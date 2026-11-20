@@ -1,0 +1,72 @@
+{
+  "module_name": "sync_fifo",
+  "clock_port": "clk",
+  "reset_port": "rst_n",
+  "reset_active_low": true,
+  "reset_sync": false,
+  "ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "description": "System clock"
+    },
+    {
+      "name": "rst_n",
+      "direction": "input",
+      "width": 1,
+      "description": "Active-low async reset"
+    },
+    {
+      "name": "wr_en_i",
+      "direction": "input",
+      "width": 1,
+      "description": "Write enable (ignored when full)"
+    },
+    {
+      "name": "wr_data_i",
+      "direction": "input",
+      "width": 8,
+      "description": "Write data"
+    },
+    {
+      "name": "rd_en_i",
+      "direction": "input",
+      "width": 1,
+      "description": "Read enable (ignored when empty)"
+    },
+    {
+      "name": "rd_data_o",
+      "direction": "output",
+      "width": 8,
+      "description": "Head-of-queue data (combinational)"
+    },
+    {
+      "name": "full_o",
+      "direction": "output",
+      "width": 1,
+      "description": "FIFO full"
+    },
+    {
+      "name": "empty_o",
+      "direction": "output",
+      "width": 1,
+      "description": "FIFO empty"
+    },
+    {
+      "name": "level_o",
+      "direction": "output",
+      "width": 3,
+      "description": "Number of stored entries (0..4)"
+    }
+  ],
+  "functional_requirements": [
+    "4-entry, 8-bit synchronous FIFO",
+    "Writes are ignored when full, reads when empty",
+    "level_o tracks occupancy exactly"
+  ],
+  "pipeline_stages": 1,
+  "target_clock_ns": 10.0,
+  "max_area_um2": 25000.0,
+  "max_power_mw": 5.0
+}

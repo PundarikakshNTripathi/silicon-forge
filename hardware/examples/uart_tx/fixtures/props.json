@@ -1,0 +1,37 @@
+[
+  {
+    "id": "P_RST_TX_HIGH",
+    "kind": "RESET_VALUE",
+    "signal": "tx_o",
+    "expected": "1'b1",
+    "description": "Line idles high after reset"
+  },
+  {
+    "id": "P_RST_BUSY_LOW",
+    "kind": "RESET_VALUE",
+    "signal": "busy_o",
+    "expected": "1'b0",
+    "description": "Not busy after reset"
+  },
+  {
+    "id": "P_IDLE_LINE_HIGH",
+    "kind": "INVARIANT",
+    "condition": "!busy_o",
+    "expression": "tx_o",
+    "description": "When idle the line is high"
+  },
+  {
+    "id": "P_START_BEGINS_FRAME",
+    "kind": "LATENCY_BOUND",
+    "trigger": "start_i && !busy_o",
+    "response": "busy_o",
+    "bound": 2,
+    "description": "A start request makes the transmitter busy within 2 cycles"
+  },
+  {
+    "id": "C_REACH_BUSY",
+    "kind": "COVER_REACHABILITY",
+    "expression": "busy_o",
+    "description": "The transmitter can become busy"
+  }
+]

@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.request
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -16,7 +18,14 @@ class LLMResponse:
 
 
 class BaseLLMProvider:
-    def generate(self, model: str, system_prompt: str, user_prompt: str, temperature: float = 0.1) -> LLMResponse:
+    def generate(
+        self,
+        model: str,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = 0.1,
+        json_schema: dict | None = None,
+    ) -> LLMResponse:
         raise NotImplementedError
 
 
@@ -27,7 +36,14 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         self.base_url = (base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
         self.api_key = api_key or os.getenv("OPENAI_API_KEY", "")
 
-    def generate(self, model: str, system_prompt: str, user_prompt: str, temperature: float = 0.1) -> LLMResponse:
+    def generate(
+        self,
+        model: str,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = 0.1,
+        json_schema: dict | None = None,
+    ) -> LLMResponse:
         payload = json.dumps({
             "model": model,
             "temperature": temperature,
@@ -57,137 +73,78 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         )
 
 
-class MockChipDesignLLM(BaseLLMProvider):
-    """Deterministic principal-level hardware LLM simulator for local testing & CI.
+class ReplayMissError(RuntimeError):
+    """No recorded fixture matches the request (the replay provider never invents designs)."""
 
-    Demonstrates full contract synthesis, intentional first-pass bug + formal repair loop,
-    and Typed Property IR generation without external API keys.
+
+class ReplayProvider(BaseLLMProvider):
+    """Deterministic provider that replays recorded fixtures from `hardware/examples/*/fixtures/`.
+
+    Used for CI, offline demos and tests. It only serves the bundled example designs; for any other spec it
+    raises ReplayMissError instead of returning someone else's design. Responses are real files that are
+    separately verified against real EDA tools (see `scripts/verify_examples.py`).
     """
 
-    def __init__(self, inject_initial_bug: bool = False) -> None:
+    def __init__(self, examples_dir: Path | None = None, inject_initial_bug: bool = False) -> None:
+        root = Path(__file__).resolve().parents[3]
+        self.examples_dir = examples_dir or (root / "hardware" / "examples")
         self.inject_initial_bug = inject_initial_bug
         self._rtl_calls = 0
+        self._designs = self._index()
 
-    def generate(self, model: str, system_prompt: str, user_prompt: str, temperature: float = 0.1) -> LLMResponse:
+    def _index(self) -> dict[str, Path]:
+        out: dict[str, Path] = {}
+        for fx in sorted(self.examples_dir.glob("*/fixtures/contract.json")):
+            module = json.loads(fx.read_text(encoding="utf-8"))["module_name"]
+            out[module] = fx.parent.parent
+        return out
+
+    def designs(self) -> list[str]:
+        return sorted(self._designs)
+
+    def _match(self, text: str) -> Path:
+        for module, path in self._designs.items():
+            if re.search(rf"\b{re.escape(module)}\b", text):
+                return path
+        raise ReplayMissError(
+            "No replay fixture matches this specification. The replay provider only serves the bundled "
+            f"examples ({', '.join(self.designs())}). Select a real model profile (local llama.cpp or a cloud "
+            "provider) to design arbitrary specs."
+        )
+
+    def generate(
+        self,
+        model: str,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = 0.1,
+        json_schema: dict | None = None,
+    ) -> LLMResponse:
         first_line = system_prompt.strip().splitlines()[0].lower() if system_prompt.strip() else ""
         if "micro-architect" in first_line:
-            content = json.dumps({
-                "module_name": "axi_lite_alu",
-                "clock_port": "clk",
-                "reset_port": "rst_n",
-                "reset_active_low": True,
-                "reset_sync": False,
-                "ports": [
-                    {"name": "clk", "direction": "input", "width": 1, "description": "System clock"},
-                    {"name": "rst_n", "direction": "input", "width": 1, "description": "Active-low async reset"},
-                    {"name": "valid_i", "direction": "input", "width": 1, "description": "Input request valid"},
-                    {"name": "ready_o", "direction": "output", "width": 1, "description": "Input request ready"},
-                    {"name": "op_i", "direction": "input", "width": 3, "description": "ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)"},
-                    {"name": "a_i", "direction": "input", "width": 32, "description": "Operand A"},
-                    {"name": "b_i", "direction": "input", "width": 32, "description": "Operand B"},
-                    {"name": "valid_o", "direction": "output", "width": 1, "description": "Output result valid"},
-                    {"name": "result_o", "direction": "output", "width": 32, "description": "Registered 32-bit ALU result"},
-                    {"name": "zero_o", "direction": "output", "width": 1, "description": "High when result_o == 0"},
-                ],
-                "functional_requirements": [
-                    "Single-cycle registered ALU with valid/ready handshake",
-                    "Supports ADD, SUB, AND, OR, XOR opcodes with zero flag",
-                    "Asynchronous active-low reset clears valid_o and result_o to 0",
-                ],
-                "pipeline_stages": 1,
-                "target_clock_ns": 10.0,
-                "max_area_um2": 25000.0,
-                "max_power_mw": 5.0,
-            }, indent=2)
+            content = (self._match(user_prompt) / "fixtures" / "contract.json").read_text(encoding="utf-8")
         elif "formal verification" in first_line:
-            content = json.dumps([
-                {
-                    "id": "P_RST_VALID_LOW",
-                    "kind": "RESET_VALUE",
-                    "signal": "valid_o",
-                    "expected": "1'b0",
-                    "description": "valid_o must be 0 immediately after reset",
-                },
-                {
-                    "id": "P_RST_RESULT_ZERO",
-                    "kind": "RESET_VALUE",
-                    "signal": "result_o",
-                    "expected": "32'd0",
-                    "description": "result_o must be 0 immediately after reset",
-                },
-                {
-                    "id": "P_ZERO_FLAG_CONSISTENT",
-                    "kind": "INVARIANT",
-                    "condition": "valid_o",
-                    "expression": "(zero_o == (result_o == 32'd0))",
-                    "description": "zero_o must match (result_o == 0) whenever valid_o is asserted",
-                },
-                {
-                    "id": "C_REACH_VALID_OUT",
-                    "kind": "COVER_REACHABILITY",
-                    "expression": "valid_o && (result_o != 32'd0)",
-                    "description": "Prove non-vacuous reachability of a non-zero valid ALU result",
-                },
-            ], indent=2)
+            content = (self._match(user_prompt) / "fixtures" / "props.json").read_text(encoding="utf-8")
         elif "rtl design engineer" in first_line:
             self._rtl_calls += 1
-            if self.inject_initial_bug and self._rtl_calls == 1 and "REPAIR" not in user_prompt:
-                # Deliberately inject a subtle zero_o polarity bug to exercise formal repair loop
-                zero_expr = "(alu_comb != 32'd0)"
+            design = self._match(user_prompt)
+            bug = design / "fixtures" / "rtl_bug.sv"
+            if self.inject_initial_bug and self._rtl_calls == 1 and "REPAIR" not in user_prompt and bug.exists():
+                content = bug.read_text(encoding="utf-8")
             else:
-                zero_expr = "(alu_comb == 32'd0)"
-            content = f"""module axi_lite_alu (
-    input  logic        clk,
-    input  logic        rst_n,
-    input  logic        valid_i,
-    output logic        ready_o,
-    input  logic [2:0]  op_i,
-    input  logic [31:0] a_i,
-    input  logic [31:0] b_i,
-    output logic        valid_o,
-    output logic [31:0] result_o,
-    output logic        zero_o
-);
-    logic [31:0] alu_comb;
-
-    assign ready_o = 1'b1;
-
-    always_comb begin
-        alu_comb = 32'd0;
-        case (op_i)
-            3'd0:    alu_comb = a_i + b_i;
-            3'd1:    alu_comb = a_i - b_i;
-            3'd2:    alu_comb = a_i & b_i;
-            3'd3:    alu_comb = a_i | b_i;
-            3'd4:    alu_comb = a_i ^ b_i;
-            default: alu_comb = 32'd0;
-        endcase
-    end
-
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            valid_o  <= 1'b0;
-            result_o <= 32'd0;
-            zero_o   <= 1'b1;
-        end else begin
-            valid_o <= valid_i & ready_o;
-            if (valid_i & ready_o) begin
-                result_o <= alu_comb;
-                zero_o   <= {zero_expr};
-            end
-        end
-    end
-endmodule
-"""
+                content = next((design / "rtl").glob("*.sv")).read_text(encoding="utf-8")
         else:
             content = json.dumps({
-                "recommendation": "Use DELAY 4 synthesis and 55% placement density for timing closure.",
-                "knobs": {"SYNTH_STRATEGY": "DELAY 4", "FP_CORE_UTIL": 45, "PL_TARGET_DENSITY_PCT": 55},
+                "recommendation": "Relax the clock period or use DELAY synthesis with lower core utilization.",
+                "knobs": {"SYNTH_STRATEGY": "DELAY 4", "FP_CORE_UTIL": 40, "PL_TARGET_DENSITY_PCT": 55},
             })
-
         return LLMResponse(
             content=content,
             prompt_tokens=max(64, len(system_prompt + user_prompt) // 4),
             completion_tokens=max(32, len(content) // 4),
-            model=model,
+            model=f"replay:{model}",
         )
+
+
+# Back-compat alias for older imports/tests.
+MockChipDesignLLM = ReplayProvider

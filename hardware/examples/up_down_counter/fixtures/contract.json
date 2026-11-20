@@ -1,0 +1,66 @@
+{
+  "module_name": "up_down_counter",
+  "clock_port": "clk",
+  "reset_port": "rst_n",
+  "reset_active_low": true,
+  "reset_sync": false,
+  "ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "description": "System clock"
+    },
+    {
+      "name": "rst_n",
+      "direction": "input",
+      "width": 1,
+      "description": "Active-low async reset"
+    },
+    {
+      "name": "en_i",
+      "direction": "input",
+      "width": 1,
+      "description": "Count enable"
+    },
+    {
+      "name": "load_i",
+      "direction": "input",
+      "width": 1,
+      "description": "Synchronous load (priority over counting)"
+    },
+    {
+      "name": "up_i",
+      "direction": "input",
+      "width": 1,
+      "description": "1=count up, 0=count down"
+    },
+    {
+      "name": "load_val_i",
+      "direction": "input",
+      "width": 8,
+      "description": "Load value"
+    },
+    {
+      "name": "count_o",
+      "direction": "output",
+      "width": 8,
+      "description": "Registered counter value"
+    },
+    {
+      "name": "wrap_o",
+      "direction": "output",
+      "width": 1,
+      "description": "Registered wrap pulse"
+    }
+  ],
+  "functional_requirements": [
+    "8-bit up/down counter with enable",
+    "Synchronous load has priority over counting",
+    "wrap_o pulses for one cycle after a wrap"
+  ],
+  "pipeline_stages": 1,
+  "target_clock_ns": 10.0,
+  "max_area_um2": 25000.0,
+  "max_power_mw": 5.0
+}

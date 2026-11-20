@@ -26,7 +26,7 @@ Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,d
   backends), `inference/` (router, providers, cost, cache), `rl/` (PPA optimizer), `skills/` (BM25 skill packs).
 - `services/telemetry_engine/` C++20 log parser + static RTL linter (`sf-telemetry`), CMake.
 - `services/dashboard/` React + Vite UI. `apps/desktop/` Electron shell. `apps/tui/` Textual TUI.
-- `configs/` flow, PDK allowlists, system prompts, model profiles. `eda/` Tcl, `.sby`, LibreLane configs.
+- `configs/` flow, PDK allowlists, system prompts, model profiles. `docs/` setup guides, `benchmarks/` measured results.
 - `hardware/examples/` reference designs + specs. `tests/` pytest. `docs/`, `assets/` README visuals.
 
 ## Rules that matter

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "P_RST_VALID_LOW",
+    "kind": "RESET_VALUE",
+    "signal": "valid_o",
+    "expected": "1'b0",
+    "description": "valid_o must be 0 immediately after reset"
+  },
+  {
+    "id": "P_RST_RESULT_ZERO",
+    "kind": "RESET_VALUE",
+    "signal": "result_o",
+    "expected": "32'd0",
+    "description": "result_o must be 0 immediately after reset"
+  },
+  {
+    "id": "P_ZERO_FLAG_CONSISTENT",
+    "kind": "INVARIANT",
+    "condition": "valid_o",
+    "expression": "(zero_o == (result_o == 32'd0))",
+    "description": "zero_o must match (result_o == 0) whenever valid_o is asserted"
+  },
+  {
+    "id": "C_REACH_VALID_OUT",
+    "kind": "COVER_REACHABILITY",
+    "expression": "valid_o && (result_o != 32'd0)",
+    "description": "Prove non-vacuous reachability of a non-zero valid ALU result"
+  }
+]

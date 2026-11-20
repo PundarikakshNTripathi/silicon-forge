@@ -8,8 +8,8 @@ from services.orchestrator.inference.cost_tracker import CostTracker
 from services.orchestrator.inference.providers import (
     BaseLLMProvider,
     LLMResponse,
-    MockChipDesignLLM,
     OpenAICompatibleProvider,
+    ReplayProvider,
 )
 
 # Task complexity -> model tier mapping
@@ -35,8 +35,8 @@ class ModelRouter:
         self.cost_tracker = cost_tracker
         if provider is not None:
             self.provider = provider
-        elif config.provider == "mock":
-            self.provider = MockChipDesignLLM()
+        elif config.provider in ("mock", "replay"):
+            self.provider = ReplayProvider()
         else:
             self.provider = OpenAICompatibleProvider()
         self._cache: dict[str, LLMResponse] = {}
@@ -63,6 +63,7 @@ class ModelRouter:
         temperature: float = 0.1,
         retry_attempt: int = 0,
         bypass_cache: bool = False,
+        json_schema: dict | None = None,
     ) -> LLMResponse:
         self.cost_tracker.check_budget()
         tier_name = self.select_tier(task_type, retry_attempt=retry_attempt)
@@ -88,6 +89,7 @@ class ModelRouter:
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             temperature=temperature,
+            json_schema=json_schema,
         )
         if self.config.enable_semantic_cache:
             self._cache[key] = resp

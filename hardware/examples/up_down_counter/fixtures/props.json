@@ -1,0 +1,36 @@
+[
+  {
+    "id": "P_RST_COUNT_ZERO",
+    "kind": "RESET_VALUE",
+    "signal": "count_o",
+    "expected": "8'd0",
+    "description": "count_o is 0 right after reset"
+  },
+  {
+    "id": "P_RST_WRAP_LOW",
+    "kind": "RESET_VALUE",
+    "signal": "wrap_o",
+    "expected": "1'b0",
+    "description": "wrap_o is 0 right after reset"
+  },
+  {
+    "id": "P_LOAD_TAKES_EFFECT",
+    "kind": "INVARIANT",
+    "condition": "$past(load_i && rst_n)",
+    "expression": "count_o == $past(load_val_i)",
+    "description": "The cycle after a load, count_o equals the loaded value"
+  },
+  {
+    "id": "P_WRAP_NEEDS_COUNT_STEP",
+    "kind": "INVARIANT",
+    "condition": "wrap_o",
+    "expression": "$past(en_i) && !$past(load_i)",
+    "description": "wrap_o only follows an enabled, non-load step"
+  },
+  {
+    "id": "C_REACH_WRAP",
+    "kind": "COVER_REACHABILITY",
+    "expression": "wrap_o",
+    "description": "wrap_o is reachable"
+  }
+]

@@ -31,6 +31,7 @@ runs/
 *.gds
 *.oas
 !assets/**/*.gds
+!tests/fixtures/*.vcd
 
 # --- Local models & secrets (never commit) ---
 models/

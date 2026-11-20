@@ -1,6 +1,12 @@
-"""Core domain models and pipeline state for SiliconForge."""
+"""Core domain models and pipeline state for SiliconForge.
+
+Every EDA-derived result carries a `mode` (provenance): "simulated" | "native" | "wsl" | "docker".
+Simulated results are surrogate-model output and must never be presented as real EDA results.
+"""
 from __future__ import annotations
 
+import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Any
@@ -12,10 +18,12 @@ class PipelineStage(str, Enum):
     RTL_GEN = "RTL_GEN"
     GUARDRAIL_AUDIT = "GUARDRAIL_AUDIT"
     FORMAL_VERIFY = "FORMAL_VERIFY"
+    SIMULATION = "SIMULATION"
     SYNTHESIS_LEC = "SYNTHESIS_LEC"
     PNR_RL_OPT = "PNR_RL_OPT"
     SIGNOFF = "SIGNOFF"
     FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
 
 
 @dataclass
@@ -43,6 +51,9 @@ class DesignContract:
     def port_names(self) -> set[str]:
         return {p.name for p in self.ports}
 
+    def port(self, name: str) -> PortSpec | None:
+        return next((p for p in self.ports if p.name == name), None)
+
 
 @dataclass
 class GuardrailViolation:
@@ -67,6 +78,7 @@ class FormalWitness:
     failing_signal: str
     stimulus: dict[str, Any] = field(default_factory=dict)
     summary: str = ""
+    trace: dict[str, Any] | None = None  # compact waveform JSON for the UI (real backends only)
 
 
 @dataclass
@@ -77,10 +89,31 @@ class FormalReport:
     vacuous_detected: bool
     witnesses: list[FormalWitness] = field(default_factory=list)
     sby_log: str = ""
+    mode: str = "simulated"
+    task_status: dict[str, str] = field(default_factory=dict)
+    elapsed_sec: float = 0.0
 
     @property
     def passed(self) -> bool:
         return self.bmc_passed and self.prove_passed and self.cover_passed and not self.vacuous_detected
+
+
+@dataclass
+class SimReport:
+    passed: bool
+    mode: str = "simulated"
+    summary: str = ""
+    log: str = ""
+    skipped: bool = False
+
+
+@dataclass
+class LecReport:
+    passed: bool
+    mode: str = "simulated"
+    log: str = ""
+    cell_count: int = 0
+    elapsed_sec: float = 0.0
 
 
 @dataclass
@@ -95,6 +128,15 @@ class PPAMetrics:
     runtime_sec: float = 0.0
     knobs: dict[str, Any] = field(default_factory=dict)
     reward: float = 0.0
+    mode: str = "simulated"
+    gds_path: str | None = None
+    run_dir: str | None = None
+    cached: bool = False
+    corner_wns: dict[str, float] = field(default_factory=dict)  # per-corner setup slack (real flows)
+    extra: dict[str, Any] = field(default_factory=dict)  # die area, hold slack, render path, ...
+
+
+EventListener = Callable[[dict[str, Any]], None]
 
 
 @dataclass
@@ -102,13 +144,16 @@ class FlowState:
     run_id: str
     spec_text: str
     stage: PipelineStage = PipelineStage.INIT
+    eda_mode: str = "simulated"
     contract: DesignContract | None = None
     rtl_source: str = ""
     formal_properties_ir: list[dict[str, Any]] = field(default_factory=list)
     sva_source: str = ""
     guardrail_history: list[GuardrailReport] = field(default_factory=list)
     formal_history: list[FormalReport] = field(default_factory=list)
+    sim_report: SimReport | None = None
     lec_passed: bool = False
+    lec_report: LecReport | None = None
     ppa_episodes: list[PPAMetrics] = field(default_factory=list)
     pareto_front: list[PPAMetrics] = field(default_factory=list)
     best_ppa: PPAMetrics | None = None
@@ -116,14 +161,33 @@ class FlowState:
     signoff_passed: bool = False
     error_message: str | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
+    rtl_versions: list[dict[str, Any]] = field(default_factory=list)
+    signoff_checks: list[dict[str, Any]] = field(default_factory=list)
 
-    def log_event(self, stage: str, status: str, detail: str, payload: dict[str, Any] | None = None) -> None:
-        self.events.append({
+    def __post_init__(self) -> None:
+        # Not a dataclass field: excluded from asdict()/serialization.
+        self._listener: EventListener | None = None
+
+    def set_listener(self, listener: EventListener | None) -> None:
+        self._listener = listener
+
+    def log_event(
+        self, stage: str, status: str, detail: str, payload: dict[str, Any] | None = None
+    ) -> None:
+        event = {
+            "seq": len(self.events),
+            "ts": round(time.time(), 3),
             "stage": stage,
             "status": status,
             "detail": detail,
             "payload": payload or {},
-        })
+        }
+        self.events.append(event)
+        if self._listener is not None:
+            self._listener(event)
+
+    def add_rtl_version(self, label: str, source: str) -> None:
+        self.rtl_versions.append({"label": label, "source": source, "ts": round(time.time(), 3)})
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
