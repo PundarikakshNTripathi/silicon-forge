@@ -1,0 +1,54 @@
+{
+  "module_name": "uart_tx",
+  "clock_port": "clk",
+  "reset_port": "rst_n",
+  "reset_active_low": true,
+  "reset_sync": false,
+  "ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "description": "System clock"
+    },
+    {
+      "name": "rst_n",
+      "direction": "input",
+      "width": 1,
+      "description": "Active-low async reset"
+    },
+    {
+      "name": "start_i",
+      "direction": "input",
+      "width": 1,
+      "description": "Start transmitting data_i (ignored while busy)"
+    },
+    {
+      "name": "data_i",
+      "direction": "input",
+      "width": 8,
+      "description": "Byte to send (LSB first)"
+    },
+    {
+      "name": "tx_o",
+      "direction": "output",
+      "width": 1,
+      "description": "Serial line, idles high"
+    },
+    {
+      "name": "busy_o",
+      "direction": "output",
+      "width": 1,
+      "description": "High while a frame is in flight"
+    }
+  ],
+  "functional_requirements": [
+    "8N1 UART transmitter, LSB first",
+    "4 clock cycles per bit (fixed divider)",
+    "tx_o idles high"
+  ],
+  "pipeline_stages": 1,
+  "target_clock_ns": 10.0,
+  "max_area_um2": 25000.0,
+  "max_power_mw": 5.0
+}

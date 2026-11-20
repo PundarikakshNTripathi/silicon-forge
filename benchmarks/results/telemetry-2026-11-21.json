@@ -1,0 +1,21 @@
+{
+  "platform": "Windows-11-10.0.26200-SP0",
+  "iters": 150,
+  "cpp_subprocess_parse_logs": {
+    "median_ms": 8.3018,
+    "p95_ms": 9.5541
+  },
+  "python_inprocess_parse_logs": {
+    "median_ms": 0.0445,
+    "p95_ms": 0.0466
+  },
+  "cpp_subprocess_lint_rtl": {
+    "median_ms": 7.5985,
+    "p95_ms": 8.6038
+  },
+  "python_inprocess_lint_rtl": {
+    "median_ms": 0.0396,
+    "p95_ms": 0.0434
+  },
+  "note": "C++ numbers include process spawn (how the pipeline calls it); Python numbers are in-process regex with FAR fewer rules, so they are a lower bound on equivalent Python work."
+}

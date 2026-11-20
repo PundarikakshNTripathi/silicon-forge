@@ -1,0 +1,44 @@
+[
+  {
+    "id": "P_RST_LEVEL_ZERO",
+    "kind": "RESET_VALUE",
+    "signal": "level_o",
+    "expected": "3'd0",
+    "description": "FIFO is empty after reset"
+  },
+  {
+    "id": "P_FULL_EMPTY_EXCLUSIVE",
+    "kind": "MUTUAL_EXCLUSION",
+    "signals": [
+      "full_o",
+      "empty_o"
+    ],
+    "description": "A FIFO cannot be full and empty at once"
+  },
+  {
+    "id": "P_LEVEL_BOUNDED",
+    "kind": "INVARIANT",
+    "expression": "level_o <= 3'd4",
+    "description": "Occupancy never exceeds capacity"
+  },
+  {
+    "id": "P_FULL_MATCHES_LEVEL",
+    "kind": "COMBINATIONAL_EQUIVALENCE",
+    "expr_a": "full_o",
+    "expr_b": "(level_o == 3'd4)",
+    "description": "full_o is exactly level == capacity"
+  },
+  {
+    "id": "P_EMPTY_MATCHES_LEVEL",
+    "kind": "COMBINATIONAL_EQUIVALENCE",
+    "expr_a": "empty_o",
+    "expr_b": "(level_o == 3'd0)",
+    "description": "empty_o is exactly level == 0"
+  },
+  {
+    "id": "C_REACH_FULL",
+    "kind": "COVER_REACHABILITY",
+    "expression": "full_o",
+    "description": "The FIFO can become full"
+  }
+]

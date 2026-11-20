@@ -1,0 +1,78 @@
+{
+  "module_name": "axi_lite_alu",
+  "clock_port": "clk",
+  "reset_port": "rst_n",
+  "reset_active_low": true,
+  "reset_sync": false,
+  "ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "description": "System clock"
+    },
+    {
+      "name": "rst_n",
+      "direction": "input",
+      "width": 1,
+      "description": "Active-low async reset"
+    },
+    {
+      "name": "valid_i",
+      "direction": "input",
+      "width": 1,
+      "description": "Input request valid"
+    },
+    {
+      "name": "ready_o",
+      "direction": "output",
+      "width": 1,
+      "description": "Input request ready"
+    },
+    {
+      "name": "op_i",
+      "direction": "input",
+      "width": 3,
+      "description": "ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)"
+    },
+    {
+      "name": "a_i",
+      "direction": "input",
+      "width": 32,
+      "description": "Operand A"
+    },
+    {
+      "name": "b_i",
+      "direction": "input",
+      "width": 32,
+      "description": "Operand B"
+    },
+    {
+      "name": "valid_o",
+      "direction": "output",
+      "width": 1,
+      "description": "Output result valid"
+    },
+    {
+      "name": "result_o",
+      "direction": "output",
+      "width": 32,
+      "description": "Registered 32-bit ALU result"
+    },
+    {
+      "name": "zero_o",
+      "direction": "output",
+      "width": 1,
+      "description": "High when result_o == 0"
+    }
+  ],
+  "functional_requirements": [
+    "Single-cycle registered ALU with valid/ready handshake",
+    "Supports ADD, SUB, AND, OR, XOR opcodes with zero flag",
+    "Asynchronous active-low reset clears valid_o and result_o to 0"
+  ],
+  "pipeline_stages": 1,
+  "target_clock_ns": 10.0,
+  "max_area_um2": 25000.0,
+  "max_power_mw": 5.0
+}
