@@ -1,9 +1,30 @@
-# SiliconForge Master Configuration
+# SiliconForge master configuration
 project_name: "siliconforge"
-eda_mode: "mock" # Options: "mock" (fast local simulation), "native" (local EDA tools), "docker" (EDA container)
-pdk: "sky130A"   # Options: "sky130A", "asap7"
+
+# EDA execution backend:
+#   simulated - deterministic surrogate models (demos/CI; results are labelled "simulated", never real)
+#   native    - Yosys/SymbiYosys/Verilator/LibreLane on PATH
+#   wsl       - the same tools inside a WSL2 distro (Windows)  -> see docs/eda-setup.md
+#   docker    - the tools inside a container
+# CLI override: --backend wsl
+eda_mode: "simulated"
+pdk: "sky130A"   # "sky130A" | "asap7"
 workspace_root: "runs"
 telemetry_binary: "services/telemetry_engine/build/sf-telemetry"
+
+eda:
+  engines:                       # SymbiYosys engine per task
+    bmc: "smtbmc bitwuzla"
+    prove: "abc pdr"             # IC3/PDR proves unbounded properties k-induction cannot
+    cover: "smtbmc bitwuzla"
+  pnr_timeout_sec: 3600
+  wsl:
+    distro: "Ubuntu-24.04"
+    env_scripts: ["$HOME/eda/oss-cad-suite/environment"]
+    # LibreLane devshell AppImage extracted with --appimage-extract (no root/Nix needed)
+    librelane_cmd: ["$HOME/eda/librelane/squashfs-root/AppRun", "librelane"]
+  docker:
+    image: "siliconforge-eda:latest"
 
 # Pipeline iteration & signoff limits
 pipeline:
@@ -11,6 +32,7 @@ pipeline:
   max_formal_iters: 4
   max_pnr_rl_episodes: 6
   formal_bmc_depth: 20
+  timing_corner: "worst"         # "worst" = multi-corner signoff; or "tt" / "ss" / "ff" to pick a corner
   require_lec_pass: true
   require_zero_drc: true
   require_clean_lvs: true
@@ -22,13 +44,16 @@ targets:
   max_power_mw: 5.0
   min_wns_ns: 0.0
 
-# RL & Evolutionary PPA optimizer settings
+# RL & evolutionary PPA optimizer settings
 rl_optimizer:
   algorithm: "hybrid_ppo_ucb_pareto"
   exploration_c: 1.414
   ppo_clip_eps: 0.2
   learning_rate: 0.15
   pareto_archive_size: 8
+  parallel_episodes: 1           # real P&R episodes take minutes: raise to 3-4 on a many-core box
+  early_stop_on_clean: true      # stop as soon as a signoff-clean recipe is found
+  allow_clock_relax: false       # let the optimizer also try relaxed clock periods (reports achievable Fmax)
   reward_weights:
     timing_wns: 4.0
     timing_tns: 1.5
@@ -40,7 +65,7 @@ rl_optimizer:
 
 # Inference routing, caching, and cost guardrails
 inference:
-  provider: "mock" # Options: "mock", "openai", "anthropic", "gemini", "ollama"
+  provider: "replay" # "replay" (bundled fixtures, offline) | "openai" (OpenAI-compatible, incl. llama.cpp) | ...
   enable_semantic_cache: true
   max_budget_usd: 15.0
   max_total_tokens: 500000

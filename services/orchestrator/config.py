@@ -47,6 +47,7 @@ class FlowConfig:
     rl_optimizer: dict[str, Any]
     inference: InferenceConfig
     pdk_spec: PdkConfig
+    eda: dict[str, Any] = field(default_factory=dict)
 
 
 def _resolve_binary(path: Path) -> Path:
@@ -112,4 +113,5 @@ def load_flow_config(
         rl_optimizer=dict(raw.get("rl_optimizer", {})),
         inference=inf_cfg,
         pdk_spec=pdk_cfg,
+        eda=dict(raw.get("eda", {})),
     )
