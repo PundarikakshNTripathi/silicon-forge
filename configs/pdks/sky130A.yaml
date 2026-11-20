@@ -1,0 +1,36 @@
+# SkyWater 130nm (sky130A) PDK Grounding & Guardrail Spec
+pdk_name: "sky130A"
+node_nm: 130
+stdcell_library: "sky130_fd_sc_hd"
+nominal_voltage_v: 1.8
+typical_corner: "tt_025C_1v80"
+signoff_corners:
+  - "ss_100C_1v60"
+  - "ff_n40C_1v95"
+  - "tt_025C_1v80"
+metal_layers: ["li1", "met1", "met2", "met3", "met4", "met5"]
+min_clock_period_ns: 4.0
+default_site: "unithd"
+
+# Verified standard cell prefix allowlist (blocks hallucinated cells)
+allowed_cell_prefixes:
+  - "sky130_fd_sc_hd__"
+  - "sky130_fd_sc_hvl__"
+  - "sky130_sram_"
+  - "sky130_ef_sc_hd__"
+
+# Verified OpenROAD / LibreLane configuration keys
+allowed_flow_vars:
+  - "DESIGN_NAME"
+  - "VERILOG_FILES"
+  - "CLOCK_PORT"
+  - "CLOCK_PERIOD"
+  - "FP_CORE_UTIL"
+  - "PL_TARGET_DENSITY_PCT"
+  - "SYNTH_STRATEGY"
+  - "CTS_CLK_MAX_WIRE_LENGTH"
+  - "GRT_ALLOW_CONGESTION"
+  - "GRT_ADJUSTMENT"
+  - "RUN_KLAYOUT_DRC"
+  - "RUN_MAGIC_DRC"
+  - "RUN_LVS"

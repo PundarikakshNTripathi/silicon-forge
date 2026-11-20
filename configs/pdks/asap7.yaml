@@ -1,0 +1,38 @@
+# ASAP7 7nm Predictive PDK Grounding & Guardrail Spec
+pdk_name: "asap7"
+node_nm: 7
+stdcell_library: "asap7sc7p5t_SIMPLE_RVT_TT"
+nominal_voltage_v: 0.7
+typical_corner: "TT_0p70V_25C"
+signoff_corners:
+  - "SS_0p63V_100C"
+  - "FF_0p77V_0C"
+  - "TT_0p70V_25C"
+metal_layers: ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9"]
+min_clock_period_ns: 0.5
+default_site: "asap7sc7p5t"
+
+allowed_cell_prefixes:
+  - "AND2x"
+  - "AOI21x"
+  - "BUFx"
+  - "DFFHQNx"
+  - "INVx"
+  - "MUX2x"
+  - "NAND2x"
+  - "NOR2x"
+  - "OR2x"
+  - "TIEHIx"
+  - "TIELOx"
+  - "XOR2x"
+
+allowed_flow_vars:
+  - "DESIGN_NAME"
+  - "VERILOG_FILES"
+  - "CLOCK_PORT"
+  - "CLOCK_PERIOD"
+  - "FP_CORE_UTIL"
+  - "PL_TARGET_DENSITY_PCT"
+  - "SYNTH_STRATEGY"
+  - "CTS_CLK_MAX_WIRE_LENGTH"
+  - "GRT_ADJUSTMENT"

@@ -1,0 +1,16 @@
+FROM python:3.11-slim AS base
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    g++ make cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . /app
+
+# Build native C++20 EDA telemetry & RTL static linter engine
+RUN make -C services/telemetry_engine
+
+RUN pip install --no-cache-dir -e ".[api]"
+
+EXPOSE 8000
+CMD ["uvicorn", "services.orchestrator.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,59 @@
+# SiliconForge Master Configuration
+project_name: "siliconforge"
+eda_mode: "mock" # Options: "mock" (fast local simulation), "native" (local EDA tools), "docker" (EDA container)
+pdk: "sky130A"   # Options: "sky130A", "asap7"
+workspace_root: "runs"
+telemetry_binary: "services/telemetry_engine/build/sf-telemetry"
+
+# Pipeline iteration & signoff limits
+pipeline:
+  max_rtl_repair_iters: 5
+  max_formal_iters: 4
+  max_pnr_rl_episodes: 6
+  formal_bmc_depth: 20
+  require_lec_pass: true
+  require_zero_drc: true
+  require_clean_lvs: true
+
+# PPA targets (can be overridden per design spec)
+targets:
+  clock_period_ns: 10.0
+  max_area_um2: 25000.0
+  max_power_mw: 5.0
+  min_wns_ns: 0.0
+
+# RL & Evolutionary PPA optimizer settings
+rl_optimizer:
+  algorithm: "hybrid_ppo_ucb_pareto"
+  exploration_c: 1.414
+  ppo_clip_eps: 0.2
+  learning_rate: 0.15
+  pareto_archive_size: 8
+  reward_weights:
+    timing_wns: 4.0
+    timing_tns: 1.5
+    area: 1.5
+    power: 1.5
+    drc_penalty: 5.0
+    lvs_penalty: 10.0
+    runtime_penalty: 0.2
+
+# Inference routing, caching, and cost guardrails
+inference:
+  provider: "mock" # Options: "mock", "openai", "anthropic", "gemini", "ollama"
+  enable_semantic_cache: true
+  max_budget_usd: 15.0
+  max_total_tokens: 500000
+  tiers:
+    local_fast:
+      model: "qwen2.5-coder-14b"
+      input_cost_per_1m: 0.15
+      output_cost_per_1m: 0.60
+    balanced:
+      model: "gemini-2.5-flash"
+      input_cost_per_1m: 0.30
+      output_cost_per_1m: 2.50
+    frontier_reasoning:
+      model: "gemini-2.5-pro"
+      input_cost_per_1m: 1.25
+      output_cost_per_1m: 10.00

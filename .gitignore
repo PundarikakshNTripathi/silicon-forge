@@ -1,0 +1,54 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# --- Node / UI ---
+node_modules/
+services/dashboard/dist/
+apps/**/dist/
+apps/**/out/
+*.tsbuildinfo
+
+# --- C++ ---
+services/telemetry_engine/build/
+CMakeCache.txt
+CMakeFiles/
+
+# --- Run artifacts / EDA outputs ---
+runs/
+*.vcd
+*.fst
+*.gds
+*.oas
+!assets/**/*.gds
+
+# --- Local models & secrets (never commit) ---
+models/
+*.gguf
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Local agent state (shared harness files ARE committed) ---
+.claude/settings.local.json
+.claude/projects/
+.codex/auth.json
