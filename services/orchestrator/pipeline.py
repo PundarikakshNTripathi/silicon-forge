@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import uuid
-from typing import Optional
+from pathlib import Path
 
 from services.orchestrator.agents.architect import ArchitectAgent
 from services.orchestrator.agents.formal_verifier import FormalVerifierAgent
@@ -26,8 +25,8 @@ class SiliconForgePipeline:
     def __init__(
         self,
         config: FlowConfig,
-        provider: Optional[BaseLLMProvider] = None,
-        repo_root: Optional[Path] = None,
+        provider: BaseLLMProvider | None = None,
+        repo_root: Path | None = None,
     ) -> None:
         self.config = config
         self.repo_root = repo_root or Path(__file__).resolve().parents[2]
@@ -50,7 +49,7 @@ class SiliconForgePipeline:
         self.formal_agent = FormalVerifierAgent(self.router, self.skills, self.prompts_dir)
         self.physical_agent = PhysicalDesignerAgent(self.router, self.skills, self.prompts_dir)
 
-    def run(self, spec_text: str, run_id: Optional[str] = None) -> FlowState:
+    def run(self, spec_text: str, run_id: str | None = None) -> FlowState:
         rid = run_id or f"run_{uuid.uuid4().hex[:8]}"
         run_dir = self.config.workspace_root / rid
         run_dir.mkdir(parents=True, exist_ok=True)

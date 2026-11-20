@@ -1,0 +1,66 @@
+name: CI
+on:
+  push: {branches: [main]}
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv venv --python ${{ matrix.python }}
+      - name: Install
+        run: uv pip install -e ".[api,providers,dev]"
+      - name: Lint
+        run: uv run ruff check services tests scripts
+      - name: Test
+        run: uv run pytest -q
+
+  cpp:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Configure and build
+        working-directory: services/telemetry_engine
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+      - name: ctest
+        working-directory: services/telemetry_engine
+        run: ctest --test-dir build -C Release --output-on-failure
+
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: {package_json_file: services/dashboard/package.json}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: pnpm, cache-dependency-path: services/dashboard/pnpm-lock.yaml}
+      - working-directory: services/dashboard
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm run build
+
+  harness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Agent harness files point at AGENTS.md
+        run: python scripts/check_harness.py

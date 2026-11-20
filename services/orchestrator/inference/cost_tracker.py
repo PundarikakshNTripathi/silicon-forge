@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List
 
 
 class BudgetExceededError(RuntimeError):
@@ -24,7 +23,7 @@ class UsageRecord:
 class CostTracker:
     max_budget_usd: float = 15.0
     max_total_tokens: int = 500_000
-    records: List[UsageRecord] = field(default_factory=list)
+    records: list[UsageRecord] = field(default_factory=list)
 
     @property
     def total_cost_usd(self) -> float:
@@ -79,8 +78,8 @@ class CostTracker:
         self.check_budget()
         return rec
 
-    def summary_by_stage(self) -> Dict[str, Dict[str, float]]:
-        summary: Dict[str, Dict[str, float]] = {}
+    def summary_by_stage(self) -> dict[str, dict[str, float]]:
+        summary: dict[str, dict[str, float]] = {}
         for r in self.records:
             bucket = summary.setdefault(r.stage, {"tokens": 0, "cost_usd": 0.0, "calls": 0, "cache_hits": 0})
             bucket["tokens"] += r.prompt_tokens + r.completion_tokens

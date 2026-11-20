@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict
+from typing import Any
 
 from services.orchestrator.agents.base import BaseHardwareAgent
 from services.orchestrator.state import PPAMetrics
@@ -11,7 +11,7 @@ from services.orchestrator.state import PPAMetrics
 class PhysicalDesignerAgent(BaseHardwareAgent):
     prompt_file = "system_physical_design.md"
 
-    def advise_eco(self, best_ppa: PPAMetrics, pdk_name: str) -> Dict[str, Any]:
+    def advise_eco(self, best_ppa: PPAMetrics, pdk_name: str) -> dict[str, Any]:
         skill_ctx = self.skills.format_context(f"OpenROAD Tcl {pdk_name} timing closure DRC", top_k=2)
         user_prompt = (
             f"PDK: {pdk_name}\n\n"

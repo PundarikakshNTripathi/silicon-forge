@@ -1,0 +1,18 @@
+name: Bug report
+description: Something is broken or produces wrong results
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: {label: What happened, description: What did you expect instead?}
+    validations: {required: true}
+  - type: textarea
+    id: repro
+    attributes: {label: Steps to reproduce, description: "Spec, config, backend (simulated/native/wsl/docker), command"}
+    validations: {required: true}
+  - type: input
+    id: env
+    attributes: {label: Environment, placeholder: "OS, Python, GPU, siliconforge version"}
+  - type: textarea
+    id: logs
+    attributes: {label: Logs / run id, render: shell}

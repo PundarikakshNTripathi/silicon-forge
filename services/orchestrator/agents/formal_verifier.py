@@ -1,9 +1,9 @@
 """Principal Formal Verification Agent: synthesizes TypedPropertyIR for SymbiYosys."""
 from __future__ import annotations
 
-from dataclasses import asdict
 import json
-from typing import Any, Dict, List
+from dataclasses import asdict
+from typing import Any
 
 from services.orchestrator.agents.base import BaseHardwareAgent
 from services.orchestrator.state import DesignContract
@@ -12,7 +12,7 @@ from services.orchestrator.state import DesignContract
 class FormalVerifierAgent(BaseHardwareAgent):
     prompt_file = "system_formal_verifier.md"
 
-    def synthesize_properties_ir(self, contract: DesignContract, spec_text: str) -> List[Dict[str, Any]]:
+    def synthesize_properties_ir(self, contract: DesignContract, spec_text: str) -> list[dict[str, Any]]:
         skill_ctx = self.skills.format_context("SymbiYosys formal SVA anti-vacuity cover", top_k=1)
         user_prompt = (
             f"Formal Verification Skill Context:\n{skill_ctx}\n\n"

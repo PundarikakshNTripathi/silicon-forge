@@ -2,15 +2,14 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from services.orchestrator.eda.bridge import EDABridge
 from services.orchestrator.rl.reward import compute_ppa_reward
 from services.orchestrator.state import DesignContract, PPAMetrics
 
-
 # Discrete-combinatorial OpenROAD/LibreLane knob action space
-ACTION_SPACE: List[Dict[str, Any]] = [
+ACTION_SPACE: list[dict[str, Any]] = [
     {"SYNTH_STRATEGY": "AREA 0",  "FP_CORE_UTIL": 45, "PL_TARGET_DENSITY_PCT": 60, "GRT_ADJUSTMENT": 0.30},
     {"SYNTH_STRATEGY": "AREA 2",  "FP_CORE_UTIL": 52, "PL_TARGET_DENSITY_PCT": 65, "GRT_ADJUSTMENT": 0.30},
     {"SYNTH_STRATEGY": "DELAY 0", "FP_CORE_UTIL": 45, "PL_TARGET_DENSITY_PCT": 58, "GRT_ADJUSTMENT": 0.30},
@@ -28,8 +27,8 @@ class PpaOptimizationEnv:
         eda_bridge: EDABridge,
         run_dir: Path,
         contract: DesignContract,
-        targets: Dict[str, float],
-        reward_weights: Dict[str, float],
+        targets: dict[str, float],
+        reward_weights: dict[str, float],
     ) -> None:
         self.eda_bridge = eda_bridge
         self.run_dir = run_dir
@@ -42,7 +41,7 @@ class PpaOptimizationEnv:
     def num_actions(self) -> int:
         return len(ACTION_SPACE)
 
-    def step(self, action_idx: int) -> Tuple[PPAMetrics, float]:
+    def step(self, action_idx: int) -> tuple[PPAMetrics, float]:
         self.episode += 1
         knobs = dict(ACTION_SPACE[action_idx % len(ACTION_SPACE)])
         knobs["CLOCK_PERIOD"] = self.targets.get("clock_period_ns", self.contract.target_clock_ns)

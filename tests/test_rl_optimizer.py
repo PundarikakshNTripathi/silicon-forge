@@ -1,14 +1,14 @@
 """Unit tests for PPA reward shaping, Pareto front, and Hybrid RL Optimizer."""
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 from services.orchestrator.config import load_flow_config
 from services.orchestrator.eda.bridge import EDABridge
 from services.orchestrator.rl.optimizer import HybridPpaOptimizer
 from services.orchestrator.rl.ppa_env import PpaOptimizationEnv
 from services.orchestrator.rl.reward import compute_ppa_reward, dominates, update_pareto_front
-from services.orchestrator.state import DesignContract, PPAMetrics, PortSpec
+from services.orchestrator.state import DesignContract, PortSpec, PPAMetrics
 
 
 class TestRLOptimizer(unittest.TestCase):

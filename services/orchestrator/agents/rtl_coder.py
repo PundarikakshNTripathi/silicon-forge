@@ -1,9 +1,8 @@
 """Principal RTL Coder Agent: generates synthesizable SystemVerilog & performs COI-sliced repairs."""
 from __future__ import annotations
 
-from dataclasses import asdict
 import json
-from typing import Optional
+from dataclasses import asdict
 
 from services.orchestrator.agents.base import BaseHardwareAgent
 from services.orchestrator.guardrails.rtl_slicer import RtlDependencySlicer
@@ -37,7 +36,7 @@ class RtlCoderAgent(BaseHardwareAgent):
         contract: DesignContract,
         current_rtl: str,
         diagnostic: str,
-        failing_signal: Optional[str] = None,
+        failing_signal: str | None = None,
         retry_attempt: int = 1,
     ) -> str:
         coi_slice = (

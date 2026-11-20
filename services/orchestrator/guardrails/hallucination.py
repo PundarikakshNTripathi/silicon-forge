@@ -2,14 +2,13 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import re
 import subprocess
-from typing import Any, Dict, List, Optional
+from pathlib import Path
+from typing import Any
 
 from services.orchestrator.config import PdkConfig
 from services.orchestrator.state import DesignContract, GuardrailReport, GuardrailViolation
-
 
 # Commercial EDA commands frequently hallucinated by LLMs into OpenROAD/Yosys Tcl
 FORBIDDEN_COMMERCIAL_TCL = {
@@ -24,12 +23,12 @@ FORBIDDEN_COMMERCIAL_TCL = {
 
 
 class HallucinationGuardrail:
-    def __init__(self, pdk_spec: PdkConfig, telemetry_binary: Optional[Path] = None) -> None:
+    def __init__(self, pdk_spec: PdkConfig, telemetry_binary: Path | None = None) -> None:
         self.pdk_spec = pdk_spec
         self.telemetry_binary = telemetry_binary
 
     def audit_rtl(self, rtl_source: str, contract: DesignContract) -> GuardrailReport:
-        violations: List[GuardrailViolation] = []
+        violations: list[GuardrailViolation] = []
 
         # Gate 1: Exact module & port contract verification
         violations.extend(self._check_port_contract(rtl_source, contract))
@@ -43,8 +42,8 @@ class HallucinationGuardrail:
         passed = not any(v.severity == "ERROR" for v in violations)
         return GuardrailReport(passed=passed, violations=violations)
 
-    def audit_flow_config(self, flow_vars: Dict[str, Any], tcl_snippet: str = "") -> GuardrailReport:
-        violations: List[GuardrailViolation] = []
+    def audit_flow_config(self, flow_vars: dict[str, Any], tcl_snippet: str = "") -> GuardrailReport:
+        violations: list[GuardrailViolation] = []
 
         # Gate 4a: LibreLane/OpenROAD variable allowlist
         allowed = set(self.pdk_spec.allowed_flow_vars)
@@ -90,8 +89,8 @@ class HallucinationGuardrail:
         passed = not any(v.severity == "ERROR" for v in violations)
         return GuardrailReport(passed=passed, violations=violations)
 
-    def audit_formal_ir(self, properties_ir: List[Dict[str, Any]], contract: DesignContract) -> GuardrailReport:
-        violations: List[GuardrailViolation] = []
+    def audit_formal_ir(self, properties_ir: list[dict[str, Any]], contract: DesignContract) -> GuardrailReport:
+        violations: list[GuardrailViolation] = []
         valid_ports = contract.port_names()
         has_cover = False
         has_assert = False
@@ -130,8 +129,8 @@ class HallucinationGuardrail:
         passed = not any(v.severity == "ERROR" for v in violations)
         return GuardrailReport(passed=passed, violations=violations)
 
-    def _check_port_contract(self, rtl_source: str, contract: DesignContract) -> List[GuardrailViolation]:
-        violations: List[GuardrailViolation] = []
+    def _check_port_contract(self, rtl_source: str, contract: DesignContract) -> list[GuardrailViolation]:
+        violations: list[GuardrailViolation] = []
         mod_match = re.search(rf"\bmodule\s+{re.escape(contract.module_name)}\b", rtl_source)
         if not mod_match:
             violations.append(
@@ -158,7 +157,7 @@ class HallucinationGuardrail:
                 )
         return violations
 
-    def _run_cpp_static_lint(self, rtl_source: str) -> List[GuardrailViolation]:
+    def _run_cpp_static_lint(self, rtl_source: str) -> list[GuardrailViolation]:
         if self.telemetry_binary and self.telemetry_binary.exists():
             proc = subprocess.run(
                 [str(self.telemetry_binary), "--mode", "lint-rtl", "--input", "-"],
@@ -181,15 +180,15 @@ class HallucinationGuardrail:
                 ]
 
         # Lightweight Python fallback if C++ binary is unavailable
-        violations: List[GuardrailViolation] = []
+        violations: list[GuardrailViolation] = []
         if re.search(r"#[0-9]+", rtl_source):
             violations.append(
                 GuardrailViolation("STATIC_LINT", "SF-RTL-001", "ERROR", "Non-synthesizable #delay construct detected.")
             )
         return violations
 
-    def _check_pdk_cells(self, rtl_source: str) -> List[GuardrailViolation]:
-        violations: List[GuardrailViolation] = []
+    def _check_pdk_cells(self, rtl_source: str) -> list[GuardrailViolation]:
+        violations: list[GuardrailViolation] = []
         # Detect explicit stdcell instantiations like sky130_... or gf180mcu_... or asap7...
         cell_refs = re.findall(r"\b((?:sky130|gf180mcu|tsmc|nangate|asap7)[a-zA-Z0-9_]+)\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(", rtl_source)
         for cell in cell_refs:
