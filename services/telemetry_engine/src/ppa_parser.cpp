@@ -1,5 +1,6 @@
 #include "ppa_parser.hpp"
 
+#include <algorithm>
 #include <iomanip>
 #include <regex>
 #include <sstream>
@@ -17,6 +18,11 @@ PpaTelemetry parse_eda_logs(const std::string& log_text) {
     const std::regex re_tns(R"(tns\s+(-?[0-9]+(?:\.[0-9]+)?))", std::regex::icase);
     const std::regex re_area(R"((?:Design area|Chip area for module[^:]*:)\s*([0-9]+(?:\.[0-9]+)?))", std::regex::icase);
     const std::regex re_cells(R"(Number of cells:\s*([0-9]+))", std::regex::icase);
+    // Yosys >= 0.4x `stat`: "   903  8.7E+03 cells"
+    const std::regex re_cells_stat(R"(^\s*([0-9]+)\s+[0-9.eE+-]+\s+cells\b)");
+    // LibreLane/OpenROAD per-corner metrics: "Writing metric timing__setup__wns__corner:nom_ss_100C_1v60: -2.87"
+    const std::regex re_corner_wns(R"(timing__setup__wns(?:__corner:\S+)?:\s*(-?[0-9.eE+-]+))");
+    const std::regex re_corner_tns(R"(timing__setup__tns(?:__corner:\S+)?:\s*(-?[0-9.eE+-]+))");
     const std::regex re_power_total(R"(Total\s+[0-9.eE+-]+\s+[0-9.eE+-]+\s+[0-9.eE+-]+\s+([0-9.eE+-]+)\s+100\.0%)", std::regex::icase);
     const std::regex re_power_mw(R"(Total Power:\s*([0-9]+(?:\.[0-9]+)?)\s*mW)", std::regex::icase);
     const std::regex re_drc(R"((?:DRC violations|Total DRC errors|COUNT):\s*([0-9]+))", std::regex::icase);
@@ -39,10 +45,23 @@ PpaTelemetry parse_eda_logs(const std::string& log_text) {
         }
         if (std::regex_search(line, m, re_cells)) {
             out.cell_count = std::stoi(m[1].str());
+        } else if (std::regex_search(line, m, re_cells_stat)) {
+            out.cell_count = std::stoi(m[1].str());
+        }
+        // Multi-corner signoff: keep the worst (minimum) setup slack / TNS across corners
+        if (std::regex_search(line, m, re_corner_wns)) {
+            const double v = std::stod(m[1].str());
+            out.wns_ns = out.parsed_timing ? std::min(out.wns_ns, v) : v;
+            out.parsed_timing = true;
+        } else if (std::regex_search(line, m, re_corner_tns)) {
+            const double v = std::stod(m[1].str());
+            out.tns_ns = std::min(out.tns_ns, v);
+            out.parsed_timing = true;
         }
         if (std::regex_search(line, m, re_power_total)) {
             // OpenSTA reports Watts; convert to mW
-            out.total_power_mw = std::stod(m[1].str()) * 1000.0;
+            // multi-corner reports repeat the Total row: keep the worst (largest) power
+            out.total_power_mw = std::max(out.total_power_mw, std::stod(m[1].str()) * 1000.0);
             out.parsed_power = true;
         } else if (std::regex_search(line, m, re_power_mw)) {
             out.total_power_mw = std::stod(m[1].str());
