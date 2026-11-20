@@ -1,0 +1,5 @@
+---
+description: SiliconForge project rules
+alwaysApply: true
+---
+Follow the repository-root `AGENTS.md` (commands, layout, honesty/provenance and secret-handling rules).
