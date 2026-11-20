@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import time
 from dataclasses import dataclass
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 
 @dataclass
@@ -121,11 +121,13 @@ class WslRunner(Runner):
 
     @staticmethod
     def to_wsl_path(path: Path | str) -> str:
-        p = Path(path).resolve()
-        posix = p.as_posix()
-        if p.drive:
-            return f"/mnt/{p.drive.rstrip(':').lower()}{posix.split(':', 1)[1]}"
-        return posix
+        """Translate a Windows drive path (C: with either slash style) to /mnt/c/...; platform independent."""
+        text = str(path)
+        win = PureWindowsPath(text)
+        if win.drive:
+            rest = "/".join(win.parts[1:])
+            return f"/mnt/{win.drive.rstrip(':').lower()}/{rest}".rstrip("/")
+        return Path(text).resolve().as_posix()
 
     def _bash(self, script: str, timeout: float) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
