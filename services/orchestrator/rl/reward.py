@@ -1,15 +1,13 @@
 """Multi-objective PPA reward shaping and Pareto-front dominance utilities."""
 from __future__ import annotations
 
-from typing import Dict, List
-
 from services.orchestrator.state import PPAMetrics
 
 
 def compute_ppa_reward(
     metrics: PPAMetrics,
-    targets: Dict[str, float],
-    weights: Dict[str, float],
+    targets: dict[str, float],
+    weights: dict[str, float],
 ) -> float:
     """Computes a smooth, signoff-aware scalar reward for RL PPA optimization."""
     max_area = max(1.0, float(targets.get("max_area_um2", 25000.0)))
@@ -66,7 +64,7 @@ def dominates(a: PPAMetrics, b: PPAMetrics) -> bool:
     return ge and gt
 
 
-def update_pareto_front(front: List[PPAMetrics], candidate: PPAMetrics, max_size: int = 8) -> List[PPAMetrics]:
+def update_pareto_front(front: list[PPAMetrics], candidate: PPAMetrics, max_size: int = 8) -> list[PPAMetrics]:
     if any(dominates(existing, candidate) for existing in front):
         return front
     filtered = [existing for existing in front if not dominates(candidate, existing)]

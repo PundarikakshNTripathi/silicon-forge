@@ -6,7 +6,6 @@ of a failing output or assertion signal so the RTL Coder patches only the affect
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Set, Tuple
 
 
 class RtlDependencySlicer:
@@ -18,9 +17,9 @@ class RtlDependencySlicer:
         "if", "else", "case", "endcase", "default", "assign", "parameter", "localparam",
     }
 
-    def build_dependency_graph(self, rtl_source: str) -> Tuple[Dict[str, Set[str]], Dict[str, List[int]]]:
-        deps: Dict[str, Set[str]] = {}
-        line_map: Dict[str, List[int]] = {}
+    def build_dependency_graph(self, rtl_source: str) -> tuple[dict[str, set[str]], dict[str, list[int]]]:
+        deps: dict[str, set[str]] = {}
+        line_map: dict[str, list[int]] = {}
         for idx, line in enumerate(rtl_source.splitlines(), start=1):
             clean = line.split("//", 1)[0]
             for match in self.ASSIGN_RE.finditer(clean):
@@ -38,7 +37,7 @@ class RtlDependencySlicer:
 
     def extract_coi_slice(self, rtl_source: str, target_signal: str, context_lines: int = 2) -> str:
         deps, line_map = self.build_dependency_graph(rtl_source)
-        visited: Set[str] = set()
+        visited: set[str] = set()
         stack = [target_signal]
         while stack:
             sig = stack.pop()
@@ -50,7 +49,7 @@ class RtlDependencySlicer:
                     stack.append(parent)
 
         lines = rtl_source.splitlines()
-        keep_indices: Set[int] = set()
+        keep_indices: set[int] = set()
         for sig in visited:
             for ln in line_map.get(sig, []):
                 for offset in range(-context_lines, context_lines + 1):

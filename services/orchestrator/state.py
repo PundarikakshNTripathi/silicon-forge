@@ -1,9 +1,9 @@
 """Core domain models and pipeline state for SiliconForge."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class PipelineStage(str, Enum):
@@ -33,8 +33,8 @@ class DesignContract:
     reset_port: str
     reset_active_low: bool
     reset_sync: bool
-    ports: List[PortSpec]
-    functional_requirements: List[str]
+    ports: list[PortSpec]
+    functional_requirements: list[str]
     pipeline_stages: int = 1
     target_clock_ns: float = 10.0
     max_area_um2: float = 25000.0
@@ -56,7 +56,7 @@ class GuardrailViolation:
 @dataclass
 class GuardrailReport:
     passed: bool
-    violations: List[GuardrailViolation] = field(default_factory=list)
+    violations: list[GuardrailViolation] = field(default_factory=list)
 
 
 @dataclass
@@ -65,7 +65,7 @@ class FormalWitness:
     task: str  # "bmc" | "prove" | "cover"
     cycle: int
     failing_signal: str
-    stimulus: Dict[str, Any] = field(default_factory=dict)
+    stimulus: dict[str, Any] = field(default_factory=dict)
     summary: str = ""
 
 
@@ -75,7 +75,7 @@ class FormalReport:
     prove_passed: bool
     cover_passed: bool
     vacuous_detected: bool
-    witnesses: List[FormalWitness] = field(default_factory=list)
+    witnesses: list[FormalWitness] = field(default_factory=list)
     sby_log: str = ""
 
     @property
@@ -93,7 +93,7 @@ class PPAMetrics:
     drc_violations: int
     lvs_clean: bool
     runtime_sec: float = 0.0
-    knobs: Dict[str, Any] = field(default_factory=dict)
+    knobs: dict[str, Any] = field(default_factory=dict)
     reward: float = 0.0
 
 
@@ -102,22 +102,22 @@ class FlowState:
     run_id: str
     spec_text: str
     stage: PipelineStage = PipelineStage.INIT
-    contract: Optional[DesignContract] = None
+    contract: DesignContract | None = None
     rtl_source: str = ""
-    formal_properties_ir: List[Dict[str, Any]] = field(default_factory=list)
+    formal_properties_ir: list[dict[str, Any]] = field(default_factory=list)
     sva_source: str = ""
-    guardrail_history: List[GuardrailReport] = field(default_factory=list)
-    formal_history: List[FormalReport] = field(default_factory=list)
+    guardrail_history: list[GuardrailReport] = field(default_factory=list)
+    formal_history: list[FormalReport] = field(default_factory=list)
     lec_passed: bool = False
-    ppa_episodes: List[PPAMetrics] = field(default_factory=list)
-    pareto_front: List[PPAMetrics] = field(default_factory=list)
-    best_ppa: Optional[PPAMetrics] = None
-    gds_path: Optional[str] = None
+    ppa_episodes: list[PPAMetrics] = field(default_factory=list)
+    pareto_front: list[PPAMetrics] = field(default_factory=list)
+    best_ppa: PPAMetrics | None = None
+    gds_path: str | None = None
     signoff_passed: bool = False
-    error_message: Optional[str] = None
-    events: List[Dict[str, Any]] = field(default_factory=list)
+    error_message: str | None = None
+    events: list[dict[str, Any]] = field(default_factory=list)
 
-    def log_event(self, stage: str, status: str, detail: str, payload: Optional[Dict[str, Any]] = None) -> None:
+    def log_event(self, stage: str, status: str, detail: str, payload: dict[str, Any] | None = None) -> None:
         self.events.append({
             "stage": stage,
             "status": status,
@@ -125,5 +125,5 @@ class FlowState:
             "payload": payload or {},
         })
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)

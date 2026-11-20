@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+
 import yaml
 
 
@@ -20,7 +21,7 @@ class InferenceConfig:
     enable_semantic_cache: bool = True
     max_budget_usd: float = 15.0
     max_total_tokens: int = 500_000
-    tiers: Dict[str, TierConfig] = field(default_factory=dict)
+    tiers: dict[str, TierConfig] = field(default_factory=dict)
 
 
 @dataclass
@@ -30,8 +31,8 @@ class PdkConfig:
     stdcell_library: str
     nominal_voltage_v: float
     min_clock_period_ns: float
-    allowed_cell_prefixes: List[str] = field(default_factory=list)
-    allowed_flow_vars: List[str] = field(default_factory=list)
+    allowed_cell_prefixes: list[str] = field(default_factory=list)
+    allowed_flow_vars: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -41,11 +42,19 @@ class FlowConfig:
     pdk: str
     workspace_root: Path
     telemetry_binary: Path
-    pipeline: Dict[str, Any]
-    targets: Dict[str, float]
-    rl_optimizer: Dict[str, Any]
+    pipeline: dict[str, Any]
+    targets: dict[str, float]
+    rl_optimizer: dict[str, Any]
     inference: InferenceConfig
     pdk_spec: PdkConfig
+
+
+def _resolve_binary(path: Path) -> Path:
+    """Return `path`, or `path.exe` on Windows when only the .exe exists."""
+    if path.exists():
+        return path
+    exe = path.with_name(path.name + ".exe")
+    return exe if exe.exists() else path
 
 
 def load_flow_config(
@@ -95,7 +104,9 @@ def load_flow_config(
         eda_mode=raw.get("eda_mode", "mock"),
         pdk=pdk_name,
         workspace_root=root / raw.get("workspace_root", "runs"),
-        telemetry_binary=root / raw.get("telemetry_binary", "services/telemetry_engine/build/sf-telemetry"),
+        telemetry_binary=_resolve_binary(
+            root / raw.get("telemetry_binary", "services/telemetry_engine/build/sf-telemetry")
+        ),
         pipeline=dict(raw.get("pipeline", {})),
         targets={k: float(v) for k, v in raw.get("targets", {}).items()},
         rl_optimizer=dict(raw.get("rl_optimizer", {})),

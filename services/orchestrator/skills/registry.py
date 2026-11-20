@@ -1,28 +1,27 @@
 """Domain Skill Pack Registry with lightweight BM25 hybrid retrieval for grounding."""
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
-from pathlib import Path
 import re
-from typing import Dict, List
+from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
 class SkillPack:
     name: str
     content: str
-    tokens: List[str]
+    tokens: list[str]
 
 
 class SkillRegistry:
     def __init__(self, packs_dir: Path | None = None) -> None:
         self.packs_dir = packs_dir or (Path(__file__).resolve().parent / "packs")
-        self.packs: List[SkillPack] = []
+        self.packs: list[SkillPack] = []
         self._load_packs()
 
     @staticmethod
-    def _tokenize(text: str) -> List[str]:
+    def _tokenize(text: str) -> list[str]:
         return re.findall(r"[a-z0-9_]+", text.lower())
 
     def _load_packs(self) -> None:
@@ -32,7 +31,7 @@ class SkillRegistry:
             content = md_file.read_text(encoding="utf-8")
             self.packs.append(SkillPack(name=md_file.stem, content=content, tokens=self._tokenize(content)))
 
-    def retrieve(self, query: str, top_k: int = 2) -> List[SkillPack]:
+    def retrieve(self, query: str, top_k: int = 2) -> list[SkillPack]:
         if not self.packs:
             return []
         q_tokens = set(self._tokenize(query))
@@ -40,7 +39,7 @@ class SkillRegistry:
         avg_len = sum(len(p.tokens) for p in self.packs) / max(1, n_docs)
 
         # Compute document frequency
-        df: Dict[str, int] = {}
+        df: dict[str, int] = {}
         for p in self.packs:
             for tok in set(p.tokens):
                 df[tok] = df.get(tok, 0) + 1
@@ -50,7 +49,7 @@ class SkillRegistry:
         for p in self.packs:
             score = 0.0
             doc_len = len(p.tokens)
-            tf_map: Dict[str, int] = {}
+            tf_map: dict[str, int] = {}
             for t in p.tokens:
                 tf_map[t] = tf_map.get(t, 0) + 1
             for qt in q_tokens:

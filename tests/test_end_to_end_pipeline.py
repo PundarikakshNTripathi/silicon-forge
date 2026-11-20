@@ -1,7 +1,7 @@
 """End-to-end integration test for SiliconForge Spec -> RTL -> Formal Repair -> LEC -> RL PPA -> Signoff."""
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 from services.orchestrator.config import load_flow_config
 from services.orchestrator.inference.providers import MockChipDesignLLM

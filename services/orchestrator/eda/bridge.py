@@ -3,12 +3,12 @@ from __future__ import annotations
 
 import json
 import math
-from pathlib import Path
 import re
 import shutil
 import subprocess
 import time
-from typing import Any, Dict, Tuple
+from pathlib import Path
+from typing import Any
 
 from services.orchestrator.config import FlowConfig
 from services.orchestrator.eda.formal_ir import FormalIRCompiler
@@ -26,7 +26,7 @@ class EDABridge:
         contract: DesignContract,
         rtl_source: str,
         properties_ir: list[dict[str, Any]],
-    ) -> Tuple[FormalReport, str]:
+    ) -> tuple[FormalReport, str]:
         sva_block = self.formal_compiler.compile_sva_block(contract, properties_ir)
         instrumented_rtl = self.formal_compiler.inject_formal_block(rtl_source, sva_block)
         formal_dir = run_dir / "formal"
@@ -49,7 +49,7 @@ class EDABridge:
             return self._run_docker_sby(formal_dir, sby_file.name), sva_block
         return self._run_mock_formal(rtl_source, properties_ir), sva_block
 
-    def run_synthesis_and_lec(self, run_dir: Path, contract: DesignContract, rtl_source: str) -> Tuple[bool, str]:
+    def run_synthesis_and_lec(self, run_dir: Path, contract: DesignContract, rtl_source: str) -> tuple[bool, str]:
         synth_dir = run_dir / "synthesis"
         synth_dir.mkdir(parents=True, exist_ok=True)
         (synth_dir / f"{contract.module_name}.sv").write_text(rtl_source, encoding="utf-8")
@@ -77,7 +77,7 @@ class EDABridge:
         self,
         run_dir: Path,
         contract: DesignContract,
-        knobs: Dict[str, Any],
+        knobs: dict[str, Any],
         episode_idx: int,
     ) -> PPAMetrics:
         t0 = time.perf_counter()
@@ -103,7 +103,7 @@ class EDABridge:
             knobs=dict(knobs),
         )
 
-    def parse_logs_with_cpp(self, log_text: str) -> Dict[str, Any]:
+    def parse_logs_with_cpp(self, log_text: str) -> dict[str, Any]:
         binary = self.config.telemetry_binary
         if binary.exists():
             proc = subprocess.run(
@@ -192,7 +192,7 @@ class EDABridge:
             sby_log="SBY [bmc] PASS (depth 20)\nSBY [prove] PASS (k-induction)\nSBY [cover] PASS (all reachability bins hit)",
         )
 
-    def _simulate_openroad_logs(self, contract: DesignContract, knobs: Dict[str, Any]) -> str:
+    def _simulate_openroad_logs(self, contract: DesignContract, knobs: dict[str, Any]) -> str:
         """Physics-grounded surrogate model emitting authentic OpenROAD/OpenSTA/Magic/Netgen log lines."""
         strat = str(knobs.get("SYNTH_STRATEGY", "AREA 0"))
         util = float(knobs.get("FP_CORE_UTIL", 45))

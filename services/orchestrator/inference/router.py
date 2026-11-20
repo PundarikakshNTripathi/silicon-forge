@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Dict, Optional
 
 from services.orchestrator.config import InferenceConfig
 from services.orchestrator.inference.cost_tracker import CostTracker
@@ -13,9 +12,8 @@ from services.orchestrator.inference.providers import (
     OpenAICompatibleProvider,
 )
 
-
 # Task complexity -> model tier mapping
-TASK_TIER_MAP: Dict[str, str] = {
+TASK_TIER_MAP: dict[str, str] = {
     "log_triage": "local_fast",
     "lint_fix": "local_fast",
     "rtl_generation": "balanced",
@@ -31,7 +29,7 @@ class ModelRouter:
         self,
         config: InferenceConfig,
         cost_tracker: CostTracker,
-        provider: Optional[BaseLLMProvider] = None,
+        provider: BaseLLMProvider | None = None,
     ) -> None:
         self.config = config
         self.cost_tracker = cost_tracker
@@ -41,7 +39,7 @@ class ModelRouter:
             self.provider = MockChipDesignLLM()
         else:
             self.provider = OpenAICompatibleProvider()
-        self._cache: Dict[str, LLMResponse] = {}
+        self._cache: dict[str, LLMResponse] = {}
 
     def select_tier(self, task_type: str, retry_attempt: int = 0) -> str:
         tier = TASK_TIER_MAP.get(task_type, "balanced")

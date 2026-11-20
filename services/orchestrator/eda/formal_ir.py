@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 from services.orchestrator.state import DesignContract, FormalWitness
 
@@ -13,7 +13,7 @@ class FormalIRCompiler:
     Eliminates LLM temporal syntax hallucinations and enforces f_past_valid reset framing.
     """
 
-    def compile_sva_block(self, contract: DesignContract, properties_ir: List[Dict[str, Any]]) -> str:
+    def compile_sva_block(self, contract: DesignContract, properties_ir: list[dict[str, Any]]) -> str:
         clk = contract.clock_port
         rst = contract.reset_port
         rst_cond = f"!{rst}" if contract.reset_active_low else rst
@@ -95,8 +95,8 @@ class FormalIRCompiler:
             f"{rtl_filename}\n"
         )
 
-    def parse_sby_witness(self, sby_log: str) -> List[FormalWitness]:
-        witnesses: List[FormalWitness] = []
+    def parse_sby_witness(self, sby_log: str) -> list[FormalWitness]:
+        witnesses: list[FormalWitness] = []
         # Match SymbiYosys assertion failure lines
         fail_re = re.compile(
             r"Assert failed in\s+([a-zA-Z0-9_]+):.*?([A-Z0-9_]+).*?(?:step|cycle)\s+(\d+)",

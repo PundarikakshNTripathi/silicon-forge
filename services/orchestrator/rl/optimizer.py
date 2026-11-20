@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from typing import List, Tuple
+
 import numpy as np
 
 from services.orchestrator.rl.ppa_env import PpaOptimizationEnv
@@ -38,7 +38,7 @@ class HybridPpaOptimizer:
         exp_l = np.exp(shifted)
         return exp_l / np.sum(exp_l)
 
-    def select_action(self) -> Tuple[int, float]:
+    def select_action(self) -> tuple[int, float]:
         probs = self.policy_probs()
         # UCB bonus ensures unvisited synthesis/P&R recipes are systematically explored
         ucb_scores = np.zeros(self.num_actions, dtype=np.float64)
@@ -66,9 +66,9 @@ class HybridPpaOptimizer:
         surrogate_grad = min(ratio * advantage, clipped_ratio * advantage)
         self.logits[action] += self.lr * surrogate_grad
 
-    def optimize(self, env: PpaOptimizationEnv, max_episodes: int = 6) -> Tuple[List[PPAMetrics], List[PPAMetrics], PPAMetrics]:
-        episodes: List[PPAMetrics] = []
-        pareto: List[PPAMetrics] = []
+    def optimize(self, env: PpaOptimizationEnv, max_episodes: int = 6) -> tuple[list[PPAMetrics], list[PPAMetrics], PPAMetrics]:
+        episodes: list[PPAMetrics] = []
+        pareto: list[PPAMetrics] = []
         for _ in range(max_episodes):
             action, old_prob = self.select_action()
             metrics, reward = env.step(action)
