@@ -55,7 +55,7 @@ jobs:
         with: {node-version: 22, cache: pnpm, cache-dependency-path: services/dashboard/pnpm-lock.yaml}
       - working-directory: services/dashboard
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --ignore-scripts
           pnpm run build
 
   harness:
