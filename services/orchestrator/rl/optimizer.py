@@ -1,13 +1,21 @@
-"""Hybrid Clipped-PPO + UCB Exploration + Evolutionary Pareto-Front PPA Optimizer."""
+"""Hybrid Clipped-PPO + UCB Exploration + Evolutionary Pareto-Front PPA Optimizer.
+
+Supports batched, parallel episode evaluation (real P&R episodes take minutes) and early stopping once a
+signoff-clean recipe is found.
+"""
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 
 from services.orchestrator.rl.ppa_env import PpaOptimizationEnv
 from services.orchestrator.rl.reward import update_pareto_front
 from services.orchestrator.state import PPAMetrics
+
+EpisodeCallback = Callable[[int, PPAMetrics], None]
 
 
 class HybridPpaOptimizer:
@@ -38,18 +46,35 @@ class HybridPpaOptimizer:
         exp_l = np.exp(shifted)
         return exp_l / np.sum(exp_l)
 
-    def select_action(self) -> tuple[int, float]:
+    def _ucb_scores(self, pending: np.ndarray | None = None) -> np.ndarray:
         probs = self.policy_probs()
-        # UCB bonus ensures unvisited synthesis/P&R recipes are systematically explored
-        ucb_scores = np.zeros(self.num_actions, dtype=np.float64)
+        counts = self.counts + (pending if pending is not None else 0)
+        scores = np.zeros(self.num_actions, dtype=np.float64)
         for a in range(self.num_actions):
-            if self.counts[a] == 0:
-                ucb_scores[a] = 1e6 + probs[a]
+            if counts[a] == 0:
+                scores[a] = 1e6 + probs[a]
             else:
-                bonus = self.exploration_c * math.sqrt(math.log(self.total_steps + 1) / self.counts[a])
-                ucb_scores[a] = self.value_est[a] + bonus + 0.25 * probs[a]
-        action = int(np.argmax(ucb_scores))
-        return action, float(probs[action])
+                bonus = self.exploration_c * math.sqrt(math.log(self.total_steps + 2) / counts[a])
+                scores[a] = self.value_est[a] + bonus + 0.25 * probs[a]
+        return scores
+
+    def select_action(self) -> tuple[int, float]:
+        # UCB bonus ensures unvisited synthesis/P&R recipes are systematically explored
+        action = int(np.argmax(self._ucb_scores()))
+        return action, float(self.policy_probs()[action])
+
+    def select_batch(self, k: int) -> list[tuple[int, float]]:
+        """Pick up to k distinct actions (treating already-picked ones as pending visits)."""
+        pending = np.zeros(self.num_actions, dtype=np.int64)
+        probs = self.policy_probs()
+        picked: list[tuple[int, float]] = []
+        for _ in range(min(k, self.num_actions)):
+            scores = self._ucb_scores(pending)
+            scores[pending > 0] = -np.inf  # distinct actions within one batch
+            a = int(np.argmax(scores))
+            pending[a] += 1
+            picked.append((a, float(probs[a])))
+        return picked
 
     def update(self, action: int, old_prob: float, reward: float) -> None:
         self.total_steps += 1
@@ -66,15 +91,42 @@ class HybridPpaOptimizer:
         surrogate_grad = min(ratio * advantage, clipped_ratio * advantage)
         self.logits[action] += self.lr * surrogate_grad
 
-    def optimize(self, env: PpaOptimizationEnv, max_episodes: int = 6) -> tuple[list[PPAMetrics], list[PPAMetrics], PPAMetrics]:
+    def optimize(
+        self,
+        env: PpaOptimizationEnv,
+        max_episodes: int = 6,
+        batch_size: int = 1,
+        is_clean: Callable[[PPAMetrics], bool] | None = None,
+        on_episode: EpisodeCallback | None = None,
+        cancel_check: Callable[[], bool] | None = None,
+    ) -> tuple[list[PPAMetrics], list[PPAMetrics], PPAMetrics]:
+        """Run up to `max_episodes` episodes in batches of `batch_size`; stop early on a clean result."""
         episodes: list[PPAMetrics] = []
         pareto: list[PPAMetrics] = []
-        for _ in range(max_episodes):
-            action, old_prob = self.select_action()
-            metrics, reward = env.step(action)
-            self.update(action, old_prob, reward)
-            episodes.append(metrics)
-            pareto = update_pareto_front(pareto, metrics, max_size=self.pareto_archive_size)
+        done = 0
+        while done < max_episodes:
+            if cancel_check is not None and cancel_check():
+                break
+            k = min(batch_size, max_episodes - done)
+            picks = self.select_batch(k) if k > 1 else [self.select_action()]
+            eps_idx = [env.next_episode() for _ in picks]
+            if len(picks) == 1:
+                results = [env.evaluate(picks[0][0], eps_idx[0])]
+            else:
+                with ThreadPoolExecutor(max_workers=len(picks)) as pool:
+                    futures = [pool.submit(env.evaluate, a, e) for (a, _), e in zip(picks, eps_idx, strict=True)]
+                    results = [f.result() for f in futures]
+            for (action, old_prob), (metrics, reward) in zip(picks, results, strict=True):
+                self.update(action, old_prob, reward)
+                episodes.append(metrics)
+                pareto = update_pareto_front(pareto, metrics, max_size=self.pareto_archive_size)
+                done += 1
+                if on_episode is not None:
+                    on_episode(done, metrics)
+            if is_clean is not None and any(is_clean(m) for m, _ in results):
+                break  # signoff-clean recipe found: stop spending EDA time
 
+        if not episodes:
+            raise RuntimeError("PPA optimization produced no episodes (cancelled?)")
         best = max(episodes, key=lambda m: m.reward)
         return episodes, pareto, best

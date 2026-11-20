@@ -8,7 +8,14 @@ from pathlib import Path
 from typing import Any
 
 from services.orchestrator.config import PdkConfig
-from services.orchestrator.state import DesignContract, GuardrailReport, GuardrailViolation
+from services.orchestrator.eda.formal_ir import property_signals
+from services.orchestrator.state import (
+    DesignContract,
+    FormalReport,
+    GuardrailReport,
+    GuardrailViolation,
+    LecReport,
+)
 
 # Commercial EDA commands frequently hallucinated by LLMs into OpenROAD/Yosys Tcl
 FORBIDDEN_COMMERCIAL_TCL = {
@@ -103,9 +110,8 @@ class HallucinationGuardrail:
             else:
                 has_assert = True
 
-            # Verify referenced signal exists in DesignContract
-            sig = prop.get("signal")
-            if sig and sig not in valid_ports:
+            # Verify every referenced design signal exists in the DesignContract (incl. inside expressions)
+            for sig in sorted(property_signals(prop) - valid_ports):
                 violations.append(
                     GuardrailViolation(
                         gate="FORMAL_GROUNDING",
@@ -128,6 +134,28 @@ class HallucinationGuardrail:
 
         passed = not any(v.severity == "ERROR" for v in violations)
         return GuardrailReport(passed=passed, violations=violations)
+
+    def audit_formal_result(self, report: FormalReport) -> GuardrailReport:
+        """Gate 5: a proof only counts if it is non-vacuous (cover statements reached, no front-end error)."""
+        violations: list[GuardrailViolation] = []
+        if report.task_status.get("cover") == "ERROR":
+            violations.append(GuardrailViolation(
+                "FORMAL_ANTI_VACUITY", "SF-GRD-504", "ERROR",
+                "Formal front-end error: properties could not be elaborated, so nothing was proven."))
+        elif report.vacuous_detected:
+            violations.append(GuardrailViolation(
+                "FORMAL_ANTI_VACUITY", "SF-GRD-503", "ERROR",
+                "Cover reachability failed: assumptions over-constrain the design or the trigger state is "
+                "unreachable, so the assertions may hold vacuously."))
+        return GuardrailReport(passed=not violations, violations=violations)
+
+    def audit_lec(self, lec: LecReport) -> GuardrailReport:
+        """Gate 6: post-synthesis logical equivalence between RTL and the synthesized netlist."""
+        if lec.passed:
+            return GuardrailReport(passed=True)
+        return GuardrailReport(passed=False, violations=[GuardrailViolation(
+            "LEC", "SF-GRD-601", "ERROR",
+            "Logical equivalence check failed: the synthesized netlist is not equivalent to the RTL.")])
 
     def _check_port_contract(self, rtl_source: str, contract: DesignContract) -> list[GuardrailViolation]:
         violations: list[GuardrailViolation] = []
@@ -155,6 +183,28 @@ class HallucinationGuardrail:
                         message=f"Contract port '{port.direction} {port.name}' (width={port.width}) missing or mismatched.",
                     )
                 )
+                continue
+            # Width check for numeric ranges, e.g. `input logic [31:0] a_i`
+            decl = re.search(
+                rf"\b{port.direction}\b\s+(?:(?:logic|wire|reg)\s+)?(?:signed\s+)?"
+                rf"(?:\[\s*(\d+)\s*:\s*(\d+)\s*\]\s*)?{re.escape(port.name)}\b",
+                rtl_source,
+            )
+            if decl:
+                hi, lo = decl.group(1), decl.group(2)
+                actual = abs(int(hi) - int(lo)) + 1 if hi is not None else 1
+                if actual != port.width:
+                    violations.append(
+                        GuardrailViolation(
+                            gate="PORT_CONTRACT",
+                            rule_id="SF-GRD-103",
+                            severity="ERROR",
+                            message=(
+                                f"Port '{port.name}' is {actual} bit(s) wide in the RTL but the "
+                                f"DesignContract requires {port.width}."
+                            ),
+                        )
+                    )
         return violations
 
     def _run_cpp_static_lint(self, rtl_source: str) -> list[GuardrailViolation]:

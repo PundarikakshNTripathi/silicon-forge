@@ -1,4 +1,4 @@
-"""Principal Formal Verification Agent: synthesizes TypedPropertyIR for SymbiYosys."""
+"""Principal Formal Verification Agent: synthesizes schema-validated TypedPropertyIR for SymbiYosys."""
 from __future__ import annotations
 
 import json
@@ -6,6 +6,7 @@ from dataclasses import asdict
 from typing import Any
 
 from services.orchestrator.agents.base import BaseHardwareAgent
+from services.orchestrator.schemas import PROPERTY_LIST, property_list_json_schema
 from services.orchestrator.state import DesignContract
 
 
@@ -20,14 +21,16 @@ class FormalVerifierAgent(BaseHardwareAgent):
             f"Specification:\n{spec_text}\n\n"
             "Emit a JSON array of TypedPropertyIR objects including at least one COVER_REACHABILITY property."
         )
-        resp = self.router.complete(
+
+        def parse(raw: Any) -> list[dict[str, Any]]:
+            if not isinstance(raw, list):
+                raise ValueError("expected a JSON array of TypedPropertyIR objects")
+            return [p.model_dump() for p in PROPERTY_LIST.validate_python(raw)]
+
+        return self.complete_structured(
             stage="FORMAL_VERIFY",
             task_type="formal_ir_synthesis",
-            system_prompt=self.system_prompt,
             user_prompt=user_prompt,
-            temperature=0.05,
+            parse=parse,
+            json_schema=property_list_json_schema(),
         )
-        props = self.extract_json(resp.content)
-        if not isinstance(props, list):
-            raise ValueError("FormalVerifierAgent expected a JSON list of TypedPropertyIR objects.")
-        return props
