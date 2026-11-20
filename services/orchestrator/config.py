@@ -9,19 +9,20 @@ import yaml
 
 
 @dataclass
-class TierConfig:
-    model: str
-    input_cost_per_1m: float
-    output_cost_per_1m: float
-
-
-@dataclass
 class InferenceConfig:
-    provider: str = "mock"
-    enable_semantic_cache: bool = True
+    profile: str = "replay"  # routing profile from configs/models.yaml
+    catalog_path: str = "configs/models.yaml"
+    enable_semantic_cache: bool = True  # response cache (exact match); name kept for config compatibility
+    cache_path: str | None = None  # SQLite file for a persistent cache; None = in-memory
     max_budget_usd: float = 15.0
     max_total_tokens: int = 500_000
-    tiers: dict[str, TierConfig] = field(default_factory=dict)
+    stage_token_budgets: dict[str, int] = field(default_factory=dict)
+    cli_bridge_enabled: bool = False  # opt-in subscription CLI bridge (see docs/providers.md)
+
+    @property
+    def provider(self) -> str:
+        """Legacy alias."""
+        return self.profile
 
 
 @dataclass
@@ -72,22 +73,19 @@ def load_flow_config(
     pdk_file = root / "configs" / "pdks" / f"{pdk_name}.yaml"
     pdk_raw = yaml.safe_load(pdk_file.read_text(encoding="utf-8"))
 
-    tiers = {
-        name: TierConfig(
-            model=vals["model"],
-            input_cost_per_1m=float(vals["input_cost_per_1m"]),
-            output_cost_per_1m=float(vals["output_cost_per_1m"]),
-        )
-        for name, vals in raw.get("inference", {}).get("tiers", {}).items()
-    }
-
     inf_raw = raw.get("inference", {})
+    legacy = {"mock": "replay", "replay": "replay"}
+    profile = inf_raw.get("profile") or legacy.get(inf_raw.get("provider", "replay"), inf_raw.get("provider", "replay"))
+    cache_path = inf_raw.get("cache_path")
     inf_cfg = InferenceConfig(
-        provider=inf_raw.get("provider", "mock"),
+        profile=str(profile),
+        catalog_path=str(inf_raw.get("catalog_path", "configs/models.yaml")),
         enable_semantic_cache=bool(inf_raw.get("enable_semantic_cache", True)),
+        cache_path=str(root / cache_path) if cache_path else None,
         max_budget_usd=float(inf_raw.get("max_budget_usd", 15.0)),
         max_total_tokens=int(inf_raw.get("max_total_tokens", 500_000)),
-        tiers=tiers,
+        stage_token_budgets={k: int(v) for k, v in (inf_raw.get("stage_token_budgets") or {}).items()},
+        cli_bridge_enabled=bool(inf_raw.get("cli_bridge_enabled", False)),
     )
 
     pdk_cfg = PdkConfig(

@@ -25,10 +25,11 @@ def _build_pipeline(args: argparse.Namespace) -> SiliconForgePipeline:
     cfg = load_flow_config(args.config)
     if getattr(args, "backend", None):
         cfg.eda_mode = normalize_mode(args.backend)
-    if getattr(args, "provider", None):
-        cfg.inference.provider = args.provider
+    profile = getattr(args, "profile", None) or getattr(args, "provider", None)
+    if profile:
+        cfg.inference.profile = "replay" if profile == "mock" else profile
     provider = None
-    if cfg.inference.provider in ("mock", "replay"):
+    if cfg.inference.profile == "replay":
         provider = ReplayProvider(inject_initial_bug=getattr(args, "inject_bug", False))
     return SiliconForgePipeline(cfg, provider=provider, eda=EDABridge(cfg))
 
@@ -126,7 +127,9 @@ def build_parser() -> argparse.ArgumentParser:
     def common(sp: argparse.ArgumentParser) -> None:
         sp.add_argument("--config", default="configs/flow_default.yaml", help="Flow YAML config")
         sp.add_argument("--backend", choices=MODES, default=None, help="EDA backend (overrides config eda_mode)")
-        sp.add_argument("--provider", default=None, help="LLM provider (replay|openai|...; overrides config)")
+        sp.add_argument("--profile", default=None,
+                        help="Model routing profile: replay | local | hybrid | cloud | openai | gemini | subscription")
+        sp.add_argument("--provider", dest="provider", default=None, help=argparse.SUPPRESS)
 
     r = sub.add_parser("run", help="Run the full flow on a spec")
     r.add_argument("--spec", required=True, help="Path to hardware specification (markdown/text)")

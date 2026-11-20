@@ -56,7 +56,7 @@ def test_unknown_spec_fails_loudly_instead_of_returning_someone_elses_design(sim
 
 
 def test_budget_exceeded_fails_run_gracefully(sim_config):
-    tracker = CostTracker(max_budget_usd=0.000001, max_total_tokens=10_000_000)
+    tracker = CostTracker(max_budget_usd=15.0, max_total_tokens=100)  # replay calls are free: trip the token ceiling
     pipeline = SiliconForgePipeline(sim_config, provider=ReplayProvider(), cost_tracker=tracker)
     state = pipeline.run(_spec("axi_lite_alu"), run_id="e2e_budget")
     assert state.stage == PipelineStage.FAILED
