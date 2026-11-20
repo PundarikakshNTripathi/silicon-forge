@@ -1,0 +1,4 @@
+# Default reviewers. Narrow these as the contributor base grows.
+*                          @PundarikakshNTripathi
+/services/orchestrator/guardrails/  @PundarikakshNTripathi
+/eda/                      @PundarikakshNTripathi
