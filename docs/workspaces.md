@@ -50,6 +50,23 @@ Limits you should know about:
   and why `auto` is for workspaces you trust.
 - With the `simulated` backend the `eda` tool refuses to run rather than invent results.
 
+## Saved conversations
+
+Nothing is saved by default. `siliconforge chat --save` (or `agent --save "task"`) writes the conversation to
+`.siliconforge/sessions/<id>.jsonl`, one JSON entry per line, in clear text: your prompts, the model's replies and tool
+output, including file contents the agent read. The folder is inside the workspace state directory, which is gitignored
+and which the agent itself cannot write to.
+
+```bash
+siliconforge sessions                    # list saved conversations in this folder
+siliconforge chat --resume               # continue the newest one
+siliconforge chat --resume 20261121-183000
+```
+
+A resumed session sends the model the same transcript it had before (older tool results are still shortened to one line, as in
+a live session). File changes made by the earlier session are not rolled back by resuming, and `/undo` only knows about edits
+made since the process started. A line cut off by a killed process is skipped when loading.
+
 ## From the API and the desktop app
 
 `POST /api/workspaces/open` opens or creates a workspace; `GET /api/fs` is a directories-only browser for the web UI

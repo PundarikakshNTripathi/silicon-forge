@@ -258,7 +258,31 @@ def _agent_session(args: argparse.Namespace, interactive: bool):
 
     session = create_session(ws, profile=profile, mode=args.mode, approver=approve, on_event=show,
                              max_steps=args.max_steps)
+    resume = getattr(args, "resume", None)
+    if getattr(args, "save", False) or resume is not None:
+        from services.orchestrator.agent.store import SessionStore
+
+        try:
+            sid = session.save_to(SessionStore(ws.state_dir / "sessions"), None if resume in (None, "latest") else resume,
+                                  resume=resume is not None)
+        except (FileNotFoundError, ValueError) as exc:
+            raise SystemExit(str(exc)) from exc
+        print(f"session {sid} ({'resumed, ' + str(len(session.history)) + ' entries' if resume is not None else 'saving'})")
     return ws, profile, session
+
+
+def cmd_sessions(args: argparse.Namespace) -> int:
+    """List the agent conversations saved in a workspace."""
+    from services.orchestrator.agent.store import SessionStore
+    from services.orchestrator.workspace import find_workspace
+
+    found = SessionStore(find_workspace(args.workspace).state_dir / "sessions").list()
+    if not found:
+        print("no saved sessions (start one with: siliconforge chat --save)")
+        return 0
+    for info in found:
+        print(f"{info.id}  {info.turns:>3} turn(s)  {info.first_message}")
+    return 0
 
 
 def cmd_agent(args: argparse.Namespace) -> int:
@@ -574,6 +598,10 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--mode", choices=["ask", "accept-edits", "auto", "plan"], default="ask")
         sp.add_argument("--max-steps", type=int, default=14)
         sp.add_argument("--verbose", action="store_true", help="Show tool results")
+        sp.add_argument("--save", action="store_true",
+                        help="Save the conversation (clear text) under .siliconforge/sessions/ in the workspace")
+        sp.add_argument("--resume", nargs="?", const="latest", default=None, metavar="ID",
+                        help="Continue a saved conversation (newest when no ID is given); implies --save")
 
     ag = sub.add_parser("agent", help="Give the workspace agent one task (headless)")
     ag.add_argument("task")
@@ -583,6 +611,10 @@ def build_parser() -> argparse.ArgumentParser:
     ch = sub.add_parser("chat", help="Interactive agent session in this folder")
     agent_opts(ch)
     ch.set_defaults(func=cmd_chat)
+
+    ss = sub.add_parser("sessions", help="List saved agent conversations in this folder")
+    ss.add_argument("--workspace", default=".")
+    ss.set_defaults(func=cmd_sessions)
 
     isa = sub.add_parser("isa", help="ISA toolchain from an isa.yaml: gen, asm, disasm, check, run")
     isa.add_argument("action", choices=["gen", "asm", "disasm", "check", "run"])
