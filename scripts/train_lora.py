@@ -63,7 +63,7 @@ def main() -> int:
     answer_tokens = sum(sum(1 for t in e["labels"] if t != -100) for e in data)
     print(f"{len(data)} examples ({dropped} dropped for length), {answer_tokens} answer tokens, fingerprint {dataset_fingerprint(rows)}", flush=True)
 
-    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16).to("cuda")
+    model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.bfloat16).to("cuda")
     model.gradient_checkpointing_enable()
     model.enable_input_require_grads()
     cfg = LoraConfig(r=args.rank, lora_alpha=args.alpha, lora_dropout=0.05, task_type="CAUSAL_LM",

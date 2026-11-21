@@ -27,7 +27,7 @@ class HFModel:
         self.tok = AutoTokenizer.from_pretrained(model_id)
         if self.tok.pad_token is None:
             self.tok.pad_token = self.tok.eos_token
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=getattr(torch, dtype)).to("cuda")
+        self.model = AutoModelForCausalLM.from_pretrained(model_id, dtype=getattr(torch, dtype)).to("cuda")
         if adapter:
             from peft import PeftModel
 

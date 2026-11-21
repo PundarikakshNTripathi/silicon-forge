@@ -49,7 +49,7 @@ outline means a surrogate did. In the command line and in result files the field
 | Evaluation harness (VerilogEval) | Real. One suite; Gemini and three local models measured. |
 | Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. |
 | Tiny Tapeout IHP: hardening, timing, DRC | **Not run locally.** Needs the official flow (Docker or the GitHub action). |
-| Fine-tuning a local model on verified samples | Code and tests written; **training has not been run.** |
+| Fine-tuning a local model on verified samples | One round measured on a 1.5B model ([results](#fine-tuning-on-verified-answers)); no larger model, no second round. |
 | Docker backend, subscription CLI bridges | Wiring is unit-tested; not run end to end on the reference machine. |
 | Clock-domain-crossing analysis, hierarchical macros, SRAM macros | **Absent.** |
 | `simulated` backend | Surrogate models, always labelled. For demos and CI. |
@@ -211,6 +211,22 @@ LibreLane 3.0.17 ([`flow-pio16-sky130A-*.json`](benchmarks/results)).
 
 Two runs on identical inputs gave identical area, power, slack and gate outcomes.
 
+### Fine-tuning on verified answers
+
+One round of rejection-sampling fine-tuning on Qwen2.5-Coder-1.5B-Instruct: sample the base model on the 101 training problems (8
+samples each), keep the answers the testbench accepted (37 examples from 23 problems), train a LoRA adapter (35 seconds), and
+score base and tuned model on the 54 held-out problems.
+
+| | pass@1 | 95% interval | Answers that compile |
+| :--- | ---: | :--- | ---: |
+| Base | 14.8% | 8.8 to 22.0 | 46.3% |
+| After one round | 22.9% | 14.1 to 32.2 | 59.0% |
+
+The paired difference is **+8.1 points (95% interval +3.7 to +12.7)**; 18 problems improved, 6 got worse, 30 did not change. The
+problem ids of the two splits do not overlap, and a check for near-duplicate problems found 3 of 54 that resemble a training problem,
+which do not drive the gain. This is one round, one training seed and a small model whose base score is low, so it shows the loop
+works end to end; it says nothing yet about larger models or further rounds ([docs/evals.md](docs/evals.md#fine-tuning-on-verified-samples-one-round-measured)).
+
 ### Searching layout knobs
 
 A Gaussian-process optimizer was added and compared with random search, Latin hypercube and the original bandit on real runs
@@ -317,7 +333,7 @@ are stronger.
 
 ## Roadmap
 
-CVDP and a held-out design suite; the fine-tuning run; clock-domain-crossing checks, macros and more PDKs in the project flow;
+CVDP and a held-out design suite; further fine-tuning rounds on larger models; clock-domain-crossing checks, macros and more PDKs in the project flow;
 Tiny Tapeout hardening through Docker; signed installers.
 
 ## Licence
