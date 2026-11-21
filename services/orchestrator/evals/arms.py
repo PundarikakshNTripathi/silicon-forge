@@ -75,14 +75,29 @@ class CompileFeedback(Arm):
 
     name = "feedback"
 
-    def __init__(self, rounds: int = 3, context: bool = True) -> None:
+    def __init__(self, rounds: int = 3, context: bool = True, guidance: bool = False) -> None:
         self.rounds = rounds
         self.context = context
+        self.guidance = guidance
+        self._skills = None
         if not context:
             self.name = "feedback-plain"
+        elif guidance:
+            self.name = "feedback-guided"
 
     def describe(self) -> dict:
-        return {"arm": self.name, "rounds": self.rounds, "debug_context": self.context}
+        return {"arm": self.name, "rounds": self.rounds, "debug_context": self.context, "knowledge_packs": self.guidance}
+
+    def guide(self, diag: str) -> str:
+        """Knowledge-pack sections for the compiler's error lines (warnings are left out so that they do not steer retrieval)."""
+        if not self.guidance:
+            return ""
+        if self._skills is None:
+            from services.orchestrator.skills.registry import SkillRegistry
+
+            self._skills = SkillRegistry()
+        errors = " ".join(ln for ln in diag.splitlines() if "error" in ln.lower() or "syntax" in ln.lower())
+        return self._skills.format_context(errors or diag, top_k=2)
 
     def solve(self, problem, llm, runner, temperature=0.0, workdir=None) -> Attempt:
         a = Attempt(rtl="")
@@ -101,8 +116,10 @@ class CompileFeedback(Arm):
                 a.log.append(f"round {rnd}: {diag.splitlines()[0][:160]}")
                 evidence = error_lines(diag, rtl) if self.context else ""
                 history = memory.render() if self.context else ""
+                notes = self.guide(diag)
                 prompt = (f"{base}\n\nYour previous attempt does not compile.\nCompiler output:\n{diag}\n"
                           + (f"\nLines it points at (>> marks them):\n{evidence}\n" if evidence else "")
+                          + (f"\nRelevant guidance:\n{notes}\n" if notes else "")
                           + (f"\nEarlier attempts, do not repeat them:\n{history}\n" if history else "")
                           + "\nReply with the corrected module only, in one ```verilog block.")
                 r = llm(ve.SYSTEM_PROMPT, prompt, temperature)
@@ -149,9 +166,11 @@ def build_arm(name: str, rounds: int = 3, candidates: int = 3) -> Arm:
         return CompileFeedback(rounds)
     if name == "feedback-plain":
         return CompileFeedback(rounds, context=False)
+    if name == "feedback-guided":
+        return CompileFeedback(rounds, guidance=True)
     if name == "sampled":
         return Sampled(CompileFeedback(rounds), candidates)
-    raise ValueError(f"unknown arm '{name}' (single, feedback, feedback-plain, sampled)")
+    raise ValueError(f"unknown arm '{name}' (single, feedback, feedback-plain, feedback-guided, sampled)")
 
 
 def timed(fn: Callable[[], LLMReply]) -> LLMReply:

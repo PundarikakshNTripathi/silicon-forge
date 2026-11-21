@@ -9,6 +9,7 @@ agent can look things up with the `knowledge` tool.
 | Pack | Covers |
 | --- | --- |
 | `verilator_warnings` | The common Verilator messages (WIDTH, LATCH, BLKSEQ, COMBDLY, MULTIDRIVEN, UNOPTFLAT, undeclared signals, statements outside a block) and SiliconForge's own `SF-RTL-001..006` rules, with the fix for each |
+| `iverilog_errors` | The Icarus Verilog messages models hit most (not a valid l-value for a procedural assignment, already declared, declarations before statements, part-select of a scalar, unknown module type) and what each means |
 | `sv_synthesizable_idioms` | Register and combinational templates, reset style, an FSM template, counters, widths and signedness, what not to write |
 | `handshake_and_fifo` | Ready/valid rules, FIFO pointers and flags, skid buffers, the five AXI-Lite channels |
 | `cdc_and_resets` | Synchronizers, Gray-coded pointers, reset synchronizers. SiliconForge has no CDC analysis yet; the pack says so |

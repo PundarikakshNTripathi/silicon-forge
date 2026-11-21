@@ -51,6 +51,7 @@ and it is why the loop below is limited to what a compiler can tell you.
 | `single` | One call. The baseline. |
 | `feedback-plain` | Generate, compile; on an error ask again with the compiler's message (at most `--rounds` calls). |
 | `feedback` | As above, plus the source lines the error points at and a short history of what earlier rounds tried (`docs/debug-context.md`). |
+| `feedback-guided` | As `feedback`, plus the knowledge-pack sections that match the compiler's error lines (`docs/knowledge-packs.md`). Comparing it with `feedback` measures whether the guidance helps beyond the raw message. |
 | `sampled` | Up to `--candidates` runs of `feedback`, stopping at the first candidate that compiles. |
 
 Comparing `single`, `feedback-plain` and `feedback` on the same model and problems separates what the loop buys from what the

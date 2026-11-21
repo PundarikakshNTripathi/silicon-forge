@@ -137,3 +137,49 @@ def test_short_exact_queries_find_their_section_by_heading(reg, query, expected)
                                    "quarterly marketing budget for the cafeteria"])
 def test_short_and_long_irrelevant_queries_return_nothing(reg, query):
     assert reg.retrieve(query) == []
+
+
+@pytest.mark.parametrize("message,expected", [
+    ("dut.sv:5: error: out is not a valid l-value for a procedural assignment.", "valid l-value"),
+    ("dut.sv:6: error: 'out' has already been declared in this scope.", "already been declared"),
+    ("dut.sv:9: error: Declarations must precede statements.", "Declarations must precede"),
+    ("dut.sv:12: error: can not select part of scalar: vec", "part of scalar"),
+    ("dut.sv:3: error: Unknown module type: andgate", "Unknown module type"),
+])
+def test_icarus_errors_find_their_section(reg, message, expected):
+    hits = top(reg, message, k=1)
+    assert hits and hits[0].startswith("iverilog_errors") and expected.lower() in hits[0].lower(), hits
+
+
+def test_the_guided_feedback_arm_adds_retrieved_guidance_to_the_repair_prompt_and_the_plain_one_does_not():
+    from services.orchestrator.evals.arms import LLMReply, build_arm
+    from services.orchestrator.evals.verilogeval import Problem
+
+    class Runner:
+        name = "fake"
+
+        def run(self, cmd, cwd, timeout=60, env=None, isolate=False):
+            from services.orchestrator.eda.runner import RunResult
+
+            dut = (Path(cwd) / "dut.sv").read_text()
+            if "always" in dut:
+                return RunResult(1, "", "dut.sv:3: error: out is not a valid l-value for a procedural assignment.", 0.0)
+            return RunResult(0, "", "", 0.0)
+
+    nl = chr(10)
+    fence = "`" * 3
+    BAD = fence + "verilog" + nl + "module TopModule(output out);" + nl + "  always @* out = 1;" + nl + "endmodule" + nl + fence
+    OK = fence + "verilog" + nl + "module TopModule(output out);" + nl + "  assign out = 1;" + nl + "endmodule" + nl + fence
+    seen = {}
+    for arm_name in ("feedback-guided", "feedback"):
+        prompts = []
+
+        def llm(system, user, temperature, _p=prompts):
+            _p.append(user)
+            return LLMReply(BAD if len(_p) == 1 else OK)
+
+        a = build_arm(arm_name, rounds=3).solve(Problem("P1", "make out 1", "r", "t"), llm, Runner())
+        assert a.compiled and a.rounds == 2
+        seen[arm_name] = prompts[1]
+    assert "Relevant guidance" in seen["feedback-guided"] and "output reg out" in seen["feedback-guided"]
+    assert "Relevant guidance" not in seen["feedback"]
