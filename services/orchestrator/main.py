@@ -228,6 +228,74 @@ def cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+NL = chr(10)
+
+
+def _agent_session(args: argparse.Namespace, interactive: bool):
+    from services.orchestrator.agent import AgentEvent, create_session
+    from services.orchestrator.workspace import find_workspace, remember_workspace
+
+    ws = find_workspace(args.workspace)
+    remember_workspace(ws)
+    profile = args.profile or ws.profile
+
+    def show(ev: AgentEvent) -> None:
+        if ev.kind == "assistant":
+            print(f"{NL}{ev.text}", flush=True)
+        elif ev.kind == "tool_call":
+            print(f"  > {ev.text}", flush=True)
+        elif ev.kind == "tool_result" and args.verbose:
+            print(f"    {ev.text[:300]}", flush=True)
+        elif ev.kind in ("approval", "error"):
+            print(f"  ! {ev.text}", flush=True)
+
+    def approve(kind: str, summary: str, details: dict) -> bool:
+        if not interactive:
+            return False
+        return input(f"  allow {kind}: {summary}  [y/N] ").strip().lower() in ("y", "yes")
+
+    session = create_session(ws, profile=profile, mode=args.mode, approver=approve, on_event=show,
+                             max_steps=args.max_steps)
+    return ws, profile, session
+
+
+def cmd_agent(args: argparse.Namespace) -> int:
+    """One-shot agent turn in a workspace (headless): `siliconforge agent "add a reset to rtl/cnt.sv"`."""
+    ws, profile, session = _agent_session(args, interactive=sys.stdin.isatty() and args.mode in ("ask", "accept-edits"))
+    print(f"workspace {ws.root}  profile {profile}  mode {args.mode}")
+    res = session.send(args.task)
+    print(f"{NL}[{res.stopped}] {res.steps} step(s)")
+    return 0 if res.stopped == "done" else 1
+
+
+def cmd_chat(args: argparse.Namespace) -> int:
+    """Interactive session in the current directory, like Claude Code or Codex: type a request, approve what it does."""
+    ws, profile, session = _agent_session(args, interactive=True)
+    print(f"SiliconForge in {ws.root}{NL}profile {profile}  mode {args.mode}  (/undo, /mode <m>, /exit)")
+    while True:
+        try:
+            line = input(f"{NL}> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return 0
+        if not line:
+            continue
+        if line in ("/exit", "/quit"):
+            return 0
+        if line == "/undo":
+            print(session.tools.undo())
+            continue
+        if line.startswith("/mode"):
+            new = line.split()[-1]
+            if new in ("ask", "accept-edits", "auto", "plan"):
+                session.mode = new  # type: ignore[assignment]
+                print(f"mode: {new}")
+            else:
+                print("modes: ask, accept-edits, auto, plan")
+            continue
+        session.send(line)
+
+
 def cmd_tui(args: argparse.Namespace) -> int:
     try:
         from services.tui.app import main as tui_main
@@ -312,6 +380,22 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--max-budget", type=float, default=None, help="USD budget for metered models")
     i.add_argument("--force", action="store_true", help="Overwrite an existing siliconforge.yaml")
     i.set_defaults(func=cmd_init)
+
+    def agent_opts(sp: argparse.ArgumentParser) -> None:
+        sp.add_argument("--workspace", default=".", help="Folder the agent works in (default: here)")
+        sp.add_argument("--profile", default=None, help="Model profile (default: the workspace's)")
+        sp.add_argument("--mode", choices=["ask", "accept-edits", "auto", "plan"], default="ask")
+        sp.add_argument("--max-steps", type=int, default=14)
+        sp.add_argument("--verbose", action="store_true", help="Show tool results")
+
+    ag = sub.add_parser("agent", help="Give the workspace agent one task (headless)")
+    ag.add_argument("task")
+    agent_opts(ag)
+    ag.set_defaults(func=cmd_agent)
+
+    ch = sub.add_parser("chat", help="Interactive agent session in this folder")
+    agent_opts(ch)
+    ch.set_defaults(func=cmd_chat)
 
     rp = sub.add_parser("report", help="Generate reports from a workspace")
     rp.add_argument("kind", choices=["ai-usage"])

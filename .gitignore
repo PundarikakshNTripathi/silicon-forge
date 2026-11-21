@@ -62,3 +62,6 @@ Thumbs.db
 apps/desktop/dist/
 apps/desktop/backend-dist/
 build/
+
+# per-user runtime state (recent workspaces contain personal paths)
+/workspaces.json

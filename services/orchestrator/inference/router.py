@@ -34,6 +34,7 @@ TASK_TIER_MAP: dict[str, str] = {
     "architecture_contract": "frontier_reasoning",
     "counterexample_repair": "frontier_reasoning",
     "physical_eco": "balanced",
+    "agent_step": "balanced",
 }
 
 #: only low-temperature calls are cached: a replayed answer is as valid as a fresh sample
