@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 import xml.etree.ElementTree as ET
@@ -62,15 +63,21 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     here = Path.cwd()
+    if not os.environ.get("PDK_ROOT"):  # unset or empty: default to ~/pdk so sources can say $PDK_ROOT/<pdk>/libs.ref/...
+        os.environ["PDK_ROOT"] = str(Path.home() / "pdk")
+
+    def expand(p: str) -> Path:
+        return (here / os.path.expandvars(os.path.expanduser(p))).resolve()
+
     defines = {d.split("=", 1)[0]: (d.split("=", 1)[1] if "=" in d else "1") for d in a.define}
     unit, _, prec = a.timescale.partition("/")
     ts = (unit, prec or unit)
     runner = get_runner("icarus")
     build_dir = (here / a.build_dir).resolve()
     t_build = time.time()
-    runner.build(sources=[(here / s).resolve() for s in a.sources], hdl_toplevel=a.top, build_dir=build_dir,
+    runner.build(sources=[expand(s) for s in a.sources], hdl_toplevel=a.top, build_dir=build_dir,
                  always=True, timescale=ts, waves=a.waves, defines=defines,
-                 includes=[(here / i).resolve() for i in a.include], build_args=list(a.build_arg))
+                 includes=[expand(i) for i in a.include], build_args=list(a.build_arg))
     build_s = round(time.time() - t_build, 2)
     extra_env = dict(kv.split("=", 1) for kv in a.env)
     runs = []

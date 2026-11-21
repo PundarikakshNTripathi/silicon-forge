@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 TOOLS_DIR = Path(__file__).parent / "tools"
-SCRIPTS = ("sf_mutate.py", "sf_cocotb_run.py", "sf_toggle.py", "sf_protocols.py", "sf_lockstep.py")
+SCRIPTS = ("sf_mutate.py", "sf_cocotb_run.py", "sf_toggle.py", "sf_protocols.py", "sf_lockstep.py", "sf_tt_synth.py")
 
 
 class VerifyError(RuntimeError):

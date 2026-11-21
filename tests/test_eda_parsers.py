@@ -28,6 +28,16 @@ def test_typical_corner_selection_closes_timing():
     assert ppa.wns_ns > 0  # the same design meets 10 ns at the typical corner
 
 
+def test_wsl_quoting_neutralises_shell_expansion_but_keeps_home_expandable():
+    q = WslRunner._q
+    assert q("$PDK_ROOT/x") == "'\\$PDK_ROOT/x'"
+    assert q("$(rm -rf x)") == "'\\$(rm -rf x)'"
+    assert q("a`id`b") == "'a\\`id\\`b'"
+    assert q("$HOME/eda/x") == '"$HOME"/' + "eda/x"  # the one deliberate expansion
+    assert q("$HOME/a$b") == '"$HOME"/' + "'a\\$b'"
+    assert q("plain path") == "'plain path'"
+
+
 def test_wsl_path_translation():
     assert WslRunner.to_wsl_path(Path("C:/Users/dev/proj/runs")) == "/mnt/c/Users/dev/proj/runs"
 

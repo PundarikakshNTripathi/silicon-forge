@@ -4,6 +4,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 ### Added
+- **Tiny Tapeout (IHP SG13CMOS5L) mode**: `siliconforge tt scaffold|check|synth|gls|pack|doctor|harden`; info.yaml and port validation, tile budget from real post-synthesis area (Yosys against the IHP liberty), and gate-level simulation of your cocotb tests with the PDK cell models. `docs/tiny-tapeout.md`.
+### Fixed
+- **`WslRunner` executed command substitutions inside arguments** (`$(cmd)` and backticks were expanded by a shell layer even inside single quotes), so an argument or file name could run commands, and `$VAR` in arguments was silently emptied. Arguments are now escaped; covered by a unit test and a real WSL round-trip test.
 - **ISA toolchain** from one `isa.yaml`: assembler/disassembler, Verilog decoder with a formal one-hot proof, golden model, timing checker (static proof + trace), docs with bit-field SVGs, and a standalone bundle. `docs/isa-toolchain.md`.
 - **Verification toolkit**: mutation testing with Yosys equivalence filtering, cocotb runner with seeds, lockstep co-simulation and functional coverage, toggle coverage, independent UART/SPI/I2C/WS2812 decoders; `siliconforge verify sim|mutate|toggle`; MCP tools `isa_check`, `run_cocotb`, `mutation_test`. `docs/verification.md`.
 - `hardware/isa/pio16`: a worked example (ISA, RTL, cocotb lockstep tests, committed generated files that a test keeps in sync).

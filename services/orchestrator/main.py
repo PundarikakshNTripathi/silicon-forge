@@ -348,6 +348,83 @@ def cmd_verify(args: argparse.Namespace) -> int:
     return 2
 
 
+def cmd_tt(args: argparse.Namespace) -> int:
+    """Tiny Tapeout (IHP SG13CMOS5L): scaffold, check, synth, gls, pack, doctor, harden."""
+    from services.orchestrator import tt
+    from services.orchestrator.verify import VerifyError
+
+    root = Path(args.workspace).resolve()
+    if args.action == "scaffold":
+        if not args.top:
+            print("usage: siliconforge tt scaffold DIR --top tt_um_yourname_project")
+            return 2
+        root = Path(args.dir).resolve()
+        try:
+            files = tt.scaffold(root, args.top, title=args.title, author=args.author, description=args.description,
+                                tiles=args.tiles, clock_hz=args.clock_hz, force=args.force)
+        except (ValueError, FileExistsError) as exc:
+            print(f"error: {exc}")
+            return 1
+        print(f"wrote {len(files)} files under {root}")
+        return 0
+    if args.action == "pack":
+        info = tt.load_info(root)
+        out = root / "SUBMISSION.md"
+        out.write_text(tt.submission_checklist(root, info), encoding="utf-8")
+        print(f"wrote {out}")
+        return 0
+    if args.action == "doctor":
+        ok, why = tt.docker_ready()
+        print(f"docker: {'ready ' + why if ok else why}")
+        for t in ("yosys", "iverilog", "verilator"):
+            print(f"  {'ok ' if shutil.which(t) else '-- '} {t} (host PATH)")
+        print(f"hardening flow pinned by Tiny Tapeout: LibreLane {tt.LIBRELANE_VERSION}, PDK {tt.PDK_VERSION[:10]}")
+        return 0
+    if args.action == "harden":
+        ok, why = tt.docker_ready()
+        if not ok:
+            print(f"cannot harden locally: {why}")
+            print("Official hardening runs LibreLane in a container. Start Docker Desktop and rerun, or push the project to")
+            print("GitHub: its `gds` workflow (TinyTapeout/tt-gds-action) hardens it and runs the precheck for you.")
+            return 3
+        print("Docker is ready. Run the official flow from the project folder:")
+        print(f"  git clone {tt.TT_TOOLS_REPO} tt && pip install -r tt/requirements.txt librelane=={tt.LIBRELANE_VERSION}")
+        print("  ./tt/tt_tool.py --create-user-config --pdk ihp-sg13cmos5l && ./tt/tt_tool.py --harden --pdk ihp-sg13cmos5l")
+        return 0
+    # the rest need a real EDA backend and the IHP PDK
+    ws, runner = _workspace_runner(args)
+    root = ws.root
+    try:
+        if args.action == "synth":
+            rep = tt.synthesize(runner, root)
+            area = rep["area_um2"] or 0.0
+            share = f", {100 * rep['sequential_area_um2'] / area:.0f}% sequential" if area else ""
+            print(f"[{rep['provenance']}] {rep['cells']} cells, {area:.0f} um2, {rep['flops']} flops, "
+                  f"{rep['latches']} latches{share}")
+            info = tt.load_info(root)
+            b = tt.budget(rep["area_um2"], str((info.get("project") or {}).get("tiles", "")) or None)
+            for r in b["options"]:
+                if r["tiles"] in ("1x1", "1x2", "2x2", "3x2", "4x2", "4x4", "6x4", "8x4"):
+                    print(f"  {r['tiles']:>4}  {r['utilization']:>6.0%}  {r['verdict']}")
+            print(f"smallest that fits (with {b['margin']}x margin for layout): {b['smallest_that_fits']}")
+            return 0
+        if args.action == "check":
+            synth = tt.synthesize(runner, root) if args.synth else None
+            rep = tt.preflight(root, synth)
+            print(rep.text())
+            return 0 if rep.ok else 1
+        if args.action == "gls":
+            rep = tt.run_gls(runner, root)
+            print(f"[{rep['provenance']}] gate-level: {rep['passed']} passed, {rep['failed']} failed ({rep['netlist_kind']})")
+            for ex in rep["failure_excerpts"]:
+                print(ex)
+            return 0 if rep["ok"] else 1
+    except (VerifyError, FileNotFoundError) as exc:
+        print(f"tt {args.action} failed: {exc}")
+        return 2
+    return 2
+
+
 def cmd_isa(args: argparse.Namespace) -> int:
     """ISA toolchain: generate / asm / disasm / check / run, all from one isa.yaml."""
     from services.orchestrator import isa as isa_pkg
@@ -531,6 +608,22 @@ def build_parser() -> argparse.ArgumentParser:
     vf.add_argument("--scope", default=None, help="toggle: hierarchical prefix, e.g. tb.dut")
     vf.add_argument("--exclude", action="append", default=[])
     vf.set_defaults(func=cmd_verify)
+
+    ttp = sub.add_parser("tt", help="Tiny Tapeout (IHP SG13CMOS5L): scaffold, check, synth, gls, pack, doctor, harden")
+    ttp.add_argument("action", choices=["scaffold", "check", "synth", "gls", "pack", "doctor", "harden"])
+    ttp.add_argument("dir", nargs="?", default=".", help="scaffold: directory to create")
+    ttp.add_argument("--workspace", default=".")
+    ttp.add_argument("--config", default="configs/flow_default.yaml")
+    ttp.add_argument("--backend", choices=MODES, default=None)
+    ttp.add_argument("--top", default=None, help="scaffold: top module (must start with tt_um_)")
+    ttp.add_argument("--title", default="")
+    ttp.add_argument("--author", default="")
+    ttp.add_argument("--description", default="")
+    ttp.add_argument("--tiles", default="1x1")
+    ttp.add_argument("--clock-hz", type=int, default=50_000_000)
+    ttp.add_argument("--force", action="store_true")
+    ttp.add_argument("--synth", action="store_true", help="check: also synthesize and check area and latches")
+    ttp.set_defaults(func=cmd_tt)
 
     rp = sub.add_parser("report", help="Generate reports from a workspace")
     rp.add_argument("kind", choices=["ai-usage"])
