@@ -14,7 +14,8 @@ from tests.conftest import load_example  # noqa: E402
 def test_tools_are_registered():
     tools = asyncio.run(mcp_server.server.list_tools())
     names = {t.name for t in tools}
-    assert {"lint_rtl", "verify_rtl", "check_equivalence", "retrieve_skill", "list_examples", "run_example"} <= names
+    assert {"lint_rtl", "verify_rtl", "check_equivalence", "retrieve_skill", "list_examples", "run_example",
+            "isa_check", "run_cocotb", "mutation_test"} <= names
 
 
 def test_offline_tools_work():
@@ -31,3 +32,14 @@ def test_run_example_reports_provenance_and_rejects_unknown():
     assert r["provenance"] == "simulated" and r["lec_passed"] is True and r["error"] is None
     with pytest.raises(ValueError):
         mcp_server.run_example("nope")
+
+
+def test_isa_check_tool_proves_the_uart_timing():
+    from pathlib import Path
+
+    isa_dir = Path(__file__).resolve().parents[1] / "hardware" / "isa" / "pio16"
+    r = mcp_server.isa_check(str(isa_dir / "isa.yaml"), str(isa_dir / "uart_tx.asm"))
+    assert r["assembled"] and r["timing_ok"] and len(r["words"]) == 24  # oe + 11 x (pins, delay) + halt
+    assert sum(1 for g in r["static_gaps"] if g["exact"] and g["min"] == 16) >= 10
+    bad = mcp_server.isa_check(str(isa_dir / "isa.yaml"), str(isa_dir / "isa.yaml"))
+    assert bad["assembled"] is False and bad["errors"]

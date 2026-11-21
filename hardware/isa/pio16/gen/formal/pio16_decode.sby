@@ -1,0 +1,17 @@
+[tasks]
+prove
+
+[options]
+mode prove
+
+[engines]
+abc pdr
+
+[script]
+read -formal pio16_decode.v
+read -formal pio16_decode_check.sv
+prep -top pio16_decode_check
+
+[files]
+pio16_decode.v
+pio16_decode_check.sv

@@ -296,6 +296,58 @@ def cmd_chat(args: argparse.Namespace) -> int:
         session.send(line)
 
 
+def _workspace_runner(args: argparse.Namespace):
+    """The EDA runner (native, wsl or docker) for the workspace's backend; refuses the simulated backend."""
+    from services.orchestrator.eda.bridge import EDABridge
+    from services.orchestrator.workspace import find_workspace
+
+    ws = find_workspace(args.workspace)
+    cfg = load_flow_config(args.config)
+    ws.apply(cfg)
+    if args.backend:
+        cfg.eda_mode = normalize_mode(args.backend)
+    if cfg.eda_mode == "simulated":
+        raise SystemExit("verification needs a real backend: set backend in siliconforge.yaml or pass --backend wsl|native|docker")
+    return ws, EDABridge(cfg).backend.runner
+
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    """Verification toolkit: sim (cocotb), mutate, toggle, decode."""
+    from services.orchestrator import verify
+
+    ws, runner = _workspace_runner(args)
+    try:
+        if args.action == "sim":
+            rep = verify.run_cocotb(runner, ws.root, sources=args.sources, top=args.top, test_module=args.test_module,
+                                    test_dir=args.test_dir, seeds=tuple(int(s) for s in args.seeds.split(",")),
+                                    includes=tuple(args.include), defines=dict(d.split("=", 1) for d in args.define),
+                                    env=dict(e.split("=", 1) for e in args.env), waves=args.waves)
+            print(f"[{rep['provenance']}] {rep['passed']} passed, {rep['failed']} failed over seeds {rep['seeds']}")
+            for ex in rep["failure_excerpts"]:
+                print(ex)
+            return 0 if rep["ok"] else 1
+        if args.action == "mutate":
+            rep = verify.mutation_test(runner, ws.root, args.file, args.test, top=args.top, max_mutants=args.max,
+                                       seed=args.seed, jobs=args.jobs)
+            pct = "n/a" if rep["score"] is None else f"{rep['score'] * 100:.1f}%"
+            print(f"[{rep['provenance']}] mutation score {pct}: {rep['killed']} killed, {rep['survived']} survived, "
+                  f"{rep['equivalent']} proven equivalent, {rep['invalid']} invalid (seed {rep['seed']})")
+            for s in rep["survivors"][:20]:
+                print(f"  survived {s['file']}:{s['line']}  {s['op']}  {s['original'].strip()!r} -> {s['replacement'].strip()!r}")
+            return 0
+        if args.action == "toggle":
+            rep = verify.toggle_coverage(runner, ws.root, args.dump, scope=args.scope or "", exclude=tuple(args.exclude))
+            pct = "n/a" if rep["coverage"] is None else f"{rep['coverage'] * 100:.1f}%"
+            print(f"[{rep['provenance']}] toggle coverage {rep['covered_bits']}/{rep['bits']} bits ({pct})")
+            for n in rep["not_toggled"][:15]:
+                print(f"  never toggled both ways: {n}")
+            return 0
+    except verify.VerifyError as exc:
+        print(f"verify failed: {exc}")
+        return 2
+    return 2
+
+
 def cmd_isa(args: argparse.Namespace) -> int:
     """ISA toolchain: generate / asm / disasm / check / run, all from one isa.yaml."""
     from services.orchestrator import isa as isa_pkg
@@ -455,6 +507,30 @@ def build_parser() -> argparse.ArgumentParser:
     isa.add_argument("--input", action="append", default=[], metavar="NAME=VALUE", help="check/run: external input, e.g. pins=0x01")
     isa.add_argument("--steps", type=int, default=64, help="run: instruction budget")
     isa.set_defaults(func=cmd_isa)
+
+    vf = sub.add_parser("verify", help="Verification toolkit: sim (cocotb), mutate, toggle")
+    vf.add_argument("action", choices=["sim", "mutate", "toggle"])
+    vf.add_argument("--workspace", default=".")
+    vf.add_argument("--config", default="configs/flow_default.yaml")
+    vf.add_argument("--backend", choices=MODES, default=None)
+    vf.add_argument("--sources", nargs="+", default=[], help="sim: Verilog sources, relative to the workspace")
+    vf.add_argument("--top", default=None, help="sim: HDL top level; mutate: module for the equivalence check")
+    vf.add_argument("--test-module", default=None, help="sim: cocotb module (no .py)")
+    vf.add_argument("--test-dir", default=".")
+    vf.add_argument("--seeds", default="1")
+    vf.add_argument("--include", action="append", default=[])
+    vf.add_argument("--define", action="append", default=[], metavar="NAME=VALUE")
+    vf.add_argument("--env", action="append", default=[], metavar="KEY=VALUE")
+    vf.add_argument("--waves", action="store_true")
+    vf.add_argument("--file", action="append", default=[], help="mutate: source file to mutate (repeatable)")
+    vf.add_argument("--test", default=None, help="mutate: shell command that exits 0 when the tests pass")
+    vf.add_argument("--max", type=int, default=60, help="mutate: how many mutants to evaluate")
+    vf.add_argument("--seed", type=int, default=1)
+    vf.add_argument("--jobs", type=int, default=4)
+    vf.add_argument("--dump", default=None, help="toggle: VCD or FST file")
+    vf.add_argument("--scope", default=None, help="toggle: hierarchical prefix, e.g. tb.dut")
+    vf.add_argument("--exclude", action="append", default=[])
+    vf.set_defaults(func=cmd_verify)
 
     rp = sub.add_parser("report", help="Generate reports from a workspace")
     rp.add_argument("kind", choices=["ai-usage"])

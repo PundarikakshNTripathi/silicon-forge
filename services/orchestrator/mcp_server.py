@@ -122,6 +122,63 @@ def run_example(name: str, backend: str = "simulated", inject_bug: bool = False,
     }
 
 
+@server.tool()
+def isa_check(spec_path: str, program_path: str, inputs: dict[str, int] | None = None) -> dict[str, Any]:
+    """Assemble an assembly program against an isa.yaml and check its pin timing (static proof + golden-model trace).
+
+    Returns the machine code, the proven/measured cycle gaps between pin events, and any `.expect` violations."""
+    from services.orchestrator import isa
+
+    spec = isa.load_spec(spec_path)
+    try:
+        prog = isa.Assembler(spec).assemble(Path(program_path).read_text(encoding="utf-8"))
+    except isa.AsmError as exc:
+        return {"assembled": False, "errors": exc.errors}
+    rep = isa.check_timing(prog, inputs or {})
+    return {
+        "assembled": True, "words": [f"{w:0{(spec.word_bits + 3) // 4}x}" for w in prog.image()],
+        "timing_ok": rep.ok, "problems": rep.problems, "notes": rep.notes[:10],
+        "static_gaps": [{"from": g.src, "to": g.dst, "min": g.min_cycles, "max": g.max_cycles, "exact": g.exact}
+                        for g in rep.static],
+    }
+
+
+def _eda_runner(workspace: str, backend: str):
+    from services.orchestrator.workspace import load_workspace
+
+    ws = load_workspace(workspace)
+    return ws, _bridge(backend).backend.runner
+
+
+@server.tool()
+def run_cocotb(workspace: str, sources: list[str], top: str, test_module: str, test_dir: str = ".",
+               seeds: list[int] | None = None, includes: list[str] | None = None,
+               backend: str = "wsl") -> dict[str, Any]:
+    """Run a cocotb test module with Icarus for one or more seeds. Paths are relative to `workspace`.
+
+    A failing test is returned as data (`ok: false`) with the failure excerpts, not raised."""
+    from services.orchestrator import verify
+
+    ws, runner = _eda_runner(workspace, backend)
+    rep = verify.run_cocotb(runner, ws.root, sources=sources, top=top, test_module=test_module, test_dir=test_dir,
+                            seeds=tuple(seeds or [1]), includes=tuple(includes or ()))
+    return {k: rep[k] for k in ("ok", "passed", "failed", "seeds", "provenance", "failure_excerpts")}
+
+
+@server.tool()
+def mutation_test(workspace: str, files: list[str], test_command: str, top: str | None = None,
+                  max_mutants: int = 60, seed: int = 1, backend: str = "wsl") -> dict[str, Any]:
+    """Score a test suite by planting bugs in the given RTL files. `test_command` must exit 0 when the tests pass.
+
+    Returns the kill rate and every surviving mutant (file, line, exact change): each one is a gap in the tests."""
+    from services.orchestrator import verify
+
+    ws, runner = _eda_runner(workspace, backend)
+    rep = verify.mutation_test(runner, ws.root, files, test_command, top=top, max_mutants=max_mutants, seed=seed)
+    return {k: rep[k] for k in ("score", "killed", "survived", "equivalent", "invalid", "evaluated", "survivors",
+                                "provenance", "equivalence_check", "syntax_check")}
+
+
 def main() -> None:
     server.run(transport="stdio")
 

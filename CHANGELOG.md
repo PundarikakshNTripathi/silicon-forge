@@ -4,6 +4,9 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 ### Added
+- **ISA toolchain** from one `isa.yaml`: assembler/disassembler, Verilog decoder with a formal one-hot proof, golden model, timing checker (static proof + trace), docs with bit-field SVGs, and a standalone bundle. `docs/isa-toolchain.md`.
+- **Verification toolkit**: mutation testing with Yosys equivalence filtering, cocotb runner with seeds, lockstep co-simulation and functional coverage, toggle coverage, independent UART/SPI/I2C/WS2812 decoders; `siliconforge verify sim|mutate|toggle`; MCP tools `isa_check`, `run_cocotb`, `mutation_test`. `docs/verification.md`.
+- `hardware/isa/pio16`: a worked example (ISA, RTL, cocotb lockstep tests, committed generated files that a test keeps in sync).
 - **Workspaces and a tool-using agent**: open any folder, run `siliconforge chat` / `agent` in it, or use the new API endpoints; permission modes (ask, accept-edits, auto, plan), sandboxed file tools, an allowlisted `eda` tool with provenance, undo, and instruction files (`SILICONFORGE.md` / `AGENTS.md`). See `docs/workspaces.md`.
 - **Enforced model policy**: a workspace can restrict the models the router may call (`policy.allowed_models`); an empty chain is an error, not a fallback.
 - **AI-usage ledger** and `siliconforge report ai-usage`: metadata-only record of every model call and a disclosure report.

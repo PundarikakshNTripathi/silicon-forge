@@ -23,6 +23,8 @@ siliconforge tui                  # terminal UI
 siliconforge chat                 # interactive agent in the current folder (a workspace); `agent "task"` is headless
 siliconforge init . --profile dev # write siliconforge.yaml (profile, backend, model policy)
 siliconforge models detect        # local models + other model servers on this machine (read-only)
+siliconforge isa check isa.yaml prog.asm    # ISA toolchain (gen / asm / disasm / check / run)
+siliconforge verify mutate|sim|toggle ...   # mutation testing, cocotb seeds, toggle coverage (real backend only)
 pytest -m real_eda                # real Yosys/SymbiYosys checks (auto-skipped without tools)
 ```
 Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,tui,mcp,dev]"`. Python >= 3.11.
@@ -30,7 +32,7 @@ Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,t
 ## Layout
 - `services/orchestrator/` Python backend: `pipeline.py` (DAG), `workspace.py` + `agent/` (workspace agent), `agents/`, `guardrails/`, `eda/` (bridge, `backends/`
   simulated+real, `runner.py`, `librelane.py`, `formal_ir.py`, `vcd.py`), `inference/` (`router.py`, `providers/` incl. `agy`,
-  `catalog.py`, `cache.py`, `llamacpp.py`, `gpu.py`, `ledger.py`), `rl/` (PPA optimizer), `api/` (FastAPI, SQLite store, run manager),
+  `catalog.py`, `cache.py`, `llamacpp.py`, `gpu.py`, `ledger.py`), `isa/` (ISA toolchain), `verify/` (stdlib-only verification tools run via the EDA runner), `rl/` (PPA optimizer), `api/` (FastAPI, SQLite store, run manager),
   `skills/` (BM25 skill packs), `schemas.py` (pydantic IR), `paths.py` (resource vs data dir).
 - `services/telemetry_engine/` C++20 log parser + static RTL linter (`sf-telemetry`), CMake.
 - `services/dashboard/` React + Vite web UI (built to `dist/`, served by the API). `services/tui/` Textual TUI.
