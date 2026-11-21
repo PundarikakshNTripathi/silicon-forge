@@ -126,8 +126,11 @@ are not committed; they derive from a model with its own license.
 ## Limits
 
 - One suite so far. CVDP (Apache-2.0) is the next candidate; ChipBench declares no license and is not used.
-- Local models are run with the chat template's defaults, which for the Qwen3 family includes thinking. Token counts include
-  it; latency numbers are for one request at a time on one 8 GB GPU.
+- Local models run **with thinking off**: the local provider in `configs/models.yaml` sends `enable_thinking: false` with every
+  request, and that per-request switch overrides the server's `--reasoning` flag. (A first version of these evals recorded the
+  server flag as if it were the setting, and a run labelled "thinking on" was in fact another non-thinking run; it was found because
+  its outputs were identical to the non-thinking run's, and was replaced.) Use `--thinking on` to switch thinking on for a
+  comparison. Latency numbers are for one request at a time on one 8 GB GPU.
 - The compile diagnostic is the only feedback, so `feedback` cannot fix a design that compiles but computes the wrong
   thing. Measuring a loop that can use simulation feedback fairly needs a held-out testbench, which is what the
   SiliconForge-Bench suite (planned) is for.
