@@ -131,6 +131,14 @@ are not committed; they derive from a model with its own license.
   server flag as if it were the setting, and a run labelled "thinking on" was in fact another non-thinking run; it was found because
   its outputs were identical to the non-thinking run's, and was replaced.) Use `--thinking on` to switch thinking on for a
   comparison. Latency numbers are for one request at a time on one 8 GB GPU.
+- **Thinking on, measured once, inconclusive.** Qwen3.5-9B with `--thinking on` on the 40-problem seed-0 subset scored 25.0%
+  pass@1 (95% interval 12.5 to 40.0) with a 27.5% compile rate, against 47.7% over all 155 problems with thinking off
+  (`eval-...-single-subset40-thinking-on-*.json`). The cause is the token budget, not the model: the catalog caps completions at
+  6,000 tokens, and 25 of the 40 thinking-on answers ran to that limit while still reasoning, so none of them contained a finished
+  module (0 of 25 compiled). Of the 15 that finished, 11 compiled and 10 passed. Mean completion length was 4,970 tokens against
+  751 with thinking off, and the run took 63 minutes for 40 problems. This does not show that thinking helps or hurts; it shows
+  that 6,000 tokens is too few for this model to think on these problems. Not yet measured: a larger budget (16k or more) on the
+  same subset, which would take roughly two to three hours on this GPU.
 - The compile diagnostic is the only feedback, so `feedback` cannot fix a design that compiles but computes the wrong
   thing. Measuring a loop that can use simulation feedback fairly needs a held-out testbench, which is what the
   SiliconForge-Bench suite (planned) is for.

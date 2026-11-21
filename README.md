@@ -159,6 +159,11 @@ so it separates small local models far better than strong ones. Two adjustments 
 file: one problem whose reference cannot pass its own testbench is excluded (155 of 156), and a waveform-dump block that Icarus 14
 rejects is removed from the testbenches. Method and limits: [docs/evals.md](docs/evals.md).
 
+**Thinking mode** was measured once for Qwen3.5-9B on a 40-problem subset and the result is inconclusive: 25.0% pass@1, but 25 of the 40
+answers hit the 6,000-token completion cap while still reasoning and so contained no finished module. Of the 15 that finished, 10
+passed. The run shows that 6,000 tokens is too small a budget for this model to think on these problems; it does not measure
+what thinking is worth with enough room ([docs/evals.md](docs/evals.md#limits)).
+
 **Does a repair loop help?** On a fixed 60-problem subset, each loop arm compared with single-shot on the same problems (compile
 rates are single-shot over all 155 problems against the arm over the 60):
 

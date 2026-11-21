@@ -1,0 +1,858 @@
+{
+  "schema": "siliconforge.eval/1",
+  "suite": "verilogeval-spec2rtl",
+  "dataset": {
+    "source": "https://github.com/NVlabs/verilog-eval",
+    "commit": "c498220d0a52248f8e3fdffe279075215bde2da6",
+    "license": "MIT",
+    "problems_total": 155,
+    "excluded": {
+      "Prob099_m2014_q6c": "the prompt and testbench use outputs Y2 and Y4, the reference module declares Y1 and Y3, so no candidate (the reference included) can compile with the testbench"
+    },
+    "testbench_patch": "removed the waveform-dump block ($dumpfile/$dumpvars): it refers to `tb_mismatch` before its declaration, which Icarus Verilog 14 rejects ('Unable to bind wire/reg/memory'); it writes a VCD and has no effect on the mismatch count"
+  },
+  "model": "Qwen3.5-9B-Q4_K_M",
+  "arm": {
+    "arm": "single"
+  },
+  "n": 1,
+  "k": 1,
+  "temperature": 0.0,
+  "selection": {
+    "count": 40,
+    "seed": 0,
+    "all": false,
+    "split": "all",
+    "pool": 155,
+    "trajectories": null
+  },
+  "runner": "wsl",
+  "tools": {
+    "iverilog": "Icarus Verilog version 14.0 (devel) (s20260301-1233-gadb65230d-dirty)"
+  },
+  "pass_at_1": {
+    "k": 1,
+    "mean": 0.25,
+    "ci95": [
+      0.125,
+      0.4
+    ],
+    "problems": 40,
+    "skipped": 0
+  },
+  "compile_rate": 0.275,
+  "errors": 0,
+  "tokens": {
+    "prompt": 13070,
+    "completion": 198780,
+    "calls": 40
+  },
+  "wall_s": 3769.2,
+  "created": "2026-11-21T19:36:33+0530",
+  "profile": "local",
+  "routed": "llamacpp:local",
+  "reasoning": "auto",
+  "thinking": "on",
+  "per_problem": [
+    {
+      "id": "Prob008_m2014_q4h",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 160,
+          "completion_tokens": 1303,
+          "latency_s": 28.26,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob011_norgate",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 154,
+          "completion_tokens": 6000,
+          "latency_s": 109.72,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:86: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob019_m2014_q4f",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 200,
+          "completion_tokens": 6000,
+          "latency_s": 108.89,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:64: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob025_reduction",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 222,
+          "completion_tokens": 6000,
+          "latency_s": 110.46,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:59: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob026_alwaysblock1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 174,
+          "completion_tokens": 1370,
+          "latency_s": 24.88,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob027_fadd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 214,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 186,
+          "completion_tokens": 2773,
+          "latency_s": 50.43,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob034_dff8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 182,
+          "completion_tokens": 6000,
+          "latency_s": 109.73,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:82: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob036_ringer",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 250,
+          "completion_tokens": 6000,
+          "latency_s": 109.08,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:88: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob038_count15",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 421,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 214,
+          "completion_tokens": 2032,
+          "latency_s": 36.95,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob056_ece241_2013_q7",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 422,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 234,
+          "completion_tokens": 5636,
+          "latency_s": 103.33,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob057_kmap2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 266,
+          "completion_tokens": 6000,
+          "latency_s": 109.74,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:92: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob062_bugs_mux2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 201,
+          "completion_tokens": 6000,
+          "latency_s": 110.34,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:98: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob065_7420",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 256,
+          "completion_tokens": 4030,
+          "latency_s": 73.73,
+          "error": null,
+          "detail": "dut.sv:13: error: 'p1y' has already been declared in this scope.\ndut.sv:10:      : It was declared here as a net.\ndut.sv:13: error: 'p2y' has already been declared in this scope.\ndut.sv:11:      : It was declared here as a net.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob067_countslow",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 499,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 254,
+          "completion_tokens": 3203,
+          "latency_s": 57.96,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob071_always_casez",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 242,
+          "completion_tokens": 6000,
+          "latency_s": 110.05,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:86: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob073_dff16e",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 286,
+          "completion_tokens": 4666,
+          "latency_s": 85.09,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob078_dualedge",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 221,
+          "completion_tokens": 6000,
+          "latency_s": 109.52,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:82: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob079_fsm3onehot",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 334,
+          "completion_tokens": 6000,
+          "latency_s": 109.01,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:73: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob080_timer",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 381,
+          "completion_tokens": 6000,
+          "latency_s": 109.52,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:103: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob081_7458",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 415,
+          "completion_tokens": 6000,
+          "latency_s": 110.61,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:121: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob082_lfsr32",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 306,
+          "completion_tokens": 6000,
+          "latency_s": 110.35,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:66: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob085_shift4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 427,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 323,
+          "completion_tokens": 2987,
+          "latency_s": 54.77,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob091_2012_q2b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 426,
+          "completion_tokens": 6000,
+          "latency_s": 110.07,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:98: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob092_gatesv100",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 490,
+          "completion_tokens": 6000,
+          "latency_s": 110.22,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:73: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob100_fsm3comb",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 336,
+          "completion_tokens": 6000,
+          "latency_s": 110.08,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:71: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob105_rotate100",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 380,
+          "completion_tokens": 6000,
+          "latency_s": 110.11,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:77: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob109_fsm1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 228,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 219,
+          "completion_tokens": 5834,
+          "latency_s": 106.87,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob112_always_case2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 282,
+          "completion_tokens": 6000,
+          "latency_s": 110.16,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:83: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob113_2012_q1g",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 273,
+          "completion_tokens": 6000,
+          "latency_s": 109.93,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:61: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob118_history_shift",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 2035,
+          "testbench_samples": 2055,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 423,
+          "completion_tokens": 4329,
+          "latency_s": 79.57,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob122_kmap4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 261,
+          "completion_tokens": 6000,
+          "latency_s": 109.94,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:92: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob124_rule110",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 498,
+          "completion_tokens": 6000,
+          "latency_s": 110.25,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:122: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob126_circuit6",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 441,
+          "completion_tokens": 5763,
+          "latency_s": 105.67,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:9: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:11: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:12: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:13: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:14: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:15: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:16: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\n9 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob131_mt2015_q4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 562,
+          "completion_tokens": 6000,
+          "latency_s": 110.42,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:65: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob132_always_if2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 244,
+          "completion_tokens": 541,
+          "latency_s": 10.27,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob136_m2014_q6",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 298,
+          "completion_tokens": 6000,
+          "latency_s": 109.86,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:67: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob138_2012_q2fsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 364,
+          "completion_tokens": 6000,
+          "latency_s": 110.03,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:67: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob144_conwaylife",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 547,
+          "completion_tokens": 1875,
+          "latency_s": 34.5,
+          "error": null,
+          "detail": "dut.sv:23: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:24: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:26: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:32: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:32: error: Declarations must precede statements.\ndut.sv:33: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:33: error: Declarations must precede statements.\ndut.sv:40: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:40: error: Declarations must precede statements.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob150_review2015_fsmonehot",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 814,
+          "completion_tokens": 6000,
+          "latency_s": 110.44,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ntest.sv:111: error: Unknown module type: TopModule\n2 error(s) during elaboration.\n*** These modules were missing:\n        TopModule referenced 1 times.\n***"
+        }
+      ]
+    },
+    {
+      "id": "Prob153_gshare",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 751,
+          "completion_tokens": 2438,
+          "latency_s": 44.96,
+          "error": null,
+          "detail": "dut.sv:83: syntax error\ndut.sv:85: Syntax in assignment statement l-value.\ndut.sv:93: syntax error\ndut.sv:93: error: Malformed statement\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    }
+  ]
+}
