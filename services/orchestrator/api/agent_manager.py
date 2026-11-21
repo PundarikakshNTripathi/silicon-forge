@@ -96,6 +96,7 @@ class AgentManager:
         if m:
             for p in m.pending.values():  # release any thread waiting on a decision
                 p.event.set()
+            m.session.close()  # stops MCP server subprocesses, if the workspace configured any
 
     # ---------------------------------------------------------------------------------------------- turns
 

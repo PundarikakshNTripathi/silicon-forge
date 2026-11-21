@@ -119,6 +119,8 @@ class AgentSession:
         self.context_chars = context_chars  # transcript budget in characters (about 4 per token)
         self.rules = rules if rules is not None else Rules.parse(getattr(ws, "allow", None), getattr(ws, "deny", None))
         self.hooks = hooks if hooks is not None else HookSet.parse(getattr(ws, "hooks", None))  # a bad hook is an error now
+        self.bridge: Any = None  # McpBridge when the workspace configures MCP servers (set by the factory)
+        self._mcp_announced = False
         self.loop_guard = LoopGuard()
         self.compaction_stage = "full"  # which stage the last prompt needed; exposed for the UI and tests
         #: transcript entries: {"role": user|assistant|tool, ...}
@@ -182,7 +184,20 @@ class AgentSession:
 
     # ----------------------------------------------------------------------------------------------- turn
 
+    def close(self) -> None:
+        """Stop anything the session started (MCP server subprocesses). Safe to call twice."""
+        if self.bridge is not None:
+            self.bridge.close()
+
+    def _announce_mcp(self) -> None:
+        if self._mcp_announced or self.bridge is None:
+            return
+        self._mcp_announced = True  # the status is only known to the session, so it is reported with the first message
+        for name, status in self.bridge.status.items():
+            self._emit("error" if status.startswith("error") else "assistant", f"MCP server {name}: {status}")
+
     def send(self, message: str) -> TurnResult:
+        self._announce_mcp()
         self._log({"role": "user", "text": message})
         corrected = False
         for step in range(1, self.max_steps + 1):

@@ -51,10 +51,15 @@ class ToolBox:
     pipeline_factory: Callable[[str, bool], dict] | None = None
     undo_stack: list[tuple[Path, bytes | None]] = field(default_factory=list)
     _runner: Any = None
+    #: tools added at runtime, e.g. from MCP servers (agent/mcp_client.py); they go through the same permission path
+    extra: list[ToolSpec] = field(default_factory=list)
 
     # ------------------------------------------------------------------------------------------ catalog
 
     def specs(self) -> list[ToolSpec]:
+        return self._builtin_specs() + self.extra
+
+    def _builtin_specs(self) -> list[ToolSpec]:
         return [
             ToolSpec("list_dir", READ, "List files and folders.", {"path": "string, default '.'"}, self.list_dir),
             ToolSpec("read_file", READ, f"Read a text file with line numbers (max {MAX_READ_LINES} lines per call).",

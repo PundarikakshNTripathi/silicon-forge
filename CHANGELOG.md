@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent: MCP client)
+- Manifest `mcp_servers:` lets the agent use tools from external stdio MCP servers (`mcp__<server>__<tool>`). They share the built-in path: permission modes (default `command`), allow/deny rules, hooks, loop guard, redaction, output fencing. Start-up failures are reported, not hidden; calls time out; servers stop with the session. Tested against a real stdio server (21 tests); not yet against third-party servers. `docs/workspaces.md`.
 ### Added (agent hooks)
 - Manifest `hooks:` (`pre_tool` blocks on a non-zero exit, a failed start or a timeout; `post_tool` appends its output to the tool result). Argument lists, no shell, strict validation, environment describing the call. `docs/workspaces.md`.
 ### Added (agent safety and context)

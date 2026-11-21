@@ -97,6 +97,34 @@ hooks:
 - Hooks live in `siliconforge.yaml`, which the agent cannot write, so it cannot add, remove or edit one. They run with your own
   privileges: treat a manifest you did not write as you would a Makefile.
 
+## MCP servers as tools
+
+The agent can use tools from any [MCP](https://modelcontextprotocol.io) server over stdio, such as an OpenROAD or waveform server
+someone else wrote:
+
+```yaml
+mcp_servers:
+  - name: openroad                     # lowercase letters, digits, underscores
+    command: [python, -m, my_openroad_mcp]
+    env: {OPENROAD_HOME: /opt/or}      # added to a minimal default environment
+    permission: command                # read | edit | command (default: command)
+    timeout: 120                       # seconds per call
+```
+
+Servers start with the agent session and stop when it ends. Their tools appear as `mcp__<server>__<tool>`, with parameters read
+from the server's schema, and then go through exactly the path built-in tools do: the permission mode (`ask` confirms every
+`command` tool), allow/deny rules, hooks, the loop guard, redaction, and the `<tool_output>` fence. Rules match the full tool
+name, e.g. `deny: [mcp__openroad__run_script]`; there is no wildcard over tool names. `plan` mode refuses any tool whose server is
+not marked `permission: read`.
+
+Failure behaviour: a server that fails to start is reported when the first message is sent and its tools are absent; the others
+still work. A call that exceeds `timeout`, or a server error, comes back to the model as a tool error. Nothing substitutes for a
+missing server.
+
+An MCP server is code you chose to run with your privileges, and its output is untrusted text. Mark a server `read` only if you
+know it is read-only. Only stdio servers are supported; remote (HTTP) servers are not wired in yet. Tested against a real stdio
+server on Windows with the `mcp` 2.x SDK; not yet tried against third-party EDA servers.
+
 ## Guards inside the loop
 
 - **Context budget.** The transcript is kept under `context_chars` (36,000 characters, about 9k tokens). When a session grows past
