@@ -25,3 +25,16 @@ def test_eval_writes_under_the_data_root_not_the_resource_root(monkeypatch, tmp_
     written = list((tmp_path / "benchmarks" / "results").glob("*-default.json"))
     assert written, "eval did not write into SILICONFORGE_HOME"
     assert not (paths.RESOURCE_ROOT / "benchmarks" / "results" / written[0].name).exists()
+
+
+def test_one_version_everywhere():
+    """pyproject, the desktop shell and the API must agree; they drifted once (0.2.0 / 0.3.0)."""
+    import json
+    import tomllib
+
+    from services.orchestrator.version import __version__
+
+    root = paths.RESOURCE_ROOT
+    py = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    desktop = json.loads((root / "apps" / "desktop" / "package.json").read_text(encoding="utf-8"))["version"]
+    assert py == desktop == __version__

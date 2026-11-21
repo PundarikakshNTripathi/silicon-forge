@@ -29,6 +29,7 @@ from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, Serv
 from services.orchestrator.inference.secrets import delete_secret, set_secret
 from services.orchestrator.paths import RESOURCE_ROOT, data_root
 from services.orchestrator.skills.registry import SkillRegistry
+from services.orchestrator.version import __version__
 
 REPO_ROOT = RESOURCE_ROOT
 DEFAULT_SETTINGS: dict[str, Any] = {
@@ -144,7 +145,7 @@ class LocalModels:
 
 def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_root: Path | None = None,
                agents: AgentManager | None = None) -> FastAPI:
-    app = FastAPI(title="SiliconForge API", version="0.3.0")
+    app = FastAPI(title="SiliconForge API", version=__version__)
     runs_root = Path(runs_root) if runs_root else data_root() / "runs"
     store = Store(db_path or runs_root / "siliconforge.db")
     manager = RunManager(store, REPO_ROOT, runs_root=runs_root)

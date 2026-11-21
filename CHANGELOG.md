@@ -3,6 +3,9 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (evals)
+- **`siliconforge evals`**: a VerilogEval v2 (spec-to-RTL) harness with the unbiased pass@k estimator, bootstrap confidence intervals over problems, a paired `compare`, versioned result files (`siliconforge.eval/1`), and four arms (`single`, `feedback-plain`, `feedback`, `sampled`) so that what a loop buys can be separated from what its extra context buys. Arms see only the compile diagnostic of their own candidate; the scoring testbench is never exposed to them. `docs/evals.md`.
+- `evals selfcheck`: grades every problem's own reference through the real grader. All 155 usable problems pass; `Prob099_m2014_q6c` is excluded because its testbench and prompt disagree with its reference (recorded in every result). The benchmark's testbenches needed one patch to compile on Icarus Verilog 14 (waveform-dump block), also recorded.
 ### Changed
 - **License: AGPL-3.0-or-later** (was Apache-2.0 up to 0.3.0), with a commercial license available. SPDX headers on all source files, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md`, `COMMERCIAL.md`, a contributor grant in `CONTRIBUTING.md`, and a "Source" link in the cockpit (AGPL section 13). CI checks headers and dependency licenses.
 - Version 0.4.0 across the Python package and the desktop shell.
