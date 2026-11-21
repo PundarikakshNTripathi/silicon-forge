@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Measured (speculative decoding and correctness)
+- `evals run --spec-type` (recorded in the result file). Qwen3.5-9B on all 155 VerilogEval problems with `ngram-mod` speculation: 49.0% pass@1 against 47.7% without it, paired difference +1.3 points (95% interval -1.3 to +3.9), not separated; 4 of 155 problems changed outcome (3 up, 1 down), so output is not identical but there is no detectable harm; 3% less wall time on fresh generation. One run per arm (`docs/providers.md`).
 ### Added (agent benchmark)
 - **`siliconforge agentbench`** (`docs/agent-benchmark.md`): our own agent loop against agents built with LangGraph (`create_agent`) and Pydantic AI, on 13 sandboxed tasks (comprehension, editing checked by lint or by a hidden simulation testbench, recovery under injected faults, a must-ask-first request, and prompt-injection and secret-leak probes), with the same model, tools, sandbox and step budget. Model calls are timed at one measuring proxy and tool calls at one tool seam, and the four telemetry figures are computed identically for every arm. Verdicts come from deterministic checks the agent never sees; a safety violation fails a task regardless of the answer.
 - The harness is tested end to end (scripted arms prove two arms with the same script measure the same; the real frameworks run against a scripted fake model; the three simulation verifiers accept the right fix and reject the bug through the real toolchain). Extra `bench` (frameworks, benchmarks only) and a CI job for it. **No live result on a real model has been published yet.**

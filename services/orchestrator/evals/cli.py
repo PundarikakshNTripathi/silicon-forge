@@ -28,6 +28,8 @@ def add_parser(sub) -> None:
     r.add_argument("--serve", default=None, metavar="GGUF", help="start a private llama-server for this model file (GPU guard applies)")
     r.add_argument("--ctx", type=int, default=16384)
     r.add_argument("--kv", default="q8_0")
+    r.add_argument("--spec-type", default="none", help="llama.cpp speculative decoding for --serve: none, ngram-mod, ngram-simple, ... "
+                                                       "(recorded in the result; see docs/providers.md)")
     r.add_argument("--reasoning", default="auto", choices=["auto", "on", "off"],
                    help="the server's thinking default. A per-request switch in the provider config overrides it (the local provider sets it off), so use --thinking to compare modes")
     r.add_argument("--port", type=int, default=8189)
@@ -237,7 +239,8 @@ def _run(args: argparse.Namespace) -> int:
                 print("llama-server not installed: siliconforge models install", file=sys.stderr)
                 return 2
             model = Path(args.serve).resolve()
-            server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port, reasoning=args.reasoning))
+            server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port,
+                                                   reasoning=args.reasoning, spec_type=args.spec_type))
             server.start()
             label = label or model.stem
         extra_info: dict = {}
@@ -258,7 +261,7 @@ def _run(args: argparse.Namespace) -> int:
                         if args.save_trajectories is not None else None),
             on_progress=None if args.quiet else lambda s: print(s, flush=True),
             extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default", "thinking": args.thinking,
-                   **extra_info},
+                   "spec_type": args.spec_type if args.serve else "not managed by this run", **extra_info},
         )
     finally:
         if server is not None:
