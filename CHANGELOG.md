@@ -6,6 +6,10 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ### Changed (README, docs, assets)
 - README restructured around what a reader does first: a hero run screenshot, then a visual tour (web cockpit light and dark, verification, performance, layout, agent loops, the terminal UI as a recording), the agent-against-frameworks results with the benchmark's design diagram, the plots and the limits. New diagrams for the agent loop and the benchmark design; the flow diagram uses the stage hues. Screenshots are regenerated from a real WSL run by `scripts/capture_ui.py`, with the tab and theme chosen by URL (`?tab=`, `?theme=`).
 - `tests/test_readme_assets.py`: every README image exists, has alt text and a size budget; every result file it cites exists; relative links resolve.
+### Added (agent)
+- **Project memory** (`memory: true`): a `remember` tool and `.siliconforge/memory.md` that every later session reads, plain Markdown you can edit, secret-masked and bounded; `siliconforge memory show|add|clear` and `/memory` in the TUI (`docs/workspaces.md`).
+- **`investigate` subagent**: a read-only helper with its own fresh context that returns only a short answer, so searching a large project does not fill a small model's window. It cannot edit or recurse.
+- **GitHub Action** `.github/actions/flow`: `siliconforge flow check` then `flow run --locked`, report uploaded even on failure; inputs go through the environment, and a test enforces that (`docs/flow.md`).
 ### Added (web UI)
 - **Evals page, "Agent loops" tab**: the AgentBench-SF head-to-head from the committed result files (task success with intervals and the content-correct reading, a time, tools, recovery and cost table, a per-task matrix, package versions). `/api/benchmarks` drops the per-run records of AgentBench files (hundreds of KB) and serves their summaries.
 - **Insights page** (was Cost): the workspace agent's time split (model, tools, everything else), tool success with failures by class, recovery and tokens per turn, from the recorded spans, with an honest empty state.

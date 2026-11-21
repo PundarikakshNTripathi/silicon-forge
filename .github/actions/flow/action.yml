@@ -1,0 +1,57 @@
+name: SiliconForge flow
+description: >
+  Run your RTL project through SiliconForge's flow (lint, synthesis with an equivalence check, place and route, signoff gates) with the
+  tool versions pinned by flow.lock, fail the job if a gate fails, and upload the HTML and JSON reports.
+inputs:
+  path:
+    description: Project folder (the one with siliconforge.yaml), relative to the repository root.
+    default: "."
+  backend:
+    description: "Where the EDA tools run: native (tools on PATH, for example from setup-oss-cad-suite), docker, or wsl."
+    default: native
+  version:
+    description: SiliconForge git ref to install (a tag or branch). There is no PyPI release yet.
+    default: main
+  extra-args:
+    description: "Extra arguments for `siliconforge flow run`, for example `--stages lint,synth --no-lec`."
+    default: ""
+  locked:
+    description: "Refuse to run if an installed tool differs from flow.lock (true or false)."
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install SiliconForge
+      shell: bash
+      env:
+        SF_VERSION: ${{ inputs.version }}
+      run: python -m pip install "siliconforge @ git+https://github.com/PundarikakshNTripathi/silicon-forge@${SF_VERSION}"
+    - name: Check the project
+      shell: bash
+      env:
+        SF_PATH: ${{ inputs.path }}
+      run: siliconforge flow check "$SF_PATH"
+    - name: Run the flow
+      shell: bash
+      env:
+        SF_PATH: ${{ inputs.path }}
+        SF_BACKEND: ${{ inputs.backend }}
+        SF_EXTRA: ${{ inputs.extra-args }}
+        SF_LOCKED: ${{ inputs.locked }}
+      run: |
+        lock=""
+        if [ "$SF_LOCKED" = "true" ]; then lock="--locked"; fi
+        # SF_EXTRA is deliberately unquoted: it is a list of arguments written by the workflow author
+        siliconforge flow run "$SF_PATH" --backend "$SF_BACKEND" $lock $SF_EXTRA
+    - name: Upload the reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: siliconforge-flow-report
+        path: |
+          ${{ inputs.path }}/.siliconforge/flow/**/report.html
+          ${{ inputs.path }}/.siliconforge/flow/**/report.json
+        if-no-files-found: warn
