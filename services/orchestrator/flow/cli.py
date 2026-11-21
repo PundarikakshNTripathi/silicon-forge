@@ -37,6 +37,12 @@ def add_parser(sub) -> None:
     r.add_argument("--waive", action="append", default=[], metavar="CHECK", help="accept a failing signoff check (repeatable)")
     r.add_argument("--timeout-pnr", type=float, default=7200.0)
     r.add_argument("--out", default=None)
+    r.add_argument("--locked", action="store_true", help="refuse to run if an installed tool differs from flow.lock")
+
+    lk = fs.add_parser("lock", help="Write flow.lock with the installed tool versions, or check against it")
+    lk.add_argument("path", nargs="?", default=".")
+    lk.add_argument("--backend", default="wsl", choices=["native", "wsl", "docker"])
+    lk.add_argument("--check", action="store_true", help="compare with the existing flow.lock instead of writing it")
 
     rp = fs.add_parser("report", help="Re-render report.html from a report.json (or a run folder)")
     rp.add_argument("source")
@@ -95,22 +101,64 @@ def cmd_flow(args: argparse.Namespace) -> int:
         if errs:
             print("project is not valid:\n" + "\n".join(f"  {e}" for e in errs), file=sys.stderr)
             return 2
+        if cmd == "lock":
+            return _lock(project, args)
         return _run(project, args)
     except (ProjectError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
 
 
-def _run(project: Project, args: argparse.Namespace) -> int:
+def _flow(project: Project, args: argparse.Namespace, out: Path, **kw) -> ProjectFlow:
     from services.orchestrator.config import load_flow_config
     from services.orchestrator.eda.bridge import make_backend
 
+    runner = make_backend(args.backend, load_flow_config()).runner  # type: ignore[attr-defined]
+    return ProjectFlow(project, runner, out, **kw)
+
+
+def _lock(project: Project, args: argparse.Namespace) -> int:
+    import tempfile
+
+    from services.orchestrator.flow import lock as flock
+
+    with tempfile.TemporaryDirectory(prefix="sf_lock_") as tmp:
+        tools = _flow(project, args, Path(tmp)).tool_versions()
+    if args.check:
+        diffs = flock.mismatches(flock.read_lock(project.root), tools, project.pdk)
+        print("\n".join(f"  {d}" for d in diffs) if diffs else "flow.lock holds")
+        return 3 if diffs else 0
+    path = flock.write_lock(project.root, flock.make_lock(tools, project.pdk, project.top))
+    print(f"wrote {path}: " + ", ".join(f"{k} {v}" for k, v in tools.items()))
+    return 0
+
+
+def _discard_if_empty(folder: Path) -> None:
+    """A run that was refused before any stage ran should not leave an empty output folder."""
+    try:
+        folder.rmdir()
+    except OSError:
+        pass  # not empty, or already gone
+
+
+def _run(project: Project, args: argparse.Namespace) -> int:
+    from services.orchestrator.flow import lock as flock
+
     stages = tuple(s.strip() for s in args.stages.split(",") if s.strip())
-    cfg = load_flow_config()
-    runner = make_backend(args.backend, cfg).runner  # type: ignore[attr-defined]
     stamp = time.strftime("%Y%m%d-%H%M%S")
     out = Path(args.out) if args.out else project.root / ".siliconforge" / "flow" / f"{project.top}-{stamp}"
-    flow = ProjectFlow(project, runner, out, timeouts={"pnr": args.timeout_pnr}, waive=set(project.waive) | set(args.waive))
+    flow = _flow(project, args, out, timeouts={"pnr": args.timeout_pnr}, waive=set(project.waive) | set(args.waive))
+    runner = flow.runner
+    if args.locked:
+        try:
+            diffs = flock.mismatches(flock.read_lock(project.root), flow.tool_versions(), project.pdk)
+        except flock.LockError:
+            _discard_if_empty(out)
+            raise
+        if diffs:
+            _discard_if_empty(out)
+            print("tools differ from flow.lock; nothing was run:\n" + "\n".join(f"  {d}" for d in diffs), file=sys.stderr)
+            return 3
     knobs = dict(_knob(k) for k in args.knob)
     print(f"running {', '.join(stages)} on {project.top} with the {runner.name} backend; output in {out}", flush=True)
     report = flow.run(stages, lec=not args.no_lec, knobs=knobs)
