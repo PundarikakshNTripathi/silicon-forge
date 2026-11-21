@@ -267,3 +267,24 @@ def test_real_tool_commands_refuse_the_simulated_backend_and_need_approval_in_as
     s, _, _ = make([act("", "sim", sources=["a.v"], top="t", test_module="m"), act("done")], mode="ask",
                    approver=lambda kind, summary, details: asked.append(kind) or False)
     assert s.send("simulate").stopped == "denied" and asked == ["command"]
+
+
+def test_interrupt_stops_the_turn_before_the_next_model_call(env):
+    """Esc in a UI sets `interrupt` from another thread; the turn ends cleanly instead of making another model call."""
+    ws, make = env
+    s, prov, events = make([act("looking", "list_dir", path="."), act("never reached")])
+    original = s._run_tool
+
+    def run_then_interrupt(name, args):
+        stop = original(name, args)
+        s.interrupt.set()  # the user pressed Esc while the first tool was running
+        return stop
+
+    s._run_tool = run_then_interrupt  # type: ignore[method-assign]
+    res = s.send("do the thing")
+    assert res.stopped == "interrupted" and res.steps == 1
+    assert len(prov.prompts) == 1  # the second model call never happened
+    assert any(e.kind == "error" and e.text == "interrupted" for e in events)
+    # the flag does not leak into the next turn
+    s._run_tool = original  # type: ignore[method-assign]
+    assert s.send("again").stopped == "done"

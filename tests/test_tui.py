@@ -38,7 +38,7 @@ def test_tui_runs_a_replay_design_end_to_end(tmp_path):
             assert run and run["status"] == "succeeded", run
             assert app.query_one("#log", DataTable).row_count >= 8
             banner = str(app.query_one("#banner", Static).render())
-            assert "SIMULATED" in banner
+            assert "simulated" in banner and "░" in banner  # provenance is stated and drawn hatched, not only coloured
             stats = str(app.query_one("#stats", Static).render())
             assert "passed" in stats and "signoff closed" in stats
 
