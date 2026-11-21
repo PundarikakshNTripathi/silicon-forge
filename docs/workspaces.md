@@ -34,6 +34,9 @@ Standing instructions go in `SILICONFORGE.md`, falling back to `AGENTS.md`, and 
 | `list_dir`, `read_file`, `grep`, `lint_rtl` | read | always allowed |
 | `write_file`, `edit_file` | edit | exact, unique-match edits; every change is undoable (`/undo`) |
 | `eda` | command | an allowlist (`iverilog`, `vvp`, `verilator`, `yosys`, `sby`, `eqy`, `mcy`, `make`, `pytest`, `python3`) as an argument list in the workspace; the result carries its provenance (`wsl`, `native`, `docker`) |
+| `isa_check`, `isa_gen` | read / edit | assemble a program and prove its pin timing; generate decoder, golden model and docs from `isa.yaml` ([isa-toolchain](isa-toolchain.md)) |
+| `sim`, `mutate` | command | cocotb with Icarus for chosen seeds; mutation testing of a test suite ([verification](verification.md)) |
+| `tt_check`, `tt_synth`, `tt_gls` | read / command | Tiny Tapeout preflight, real IHP synthesis and tile budget, gate-level simulation ([tiny-tapeout](tiny-tapeout.md)) |
 | `run_pipeline` | command | the fixed pipeline: contract, RTL, guardrails, formal, LEC, layout |
 
 Permission modes follow Claude Code: **ask** confirms edits and commands, **accept-edits** confirms commands only,
