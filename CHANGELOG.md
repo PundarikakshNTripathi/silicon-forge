@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent)
+- **Project memory** (`memory: true`): a `remember` tool and `.siliconforge/memory.md` that every later session reads, plain Markdown you can edit, secret-masked and bounded; `siliconforge memory show|add|clear` and `/memory` in the TUI (`docs/workspaces.md`).
+- **`investigate` subagent**: a read-only helper with its own fresh context that returns only a short answer, so searching a large project does not fill a small model's window. It cannot edit or recurse.
+- **GitHub Action** `.github/actions/flow`: `siliconforge flow check` then `flow run --locked`, report uploaded even on failure; inputs go through the environment, and a test enforces that (`docs/flow.md`).
 ### Added (web UI)
 - **Evals page, "Agent loops" tab**: the AgentBench-SF head-to-head from the committed result files (task success with intervals and the content-correct reading, a time, tools, recovery and cost table, a per-task matrix, package versions). `/api/benchmarks` drops the per-run records of AgentBench files (hundreds of KB) and serves their summaries.
 - **Insights page** (was Cost): the workspace agent's time split (model, tools, everything else), tool success with failures by class, recovery and tokens per turn, from the recorded spans, with an honest empty state.
