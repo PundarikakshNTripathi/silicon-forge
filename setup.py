@@ -14,7 +14,7 @@ from setuptools import setup
 from setuptools.command.build_py import build_py
 
 ROOT = Path(__file__).resolve().parent
-BUNDLE = ["configs", "hardware/examples", "services/dashboard/dist"]
+BUNDLE = ["configs", "hardware/examples", "benchmarks/results", "services/dashboard/dist"]
 
 
 class BuildPy(build_py):

@@ -376,7 +376,12 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
     @app.get("/api/benchmarks", dependencies=[api])
     def benchmarks() -> list[dict[str, Any]]:
         out = []
-        for f in sorted((REPO_ROOT / "benchmarks" / "results").glob("*.json"), reverse=True):
+        folders = [REPO_ROOT / "benchmarks" / "results", data_root() / "benchmarks" / "results"]  # committed, then yours
+        seen: set[str] = set()
+        for f in sorted((f for d in folders if d.is_dir() for f in d.glob("*.json")), key=lambda p: p.name, reverse=True):
+            if f.name in seen:
+                continue
+            seen.add(f.name)
             try:
                 out.append({"file": f.name, "data": json.loads(f.read_text(encoding="utf-8"))})
             except (OSError, ValueError):
