@@ -3,6 +3,9 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (place-and-route search)
+- `rl/bo.py`: a Gaussian-process Bayesian optimizer over knob spaces, with random and Latin-hypercube samplers; `benchmarks/bench_ppa.py` compares default knobs, random, Latin hypercube, the original bandit and the GP optimizer on the real flow. **First result: no strategy was separated from the others (8 evaluations, 3 seeds, one design), and the GP did not beat random search.** The bandit stays the default. `docs/ppa-search.md`.
+- A flow that fails to complete (detailed placement at too high a utilization, for example) is now an outcome in the PPA environment: recorded, scored -50, cached, and logged, instead of aborting the whole search.
 ### Changed (knowledge packs)
 - A ninth pack, `iverilog_errors`, written after the first full VerilogEval run: 54 of the Qwen3-8B answers that failed to compile were the same mistake (assigning in an `always` block to an output declared as a plain net), and the packs had no entry for Icarus messages. New evaluation arm `feedback-guided` adds retrieved guidance to the repair prompt, so the value of the packs is measured against `feedback`.
 - **Knowledge packs rebuilt**: retrieval is over `## ` sections instead of whole files (the three stub packs were ~690 bytes each), with headings weighted, identifiers split at underscores, and a **relevance floor** set from measured scores so that an irrelevant query returns nothing instead of "the first packs anyway". Eight new packs (Verilator warnings, synthesizable idioms, handshakes and FIFOs, CDC and resets, SDC, LibreLane variables, cocotb, formal) and a rewritten formal pack. The old formal pack told the model to use an `f_past_valid` register, which the typed-property guardrail rejects. `docs/knowledge-packs.md`.
