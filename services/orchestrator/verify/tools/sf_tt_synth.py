@@ -68,9 +68,23 @@ def main(argv: list[str] | None = None) -> int:
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     incs = " ".join(f"-I{i}" for i in a.include)
+    family = a.pdk.replace("ihp-", "")
+    # Yosys leaves latch primitives unmapped (dfflibmap only handles flops), which would hide their area or fail the flow:
+    # map them to the library's latch cells, as the LibreLane flow does.
+    (out / "latch_map.v").write_text("\n".join([
+        "module \\$_DLATCH_P_ (input E, input D, output Q);",
+        f"  {family}_dlhq_1 _TECHMAP_REPLACE_ (.D(D), .GATE(E), .Q(Q));",
+        "endmodule",
+        "module \\$_DLATCH_N_ (input E, input D, output Q);",
+        f"  {family}_dllrq_1 _TECHMAP_REPLACE_ (.D(D), .GATE_N(E), .RESET_B(1'b1), .Q(Q));",
+        "endmodule",
+        "module \\$_DLATCH_PN0_ (input E, input R, input D, output Q);",
+        f"  {family}_dlhrq_1 _TECHMAP_REPLACE_ (.D(D), .GATE(E), .RESET_B(R), .Q(Q));",
+        "endmodule", ""]), encoding="utf-8")
     script = "\n".join([
         f"read_verilog -sv {incs} {' '.join(a.sources)}",
         f"synth -top {a.top} -flatten",
+        f"techmap -map {out / 'latch_map.v'}",
         f"dfflibmap -liberty {lib}",
         f"abc -liberty {lib}",
         "opt_clean -purge",
