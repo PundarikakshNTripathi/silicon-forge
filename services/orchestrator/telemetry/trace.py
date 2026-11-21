@@ -98,10 +98,11 @@ class Tracer:
         self._lock = threading.Lock()
 
     @contextmanager
-    def span(self, name: str, kind: str, **attrs: Any) -> Generator[Span, None, None]:
+    def span(self, name: str, kind: str, *, parent: Span | None = None, **attrs: Any) -> Generator[Span, None, None]:
+        """`parent` overrides the context-derived parent: needed when work runs on a thread that did not inherit the context."""
         if kind not in KINDS:
             raise ValueError(f"span kind must be one of {KINDS}, got {kind!r}")
-        parent = _CURRENT.get()
+        parent = parent or _CURRENT.get()
         sp = Span(trace_id=parent.trace_id if parent else uuid.uuid4().hex[:16], span_id=uuid.uuid4().hex[:12],
                   parent_id=parent.span_id if parent else None, name=name, kind=kind, start=self._clock(), attrs=dict(attrs))
         token = _CURRENT.set(sp)
@@ -134,5 +135,5 @@ class NullTracer(Tracer):
     """Does nothing, cheaply: the default when tracing is not requested."""
 
     @contextmanager
-    def span(self, name: str, kind: str, **attrs: Any) -> Generator[Span, None, None]:
+    def span(self, name: str, kind: str, *, parent: Span | None = None, **attrs: Any) -> Generator[Span, None, None]:
         yield Span(trace_id="", span_id="", parent_id=None, name=name, kind=kind, start=0.0, attrs=dict(attrs))
