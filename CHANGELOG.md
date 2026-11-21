@@ -10,6 +10,12 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ### Fixed
 - `llama-server` was started with a relative model path while running from its own directory, so the model could not be found; the path is now made absolute (this made the first GPU benchmark attempt fail).
 ### Added
+- **Debug context for repair** (`services/orchestrator/debug`): a text waveform window around the failing step of a formal counterexample, the earliest cycle at which two traces differ, the source lines a lint error points at, and an attempt memory (what each earlier repair changed, as a diff, and what the verifier said afterwards) that is shown to the next repair. Before this, a repair saw the latest one-line diagnostic and nothing about earlier attempts. Switch: `pipeline.debug_context` (default on).
+- **Verifier-ranked repair sampling**: `pipeline.repair_candidates: N` draws N repairs (the first at low temperature, the rest at 0.7) and keeps the one that passes the guardrails and Verilator lint; default 1 keeps the old behaviour.
+- Agent tools `cone_of`, `waveform` and `trace_diff` (read-only, allowed in plan mode).
+### Fixed
+- **Cone-of-influence slicer rewritten**: the regex version ignored `if`/`case` conditions (so a register's enable was not in its cone), broke on multi-line statements and instance connections, and dropped every identifier that starts with "d" (`data`, `done`). The new one is a statement-level analysis with control dependencies; its limits are listed in the module docstring.
+### Added
 - **Tiny Tapeout (IHP SG13CMOS5L) mode**: `siliconforge tt scaffold|check|synth|gls|pack|doctor|harden`; info.yaml and port validation, tile budget from real post-synthesis area (Yosys against the IHP liberty), and gate-level simulation of your cocotb tests with the PDK cell models. `docs/tiny-tapeout.md`.
 ### Fixed
 - **`WslRunner` executed command substitutions inside arguments** (`$(cmd)` and backticks were expanded by a shell layer even inside single quotes), so an argument or file name could run commands, and `$VAR` in arguments was silently emptied. Arguments are now escaped; covered by a unit test and a real WSL round-trip test.
