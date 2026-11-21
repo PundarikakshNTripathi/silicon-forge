@@ -8,7 +8,9 @@ call to a run by time window, and arms are rotated per task so no arm always goe
 """
 from __future__ import annotations
 
+import re
 import time
+from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -37,7 +39,20 @@ class RunRecord:
     error: str = ""
     wall_s: float = 0.0
     first_prompt_tokens: int | None = None
+    content_ok: bool = False  # the looser, secondary reading (see Verdict.content_ok)
+    tool_breakdown: dict[str, int] = field(default_factory=dict)  # "tool:ok" / "tool:<error class>" -> calls
+    final_text: str = ""  # the start of the agent's final reply, workspace path removed, so every verdict can be audited
     metrics: dict[str, Any] = field(default_factory=dict)
+
+
+EXCERPT_CHARS = 500
+_USER_PATH = re.compile(r"[A-Za-z]:[\\/]+Users[\\/]+[^\\/\s'\"]+", re.IGNORECASE)
+
+
+def excerpt(text: str, workspace_root: str) -> str:
+    """The start of a reply, with the sandbox location and any user path replaced, fit to commit."""
+    text = text.replace(workspace_root, "<workspace>").replace(workspace_root.replace("\\", "/"), "<workspace>")
+    return _USER_PATH.sub("<user>", text)[:EXCERPT_CHARS]
 
 
 def _llm_spans(run: Span, records: list[LlmRecord], res: ArmResult, model: str) -> list[Span]:
@@ -107,8 +122,11 @@ def run_one(task: Task, arm: Arm, trial: int, llm_log: LlmLog, *, base_url: str,
         except Exception as exc:  # noqa: BLE001 - a verifier crash is recorded as unsolved with the reason, not hidden
             verdict = Verdict(False, [f"verifier error: {type(exc).__name__}: {str(exc)[:120]}"])
         rec.solved, rec.reasons, rec.violations = verdict.solved, verdict.reasons, verdict.violations
+        rec.content_ok = verdict.solved if verdict.content_ok is None else (verdict.content_ok and not verdict.violations)
+        rec.final_text = excerpt(res.final_text, str(box.root))
         run.set(solved=verdict.solved)
         rec.metrics = run_metrics(tracer.spans)
+        rec.tool_breakdown = dict(Counter(f"{s.name}:{'ok' if s.status == 'ok' else s.error}" for s in tracer.spans if s.kind == "tool"))
     return rec
 
 
