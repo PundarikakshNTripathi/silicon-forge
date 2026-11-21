@@ -19,6 +19,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from services.orchestrator.agent.store import SessionStore
 from services.orchestrator.agent.tools import COMMAND, EDIT, READ, ToolBox, ToolError
 from services.orchestrator.inference.providers.base import ProviderError
 from services.orchestrator.inference.router import ModelRouter
@@ -110,6 +111,30 @@ class AgentSession:
         self.result_chars = result_chars
         #: transcript entries: {"role": user|assistant|tool, ...}
         self.history: list[dict[str, Any]] = []
+        self.store: SessionStore | None = None
+        self.session_id: str | None = None
+
+    # ------------------------------------------------------------------------------------------ persistence
+
+    def save_to(self, store: SessionStore, session_id: str | None = None, *, resume: bool = False) -> str:
+        """Record every later history entry in `store`. With `resume`, first load the saved transcript for `session_id`
+        (the newest one when None), so the model continues with what it had seen. Returns the session id."""
+        self.store = store
+        if resume:
+            session_id = session_id or store.latest()
+            if session_id is None:
+                raise FileNotFoundError("no saved session to resume in this workspace")
+            self.history = store.load(session_id)
+        self.session_id = session_id or store.new_id()
+        return self.session_id
+
+    def _log(self, entry: dict[str, Any]) -> None:
+        self.history.append(entry)
+        if self.store is not None and self.session_id is not None:
+            try:
+                self.store.append(self.session_id, entry)
+            except OSError as exc:  # a full disk must not kill the conversation; say so once per failure
+                self._emit("error", f"could not save the session: {exc}")
 
     # ---------------------------------------------------------------------------------------- permissions
 
@@ -152,7 +177,7 @@ class AgentSession:
     # ----------------------------------------------------------------------------------------------- turn
 
     def send(self, message: str) -> TurnResult:
-        self.history.append({"role": "user", "text": message})
+        self._log({"role": "user", "text": message})
         corrected = False
         for step in range(1, self.max_steps + 1):
             try:
@@ -171,12 +196,12 @@ class AgentSession:
                     self._emit("error", f"model returned an invalid action twice: {exc}")
                     return TurnResult("The model could not produce a valid action.", step, "error")
                 corrected = True
-                self.history.append({"role": "tool", "name": "protocol", "summary": "invalid reply",
-                                     "text": f"Your reply was not valid ({exc}). Reply with exactly one JSON object "
+                self._log({"role": "tool", "name": "protocol", "summary": "invalid reply",
+                           "text": f"Your reply was not valid ({exc}). Reply with exactly one JSON object "
                                              'of the form {"say": ..., "tool": ..., "args": {...}}.'})
                 continue
             corrected = False
-            self.history.append({"role": "assistant", "say": act["say"], "tool": act["tool"], "args": act["args"]})
+            self._log({"role": "assistant", "say": act["say"], "tool": act["tool"], "args": act["args"]})
             if act["say"]:
                 self._emit("assistant", act["say"])
             if act["tool"] is None:
@@ -213,7 +238,7 @@ class AgentSession:
     def _tool_result(self, name: str, text: str) -> None:
         clipped = text if len(text) <= self.result_chars else text[: self.result_chars // 2] + " ...[truncated]... " + text[-self.result_chars // 2:]
         first = clipped.replace("\n", " ")[:90]
-        self.history.append({"role": "tool", "name": name, "text": clipped, "summary": f"{name} -> {first}"})
+        self._log({"role": "tool", "name": name, "text": clipped, "summary": f"{name} -> {first}"})
         self._emit("tool_result", clipped[:600], {"tool": name})
 
     def _emit(self, kind: str, text: str = "", data: dict | None = None) -> None:

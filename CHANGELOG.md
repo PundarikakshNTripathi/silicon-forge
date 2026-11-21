@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent)
+- Opt-in saved conversations: `chat --save`, `chat --resume [ID]`, `siliconforge sessions`. Stored as JSON lines under `.siliconforge/sessions/`; ids are validated, a torn last line is skipped. Not saved unless asked, because the file holds prompts and tool output in clear text. `docs/workspaces.md`.
 ### Fixed (evals)
 - **Thinking was not what the results said it was.** The local provider's catalog entry sends `enable_thinking: false` with every request, which overrides the server's `--reasoning` flag; result files recorded the flag. All local runs were therefore non-thinking (correct in effect), but the run labelled "thinking on" was another non-thinking run: it produced token-for-token identical output on all 40 shared problems. Added `evals run --thinking on|off|catalog` (a per-request switch, recorded as `thinking`), corrected the docs and the Evals page, and re-ran the thinking comparison with the switch actually on.
 ### Added (fine-tuning code, not yet run)
