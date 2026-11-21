@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
@@ -26,6 +27,8 @@ from services.orchestrator.agent.store import SessionStore
 from services.orchestrator.agent.tools import COMMAND, EDIT, READ, ToolBox, ToolError
 from services.orchestrator.inference.providers.base import ProviderError
 from services.orchestrator.inference.router import ModelRouter
+from services.orchestrator.telemetry import NullTracer, Tracer
+from services.orchestrator.telemetry.metrics import INVALID_ACTION
 from services.orchestrator.workspace import Workspace
 
 Mode = Literal["ask", "accept-edits", "auto", "plan"]
@@ -103,11 +106,21 @@ def parse_action(text: str) -> dict:
     return obj
 
 
+def tool_error_class(exc: Exception) -> str:
+    """Why a tool call failed, for the failure taxonomy: `bad_args`, `timeout` or `tool_error`."""
+    msg = str(exc)
+    if msg.startswith("Bad arguments"):
+        return "bad_args"
+    if "timed out" in msg.lower() or "timeout" in msg.lower():
+        return "timeout"
+    return "tool_error"
+
+
 class AgentSession:
     def __init__(self, router: ModelRouter, ws: Workspace, tools: ToolBox, *, mode: Mode = "ask",
                  approver: Approver | None = None, on_event: Callable[[AgentEvent], None] | None = None,
                  max_steps: int = 14, result_chars: int = 3500, context_chars: int = 36000,
-                 rules: Rules | None = None, hooks: HookSet | None = None) -> None:
+                 rules: Rules | None = None, hooks: HookSet | None = None, tracer: Tracer | None = None) -> None:
         if mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}")
         self.router, self.ws, self.tools = router, ws, tools
@@ -119,6 +132,7 @@ class AgentSession:
         self.context_chars = context_chars  # transcript budget in characters (about 4 per token)
         self.rules = rules if rules is not None else Rules.parse(getattr(ws, "allow", None), getattr(ws, "deny", None))
         self.hooks = hooks if hooks is not None else HookSet.parse(getattr(ws, "hooks", None))  # a bad hook is an error now
+        self.tracer: Tracer = tracer or NullTracer()  # spans for latency / tool-success / cost / recovery metrics; off by default
         self.bridge: Any = None  # McpBridge when the workspace configures MCP servers (set by the factory)
         self._mcp_announced = False
         self.loop_guard = LoopGuard()
@@ -197,72 +211,119 @@ class AgentSession:
             self._emit("error" if status.startswith("error") else "assistant", f"MCP server {name}: {status}")
 
     def send(self, message: str) -> TurnResult:
+        """One user turn, wrapped in a `run` span so latency, tool success, cost and recovery can be measured (`telemetry/`)."""
+        with self.tracer.span("invoke_agent", "run", mode=self.mode) as run:
+            res = self._turn(message)
+            run.set(stopped=res.stopped, steps=res.steps)
+            if res.stopped in ("error", "budget"):
+                run.fail(res.stopped)
+        return res
+
+    def _turn(self, message: str) -> TurnResult:
         self._announce_mcp()
         self._log({"role": "user", "text": message})
         corrected = False
         for step in range(1, self.max_steps + 1):
-            try:
-                resp = self.router.complete("AGENT", TASK, self._system(), self._transcript(),
-                                            temperature=0.2, bypass_cache=True, json_schema=ACTION_SCHEMA)
-            except ProviderError as exc:
-                self._emit("error", f"model call failed: {exc}")
-                return TurnResult(f"Model call failed: {exc}", step, "error")
-            except Exception as exc:  # noqa: BLE001 - budget errors etc. must surface, not crash the UI
-                self._emit("error", f"{type(exc).__name__}: {exc}")
-                return TurnResult(str(exc), step, "budget" if "udget" in type(exc).__name__ else "error")
-            try:
-                act = parse_action(resp.content)
-            except (ValueError, json.JSONDecodeError) as exc:
-                if corrected:
-                    self._emit("error", f"model returned an invalid action twice: {exc}")
-                    return TurnResult("The model could not produce a valid action.", step, "error")
-                corrected = True
-                self._log({"role": "tool", "name": "protocol", "summary": "invalid reply",
-                           "text": f"Your reply was not valid ({exc}). Reply with exactly one JSON object "
-                                             'of the form {"say": ..., "tool": ..., "args": {...}}.'})
-                continue
-            corrected = False
-            self._log({"role": "assistant", "say": act["say"], "tool": act["tool"], "args": act["args"]})
-            if act["say"]:
-                self._emit("assistant", act["say"])
-            if act["tool"] is None:
-                self._emit("done", act["say"])
-                return TurnResult(act["say"], step, "done")
-            stop = self._run_tool(act["tool"], act["args"])
-            if stop:
-                kind, why = stop
-                return TurnResult(f"Stopped: {why}", step, kind)
+            with self.tracer.span(f"step {step}", "step"):
+                result, corrected = self._step(step, corrected)
+            if result is not None:
+                return result
         self._emit("error", f"step limit ({self.max_steps}) reached")
         return TurnResult("Reached the step limit for this turn. Say 'continue' to keep going.", self.max_steps,
                           "step_limit")
 
+    def _step(self, step: int, corrected: bool) -> tuple[TurnResult | None, bool]:
+        """One model call and, if it chose a tool, that tool's execution. Returns (result, corrected): a result ends the turn;
+        `corrected` says the previous reply was malformed and the model has already been asked once to fix it."""
+        with self.tracer.span("chat", "llm") as ls:
+            try:
+                resp = self.router.complete("AGENT", TASK, self._system(), self._transcript(),
+                                            temperature=0.2, bypass_cache=True, json_schema=ACTION_SCHEMA)
+            except ProviderError as exc:
+                ls.fail("provider_error")
+                self._emit("error", f"model call failed: {exc}")
+                return TurnResult(f"Model call failed: {exc}", step, "error"), corrected
+            except Exception as exc:  # noqa: BLE001 - budget errors etc. must surface, not crash the UI
+                budget = "udget" in type(exc).__name__
+                ls.fail("budget" if budget else "error")
+                self._emit("error", f"{type(exc).__name__}: {exc}")
+                return TurnResult(str(exc), step, "budget" if budget else "error"), corrected
+            self._annotate_llm(ls, resp)
+            try:
+                act = parse_action(resp.content)
+            except (ValueError, json.JSONDecodeError) as exc:
+                ls.fail(INVALID_ACTION)
+                if corrected:
+                    self._emit("error", f"model returned an invalid action twice: {exc}")
+                    return TurnResult("The model could not produce a valid action.", step, "error"), corrected
+                self._log({"role": "tool", "name": "protocol", "summary": "invalid reply",
+                           "text": f"Your reply was not valid ({exc}). Reply with exactly one JSON object "
+                                   'of the form {"say": ..., "tool": ..., "args": {...}}.'})
+                return None, True
+        self._log({"role": "assistant", "say": act["say"], "tool": act["tool"], "args": act["args"]})
+        if act["say"]:
+            self._emit("assistant", act["say"])
+        if act["tool"] is None:
+            self._emit("done", act["say"])
+            return TurnResult(act["say"], step, "done"), False
+        stop = self._run_tool(act["tool"], act["args"])
+        if stop:
+            kind, why = stop
+            return TurnResult(f"Stopped: {why}", step, kind), False
+        return None, False
+
+    def _annotate_llm(self, span: Any, resp: Any) -> None:
+        span.set(provider=resp.provider, model=resp.model, tokens_in=resp.prompt_tokens, tokens_out=resp.completion_tokens,
+                 cached_tokens=resp.cached_tokens)
+        if resp.ttft_s:
+            span.set(ttft_s=resp.ttft_s)
+        if resp.tokens_per_s:
+            span.set(tokens_per_s=resp.tokens_per_s)
+        records = self.router.cost_tracker.records
+        if records:  # the router has just recorded this call's priced usage
+            span.set(cost_usd=records[-1].cost_usd, response_cached=records[-1].cached)
+
     def _run_tool(self, name: str, args: dict) -> tuple[str, str] | None:
-        """Run one tool call. Returns (stopped, reason) when the turn must end, else None."""
+        """Run one tool call. Returns (stopped, reason) when the turn must end, else None.
+
+        Each call is a `tool` span. Time spent waiting for a human's approval is outside it (reported as `approval_wait_s`), so
+        a slow human does not make a tool look slow; a refusal by policy is a span with a policy error class, not a failure."""
         spec = self.tools.by_name().get(name)
         self._emit("tool_call", f"{name} {json.dumps(args)[:200]}", {"tool": name, "args": args})
         if spec is None:
+            with self.tracer.span(name, "tool") as ts:
+                ts.fail("unknown_tool")
             return self._finish(name, args, f"error: unknown tool '{name}'. Available: {', '.join(self.tools.by_name())}")
+        t0 = time.perf_counter()
         ok, why = self._allowed(spec.permission, name, args)
+        waited = round(time.perf_counter() - t0, 3)
         if not ok:
+            with self.tracer.span(name, "tool", permission=spec.permission, approval_wait_s=waited) as ts:
+                ts.fail("declined" if why.startswith("the user declined") else "blocked" if why.startswith("blocked by") else "denied")
             self._emit("approval", f"{name}: {why}", {"tool": name, "denied": True})
             stop = self._finish(name, args, f"denied: {why}")
             return stop or (("denied", why) if why.startswith("the user declined") else None)
-        pre = self.hooks.run("pre_tool", name, args, self.ws.root)
-        if pre.blocked:
-            self._emit("approval", f"{name}: blocked by a hook", {"tool": name, "denied": True, "hook": True})
-            return self._finish(name, args, f"blocked by a pre_tool hook:\n{pre.output}")
-        ok_call = True
-        try:
-            out = self.tools.call(name, args)
-            text = json.dumps(out, ensure_ascii=False) if not isinstance(out, str) else out
-        except ToolError as exc:
-            text, ok_call = f"error: {exc}", False
-        except Exception as exc:  # noqa: BLE001 - a tool crash goes to the model as an error, never kills the session
-            text, ok_call = f"error: {type(exc).__name__}: {exc}", False
-        if ok_call:
-            post = self.hooks.run("post_tool", name, args, self.ws.root, result=text)
-            if post.output:
-                text += "\n[post_tool hook]\n" + post.output
+        with self.tracer.span(name, "tool", permission=spec.permission, approval_wait_s=waited) as ts:
+            pre = self.hooks.run("pre_tool", name, args, self.ws.root)
+            if pre.blocked:
+                ts.fail("blocked")
+                self._emit("approval", f"{name}: blocked by a hook", {"tool": name, "denied": True, "hook": True})
+                return self._finish(name, args, f"blocked by a pre_tool hook:\n{pre.output}")
+            ok_call = True
+            try:
+                out = self.tools.call(name, args)
+                text = json.dumps(out, ensure_ascii=False) if not isinstance(out, str) else out
+            except ToolError as exc:
+                text, ok_call = f"error: {exc}", False
+                ts.fail(tool_error_class(exc))
+            except Exception as exc:  # noqa: BLE001 - a tool crash goes to the model as an error, never kills the session
+                text, ok_call = f"error: {type(exc).__name__}: {exc}", False
+                ts.fail("crash")
+            if ok_call:
+                post = self.hooks.run("post_tool", name, args, self.ws.root, result=text)
+                if post.output:
+                    text += "\n[post_tool hook]\n" + post.output
+            ts.set(result_chars=len(text))
         return self._finish(name, args, text)
 
     def _finish(self, name: str, args: dict, text: str) -> tuple[str, str] | None:

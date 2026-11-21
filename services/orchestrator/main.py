@@ -265,8 +265,15 @@ def _agent_session(args: argparse.Namespace, interactive: bool):
             return False
         return input(f"  allow {kind}: {summary}  [y/N] ").strip().lower() in ("y", "yes")
 
+    tracer = None
+    if getattr(args, "trace", False):
+        from services.orchestrator.telemetry import JsonlSink, Tracer
+
+        trace_path = ws.state_dir / "traces" / f"{time.strftime('%Y%m%d-%H%M%S')}.jsonl"
+        tracer = Tracer(sinks=[JsonlSink(trace_path)])
+        print(f"tracing to {trace_path} (metadata only: no prompts, arguments or tool output)")
     session = create_session(ws, profile=profile, mode=args.mode, approver=approve, on_event=show,
-                             max_steps=args.max_steps)
+                             max_steps=args.max_steps, tracer=tracer)
     resume = getattr(args, "resume", None)
     if getattr(args, "save", False) or resume is not None:
         from services.orchestrator.agent.store import SessionStore
@@ -278,6 +285,22 @@ def _agent_session(args: argparse.Namespace, interactive: bool):
             raise SystemExit(str(exc)) from exc
         print(f"session {sid} ({'resumed, ' + str(len(session.history)) + ' entries' if resume is not None else 'saving'})")
     return ws, profile, session
+
+
+def cmd_trace(args: argparse.Namespace) -> int:
+    """Summarise recorded agent traces (written by `chat`/`agent --trace` or the benchmark)."""
+    from services.orchestrator.telemetry import read_spans, summarize
+    from services.orchestrator.telemetry.report import render
+    from services.orchestrator.workspace import find_workspace
+
+    files = [Path(f) for f in args.files] or sorted((find_workspace(args.workspace).state_dir / "traces").glob("*.jsonl"))
+    spans = [s for f in files for s in read_spans(f)]
+    if not spans:
+        print("no spans found; record some with: siliconforge chat --trace", file=sys.stderr)
+        return 1
+    agg = summarize(spans)
+    print(json.dumps(agg, indent=2) if args.json else render(agg))
+    return 0
 
 
 def cmd_triage(args: argparse.Namespace) -> int:
@@ -630,6 +653,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Save the conversation (clear text) under .siliconforge/sessions/ in the workspace")
         sp.add_argument("--resume", nargs="?", const="latest", default=None, metavar="ID",
                         help="Continue a saved conversation (newest when no ID is given); implies --save")
+        sp.add_argument("--trace", action="store_true",
+                        help="Record spans (latency, tool success, tokens, cost; no content) under .siliconforge/traces/")
 
     ag = sub.add_parser("agent", help="Give the workspace agent one task (headless)")
     ag.add_argument("task")
@@ -650,6 +675,13 @@ def build_parser() -> argparse.ArgumentParser:
                     help="command template to show for the lowest seed of each bucket; {seed} is replaced")
     tr.add_argument("--json", action="store_true", help="print the buckets as JSON")
     tr.set_defaults(func=cmd_triage)
+
+    tc = sub.add_parser("trace", help="Summarise agent traces: latency split, tool success, cost per task, failure recovery")
+    tc.add_argument("action", choices=["summary"])
+    tc.add_argument("files", nargs="*", help="trace .jsonl files (default: every trace in the workspace)")
+    tc.add_argument("--workspace", default=".")
+    tc.add_argument("--json", action="store_true", help="print the metrics as JSON")
+    tc.set_defaults(func=cmd_trace)
 
     isa = sub.add_parser("isa", help="ISA toolchain from an isa.yaml: gen, asm, disasm, check, run")
     isa.add_argument("action", choices=["gen", "asm", "disasm", "check", "run"])

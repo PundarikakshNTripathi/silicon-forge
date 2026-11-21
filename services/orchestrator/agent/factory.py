@@ -11,12 +11,13 @@ from services.orchestrator.config import load_flow_config
 from services.orchestrator.eda.bridge import EDABridge
 from services.orchestrator.inference.cost_tracker import CostTracker
 from services.orchestrator.inference.router import ModelRouter
+from services.orchestrator.telemetry import Tracer
 from services.orchestrator.workspace import Workspace
 
 
 def create_session(ws: Workspace, *, profile: str | None = None, mode: Mode = "ask", approver: Approver | None = None,
                    on_event=None, max_steps: int = 14, router: ModelRouter | None = None,
-                   config_path: str = "configs/flow_default.yaml") -> AgentSession:
+                   config_path: str = "configs/flow_default.yaml", tracer: Tracer | None = None) -> AgentSession:
     cfg = load_flow_config(config_path)
     ws.apply(cfg)
     if profile:
@@ -54,7 +55,8 @@ def create_session(ws: Workspace, *, profile: str | None = None, mode: Mode = "a
         bridge.start()
         tools.extra.extend(bridge.tool_specs())
         atexit.register(bridge.close)  # do not leave server subprocesses behind if the process exits without close()
-    session = AgentSession(router, ws, tools, mode=mode, approver=approver, on_event=on_event, max_steps=max_steps)
+    session = AgentSession(router, ws, tools, mode=mode, approver=approver, on_event=on_event, max_steps=max_steps,
+                           tracer=tracer)
     session.bridge = bridge
     return session
 

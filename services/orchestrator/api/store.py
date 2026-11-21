@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS events (
 );
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS idx_runs_created ON runs(created DESC);
+CREATE TABLE IF NOT EXISTS spans (
+    trace_id TEXT NOT NULL, span_id TEXT NOT NULL, parent_id TEXT, name TEXT, kind TEXT, start REAL, duration_s REAL,
+    status TEXT, error TEXT, attrs TEXT, session TEXT, PRIMARY KEY (trace_id, span_id)
+);
+CREATE INDEX IF NOT EXISTS idx_spans_start ON spans(start DESC);
 """
 
 TERMINAL = {"succeeded", "failed", "cancelled", "interrupted"}
@@ -135,6 +140,36 @@ class Store:
             d["payload"] = json.loads(d["payload"])
             out.append(d)
         return out
+
+    # --- spans (agent telemetry: metadata only) ---------------------------------------------------------
+
+    def add_span(self, span: Any, session: str | None = None) -> None:
+        with self._lock:
+            self._db.execute(
+                "INSERT OR REPLACE INTO spans (trace_id, span_id, parent_id, name, kind, start, duration_s, status, error, attrs, "
+                "session) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                (span.trace_id, span.span_id, span.parent_id, span.name, span.kind, span.start, span.duration_s, span.status,
+                 span.error, json.dumps(span.attrs, default=str), session))
+            self._db.commit()
+
+    def spans_since(self, since: float, limit: int = 20000) -> list[Any]:
+        """Spans that started at or after `since` (epoch seconds), oldest first, as `Span` objects."""
+        from services.orchestrator.telemetry.trace import Span
+
+        with self._lock:
+            rows = self._db.execute("SELECT * FROM spans WHERE start>=? ORDER BY start LIMIT ?", (since, limit)).fetchall()
+        return [Span(trace_id=r["trace_id"], span_id=r["span_id"], parent_id=r["parent_id"], name=r["name"], kind=r["kind"],
+                     start=r["start"], duration_s=r["duration_s"], status=r["status"], error=r["error"] or "",
+                     attrs=json.loads(r["attrs"] or "{}")) for r in rows]
+
+    def run_counts(self) -> dict[str, Any]:
+        """Counts for the metrics endpoint: runs by status, and cost, tokens and duration totals."""
+        with self._lock:
+            by_status = self._db.execute("SELECT status, COUNT(*) n FROM runs GROUP BY status").fetchall()
+            tot = self._db.execute("SELECT COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens),0), COALESCE(SUM(duration_s),0), "
+                                   "COUNT(duration_s), COALESCE(SUM(signoff),0) FROM runs").fetchone()
+        return {"by_status": {r["status"]: r["n"] for r in by_status}, "cost_usd": tot[0], "tokens": tot[1],
+                "duration_s_sum": tot[2], "duration_n": tot[3], "signoff_passed": tot[4]}
 
     # --- settings -------------------------------------------------------------------------------------
 

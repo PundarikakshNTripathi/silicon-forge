@@ -7,13 +7,14 @@ import json
 import mimetypes
 import os
 import threading
+import time
 import uuid
 from pathlib import Path
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -29,6 +30,7 @@ from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, Serv
 from services.orchestrator.inference.secrets import delete_secret, set_secret
 from services.orchestrator.paths import RESOURCE_ROOT, data_root
 from services.orchestrator.skills.registry import SkillRegistry
+from services.orchestrator.telemetry import prometheus, summarize
 from services.orchestrator.version import __version__
 
 REPO_ROOT = RESOURCE_ROOT
@@ -150,7 +152,7 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
     store = Store(db_path or runs_root / "siliconforge.db")
     manager = RunManager(store, REPO_ROOT, runs_root=runs_root)
     local = LocalModels()
-    agents = agents or AgentManager()
+    agents = agents or AgentManager(store=store)
     token = os.getenv("SILICONFORGE_API_TOKEN", "")
 
     app.add_middleware(
@@ -298,6 +300,18 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
     @app.get("/api/cost/summary", dependencies=[api])
     def cost_summary() -> dict[str, Any]:
         return store.cost_rollup()
+
+    @app.get("/api/insights/agent", dependencies=[api])
+    def agent_insights(hours: float = Query(default=24.0, gt=0, le=24 * 365)) -> dict[str, Any]:
+        """Agent latency split, tool success, cost per task and failure recovery over the last `hours` hours."""
+        spans = store.spans_since(time.time() - hours * 3600)
+        return {"hours": hours, "spans": len(spans), "metrics": summarize(spans)}
+
+    @app.get("/api/metrics", dependencies=[api])
+    def metrics() -> Response:
+        """Prometheus text format: runs by status, cost, tokens; agent tool calls, model calls, phases, recovery."""
+        body = prometheus.render(store.run_counts(), store.spans_since(0.0))
+        return Response(content=body, media_type="text/plain; version=0.0.4; charset=utf-8")
 
     routes_workspace.register(app, api, agents)
 
