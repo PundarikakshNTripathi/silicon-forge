@@ -271,6 +271,22 @@ def _agent_session(args: argparse.Namespace, interactive: bool):
     return ws, profile, session
 
 
+def cmd_triage(args: argparse.Namespace) -> int:
+    """Bucket the failures in sim.json files by signature (offline; no backend needed)."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    from services.orchestrator.verify import triage as tri
+
+    try:
+        result = tri.triage([_Path(p) for p in args.reports])
+    except (OSError, ValueError) as exc:
+        print(f"triage failed: {exc}", file=sys.stderr)
+        return 2
+    print(_json.dumps(result, indent=2) if args.json else tri.render(result, args.replay))
+    return 1 if result["failed"] else 0
+
+
 def cmd_sessions(args: argparse.Namespace) -> int:
     """List the agent conversations saved in a workspace."""
     from services.orchestrator.agent.store import SessionStore
@@ -615,6 +631,13 @@ def build_parser() -> argparse.ArgumentParser:
     ss = sub.add_parser("sessions", help="List saved agent conversations in this folder")
     ss.add_argument("--workspace", default=".")
     ss.set_defaults(func=cmd_sessions)
+
+    tr = sub.add_parser("triage", help="Group failing runs from one or more sim.json files by failure signature")
+    tr.add_argument("reports", nargs="+", help="sim.json files written by `verify sim` / sf_cocotb_run.py")
+    tr.add_argument("--replay", default=None, metavar="CMD",
+                    help="command template to show for the lowest seed of each bucket; {seed} is replaced")
+    tr.add_argument("--json", action="store_true", help="print the buckets as JSON")
+    tr.set_defaults(func=cmd_triage)
 
     isa = sub.add_parser("isa", help="ISA toolchain from an isa.yaml: gen, asm, disasm, check, run")
     isa.add_argument("action", choices=["gen", "asm", "disasm", "check", "run"])

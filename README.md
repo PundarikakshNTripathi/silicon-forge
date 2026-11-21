@@ -113,7 +113,7 @@ Reports are JSON plus one self-contained HTML page, with tool versions, an input
 
 **Verification toolkit** ([docs/verification.md](docs/verification.md)). Lockstep co-simulation of RTL against a Python model,
 mutation testing with a Yosys equivalence filter, functional and toggle coverage, and decoders for UART, SPI, I2C and WS2812
-that judge pin behaviour independently of the RTL.
+that judge pin behaviour independently of the RTL. `siliconforge triage` groups the failures of many seeds into distinct causes.
 
 <p align="center"><img src="assets/diagrams/verification.svg" width="900" alt="One isa.yaml generates the decoder, assembler, golden model and documentation; tests compare RTL with the model"></p>
 
