@@ -29,8 +29,10 @@ def add_parser(sub) -> None:
     r.add_argument("--ctx", type=int, default=16384)
     r.add_argument("--kv", default="q8_0")
     r.add_argument("--reasoning", default="auto", choices=["auto", "on", "off"],
-                   help="thinking phase of a served model: off skips it (much faster), auto keeps the model's default")
+                   help="the server's thinking default. A per-request switch in the provider config overrides it (the local provider sets it off), so use --thinking to compare modes")
     r.add_argument("--port", type=int, default=8189)
+    r.add_argument("--thinking", default="catalog", choices=["catalog", "on", "off"],
+                   help="per-request thinking switch for a Qwen3-style model; catalog keeps configs/models.yaml (off for local)")
     r.add_argument("--hf", default=None, metavar="MODEL_ID",
                    help="evaluate a Hugging Face model in-process (needs torch, transformers, peft) instead of a routed one")
     r.add_argument("--adapter", default=None, metavar="DIR", help="LoRA adapter directory to merge into the --hf model")
@@ -83,7 +85,18 @@ def make_runner(backend: str, cfg):
     return make_backend(backend, cfg).runner  # type: ignore[attr-defined]
 
 
-def make_llm(cfg, task_type: str) -> tuple[LLM, str]:
+def set_thinking(provider, mode: str) -> None:
+    """`on` / `off` set the per-request `enable_thinking` template switch of an OpenAI-compatible provider; `catalog` leaves
+    whatever configs/models.yaml sets (for the local provider that is off). The request-level switch wins over the server's
+    `--reasoning` flag, which is why a thinking comparison has to set it here."""
+    if mode == "catalog" or not hasattr(provider, "extra_body"):
+        return
+    kw = dict(provider.extra_body.get("chat_template_kwargs", {}))
+    kw["enable_thinking"] = mode == "on"
+    provider.extra_body["chat_template_kwargs"] = kw
+
+
+def make_llm(cfg, task_type: str, thinking: str = "catalog") -> tuple[LLM, str]:
     from services.orchestrator.inference.cost_tracker import CostTracker
     from services.orchestrator.inference.router import ModelRouter
 
@@ -94,6 +107,7 @@ def make_llm(cfg, task_type: str) -> tuple[LLM, str]:
     router = ModelRouter(cfg.inference, tracker)
     tier = router.select_tier(task_type)
     target = router.chain(tier)[0]
+    set_thinking(router.provider_for(target.provider), thinking)
 
     def llm(system: str, user: str, temperature: float) -> LLMReply:
         resp = router.complete(stage="EVAL", task_type=task_type, system_prompt=system, user_prompt=user,
@@ -235,7 +249,7 @@ def _run(args: argparse.Namespace) -> int:
             label = label or routed
             extra_info = {"hf": args.hf, "adapter": Path(args.adapter).name if args.adapter else None}
         else:
-            llm, routed = make_llm(cfg, args.task_type)
+            llm, routed = make_llm(cfg, args.task_type, args.thinking)
         arm = build_arm(args.arm, args.rounds, args.candidates)
         result = run_verilogeval(
             arm, llm, runner, model=label or routed, n=args.n, k=args.k, temperature=args.temperature,
@@ -243,7 +257,7 @@ def _run(args: argparse.Namespace) -> int:
             trajectory=(TrajectoryWriter(Path(args.save_trajectories) if args.save_trajectories else default_path(args.tag))
                         if args.save_trajectories is not None else None),
             on_progress=None if args.quiet else lambda s: print(s, flush=True),
-            extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default",
+            extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default", "thinking": args.thinking,
                    **extra_info},
         )
     finally:

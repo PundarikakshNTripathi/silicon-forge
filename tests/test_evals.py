@@ -439,3 +439,26 @@ def test_environment_rewards_follow_the_verifier_cascade_and_hide_the_testbench(
     assert env.step(_fence(BROKEN))[1:3] == (COMPILE_PENALTY, True)  # turn budget exhausted
     with pytest.raises(RuntimeError, match="reset"):
         VerilogEnv(FakeRunner(), root=root).step("x")
+
+
+# ---------------------------------------------------------------------------------------- thinking switch
+
+
+def test_the_thinking_switch_overrides_the_catalog_per_request_and_catalog_leaves_it_alone():
+    from services.orchestrator.evals.cli import set_thinking
+
+    class P:
+        extra_body = {"chat_template_kwargs": {"enable_thinking": False}, "other": 1}
+
+    p = P()
+    set_thinking(p, "catalog")
+    assert p.extra_body["chat_template_kwargs"] == {"enable_thinking": False}
+    set_thinking(p, "on")
+    assert p.extra_body["chat_template_kwargs"]["enable_thinking"] is True and p.extra_body["other"] == 1
+    set_thinking(p, "off")
+    assert p.extra_body["chat_template_kwargs"]["enable_thinking"] is False
+
+    class Bare:  # a provider without an extra body (CLI bridges) is left alone
+        pass
+
+    set_thinking(Bare(), "on")

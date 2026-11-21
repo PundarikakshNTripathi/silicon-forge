@@ -11,7 +11,7 @@ interface PerProblem { id: string; n: number; c: number; samples: Sample[] }
 interface EvalResult {
   file: string; model: string; arm: string; armSettings: Record<string, unknown>; k: number; mean: number; lo: number; hi: number;
   problems: number; compile: number | null; calls: number; tokens: number; wall: number; runner: string; n: number; tag: string;
-  reasoning?: string; perProblem: PerProblem[]; excluded: number; selected: number; seed: number; created: string;
+  thinking?: string; perProblem: PerProblem[]; excluded: number; selected: number; seed: number; created: string;
 }
 
 /** Unbiased pass@k from c passes in n samples (Chen et al. 2021). */
@@ -50,7 +50,7 @@ function parse(files: BenchFile[]): EvalResult[] {
     out.push({
       file, model: String(d.model), arm: String(d.arm?.arm ?? "?"), armSettings: d.arm ?? {}, k: agg.k, mean: agg.mean, lo: agg.ci95[0], hi: agg.ci95[1],
       problems: agg.problems, compile: d.compile_rate ?? null, calls: d.tokens?.calls ?? 0, tokens: (d.tokens?.prompt ?? 0) + (d.tokens?.completion ?? 0),
-      wall: d.wall_s ?? 0, runner: d.runner ?? "unknown", n: d.n ?? 1, tag: file.replace(/^eval-.*?-(\d{4}-\d{2}-\d{2})\.json$/, "$1"), reasoning: d.reasoning,
+      wall: d.wall_s ?? 0, runner: d.runner ?? "unknown", n: d.n ?? 1, tag: file.replace(/^eval-.*?-(\d{4}-\d{2}-\d{2})\.json$/, "$1"), thinking: d.thinking,
       perProblem: d.per_problem ?? [], excluded: Object.keys(d.dataset?.excluded ?? {}).length, selected: d.selection?.count ?? agg.problems,
       seed: d.selection?.seed ?? 0, created: d.created ?? "",
     });
@@ -181,7 +181,7 @@ export function EvalsPage() {
 }
 
 function FragmentRow({ r, open, picked, onToggle, onOpen }: { r: EvalResult; open: boolean; picked: boolean; onToggle: () => void; onOpen: () => void }) {
-  const setup = [r.arm, r.reasoning && r.reasoning !== "provider default" ? `thinking ${r.reasoning}` : "", r.n > 1 ? `${r.n} samples` : ""].filter(Boolean).join(", ");
+  const setup = [r.arm, r.thinking === "on" ? "thinking on" : "", r.n > 1 ? `${r.n} samples` : ""].filter(Boolean).join(", ");
   return (
     <>
       <tr className={picked ? "picked" : ""}>
