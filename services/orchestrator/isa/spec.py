@@ -148,7 +148,9 @@ def parse_spec(raw: dict[str, Any]) -> IsaSpec:
         for letter, fld in sorted(fields.items(), key=lambda kv: -kv[1].lsb):
             d = declared.get(letter)
             if d is None:
-                raise IsaError(f"{name}: encoding field '{letter}' has no operand definition")
+                raise IsaError(f"{name}: encoding field '{letter}' has no operand definition. Encodings are 16-char "
+                               f"patterns of 0/1/-/letters with no braces; define each letter under `operands:`, "
+                               f"e.g. operands: {{{letter}: {{name: {letter}}}}} (kind: uint | int | enum | label)")
             kind = d.get("kind", "enum" if "enum" in d else "uint")
             enum = None
             if kind == "enum":

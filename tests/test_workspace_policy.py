@@ -309,3 +309,14 @@ def test_agy_retries_a_transient_failure_once_then_succeeds(fake_agy, monkeypatc
 
     monkeypatch.setattr(p, "_generate_once", flaky)
     assert p.generate("gemini-3.8-flash", "s", "u").content.startswith("echo:") and calls["n"] == 2
+
+
+def test_workspace_can_raise_the_token_ceiling_for_subscription_models(tmp_path):
+    """agy calls carry ~10k tokens of overhead each, so the default 500k ceiling stops a long agent session."""
+    (tmp_path / "siliconforge.yaml").write_text(
+        "name: x" + chr(10) + "policy:" + chr(10) + "  max_total_tokens: 20000000" + chr(10))
+    ws = load_workspace(tmp_path)
+    cfg = SimpleNamespace(workspace_root=None, eda_mode="simulated", pdk="p", inference=InferenceConfig())
+    assert InferenceConfig().max_total_tokens == 500_000
+    ws.apply(cfg)
+    assert cfg.inference.max_total_tokens == 20_000_000 and ws.describe()["max_total_tokens"] == 20_000_000
