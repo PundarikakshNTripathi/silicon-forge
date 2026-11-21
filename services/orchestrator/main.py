@@ -319,6 +319,28 @@ def cmd_triage(args: argparse.Namespace) -> int:
     return 1 if result["failed"] else 0
 
 
+def cmd_memory(args: argparse.Namespace) -> int:
+    """Show, add to, or clear the workspace's project memory (a Markdown file you can also edit by hand)."""
+    from services.orchestrator.agent.memory import Memory
+    from services.orchestrator.workspace import find_workspace
+
+    mem = Memory(find_workspace(args.workspace).state_dir)
+    if args.action == "show":
+        notes = mem.notes()
+        print("\n".join(f"- {n}" for n in notes) if notes else f"no notes yet ({mem.path})")
+        return 0
+    if args.action == "clear":
+        mem.clear()
+        print("project memory cleared")
+        return 0
+    try:
+        print("saved:", mem.add(" ".join(args.text)))
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
+
+
 def cmd_sessions(args: argparse.Namespace) -> int:
     """List the agent conversations saved in a workspace."""
     from services.orchestrator.agent.store import SessionStore
@@ -549,13 +571,18 @@ def cmd_isa(args: argparse.Namespace) -> int:
 
 
 def cmd_tui(args: argparse.Namespace) -> int:
+    """Terminal UI. Default: a chat with the workspace agent. `--run`: the pipeline run viewer."""
     try:
-        from services.tui.app import main as tui_main
+        if args.run:
+            from services.tui.app import main as tui_main
+
+            tui_main()
+            return 0
+        from services.tui.launch import launch
     except ImportError:
         print("Install the TUI extra: uv pip install -e '.[tui]'")
         return 1
-    tui_main()
-    return 0
+    return launch(args)
 
 
 def cmd_mcp(args: argparse.Namespace) -> int:
@@ -672,6 +699,12 @@ def build_parser() -> argparse.ArgumentParser:
     ss.add_argument("--workspace", default=".")
     ss.set_defaults(func=cmd_sessions)
 
+    mm = sub.add_parser("memory", help="Project memory the agent reads at the start of every session: show, add, clear")
+    mm.add_argument("action", choices=["show", "add", "clear"])
+    mm.add_argument("text", nargs="*", help="add: the note")
+    mm.add_argument("--workspace", default=".")
+    mm.set_defaults(func=cmd_memory)
+
     tr = sub.add_parser("triage", help="Group failing runs from one or more sim.json files by failure signature")
     tr.add_argument("reports", nargs="+", help="sim.json files written by `verify sim` / sf_cocotb_run.py")
     tr.add_argument("--replay", default=None, metavar="CMD",
@@ -744,7 +777,16 @@ def build_parser() -> argparse.ArgumentParser:
     rp.add_argument("--out", default=None)
     rp.set_defaults(func=cmd_report)
 
-    t = sub.add_parser("tui", help="Terminal UI")
+    t = sub.add_parser("tui", help="Terminal UI: chat with the workspace agent (or --run for the pipeline run viewer)")
+    t.add_argument("--workspace", default=".")
+    t.add_argument("--profile", default=None, help="routing profile (default: the workspace's)")
+    t.add_argument("--mode", choices=["ask", "accept-edits", "auto", "plan"], default="ask")
+    t.add_argument("--max-steps", type=int, default=14)
+    t.add_argument("--save", action="store_true", help="save the conversation so /resume can continue it")
+    t.add_argument("--resume", nargs="?", const="latest", default=None, metavar="ID", help="continue a saved conversation")
+    t.add_argument("--no-anim", action="store_true", help="skip the splash and animations")
+    t.add_argument("--light", action="store_true", help="light theme")
+    t.add_argument("--run", action="store_true", help="open the pipeline run viewer instead of the chat")
     t.set_defaults(func=cmd_tui)
 
     mc = sub.add_parser("mcp", help="MCP server (stdio) for coding agents")

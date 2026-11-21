@@ -11,8 +11,8 @@ export function HatchDefs() {
   return (
     <defs>
       <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <rect width="6" height="6" fill="var(--amber-soft)" />
-        <line x1="0" y1="0" x2="0" y2="6" stroke="var(--amber)" strokeWidth="2" opacity="0.65" />
+        <rect width="6" height="6" fill="var(--paper-2)" />
+        <line x1="0" y1="0" x2="0" y2="6" stroke="var(--layer-pnr)" strokeWidth="2" opacity="0.65" />
       </pattern>
     </defs>
   );
@@ -45,7 +45,7 @@ export function ParetoChart({ episodes, front, bestIndex }: { episodes: PPA[]; f
         const col = isClean(e) ? "var(--green)" : "var(--red)";
         return (
           <g key={i}>
-            <circle cx={X(e.area_um2)} cy={Y(e.wns_ns)} r={onFront ? 8 : 6} fill={sim ? "url(#hatch)" : col} stroke={sim ? "var(--amber)" : col} strokeWidth={onFront ? 2.5 : 1.5} fillOpacity={sim ? 1 : 0.8} />
+            <circle cx={X(e.area_um2)} cy={Y(e.wns_ns)} r={onFront ? 8 : 6} fill={sim ? "url(#hatch)" : col} stroke={sim ? "var(--layer-pnr)" : col} strokeWidth={onFront ? 2.5 : 1.5} fillOpacity={sim ? 1 : 0.8} />
             {i === bestIndex && <circle cx={X(e.area_um2)} cy={Y(e.wns_ns)} r={12} fill="none" stroke="var(--blue)" strokeWidth="2" />}
             <title>{`Episode ${i + 1}: WNS ${e.wns_ns.toFixed(2)} ns, area ${e.area_um2.toFixed(0)} µm², power ${e.total_power_mw.toFixed(2)} mW, DRC ${e.drc_violations}`}</title>
           </g>

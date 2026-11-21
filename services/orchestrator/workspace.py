@@ -53,6 +53,8 @@ class Workspace:
     hooks: list[dict[str, Any]] = field(default_factory=list)
     #: raw `mcp_servers:` entries; parsed and validated by agent/mcp_client.py when a session starts
     mcp_servers: list[dict[str, Any]] = field(default_factory=list)
+    #: `memory: true` lets the agent save notes to .siliconforge/memory.md (agent/memory.py); an existing file is read either way
+    memory: bool = False
 
     # ------------------------------------------------------------------ paths
     @property
@@ -156,6 +158,7 @@ def load_workspace(path: str | Path) -> Workspace:
         deny=rule_list("deny"),
         hooks=hooks_raw,
         mcp_servers=mcp_raw,
+        memory=bool(raw.get("memory", False)),
         name=str(raw.get("name") or root.name),
         profile=str(raw.get("profile", "replay")),
         backend=str(raw.get("backend", "simulated")),

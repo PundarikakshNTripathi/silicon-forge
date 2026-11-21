@@ -19,7 +19,7 @@ python scripts/dev.py lint        # ruff
 python -m pytest -q tests/test_guardrails.py    # one file
 siliconforge serve                # API + built UI at http://127.0.0.1:8000
 cd services/dashboard && pnpm install && pnpm dev   # UI dev server :5173 (proxies /api to :8000)
-siliconforge tui                  # terminal UI
+siliconforge tui                  # terminal UI: chat with the agent (--run for the pipeline run viewer)
 siliconforge chat                 # interactive agent in the current folder (a workspace); `agent "task"` is headless
 siliconforge init . --profile dev # write siliconforge.yaml (profile, backend, model policy)
 siliconforge models detect        # local models + other model servers on this machine (read-only)

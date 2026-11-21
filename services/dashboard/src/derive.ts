@@ -14,7 +14,7 @@ export const STAGES: { key: StageKey; label: string; sub: string }[] = [
   { key: "pnr", label: "Place & route", sub: "OpenROAD" },
   { key: "signoff", label: "Signoff", sub: "timing, DRC, LVS" },
 ];
-const STAGE_OF: Record<string, StageKey> = {
+export const STAGE_OF: Record<string, StageKey> = {
   ARCHITECT: "contract", RTL_GEN: "rtl", RTL: "rtl", GUARDRAIL_AUDIT: "guardrails", SIMULATION: "guardrails",
   FORMAL_VERIFY: "formal", SYNTHESIS_LEC: "lec", PNR_RL_OPT: "pnr", SIGNOFF: "signoff",
 };

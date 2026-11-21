@@ -300,3 +300,47 @@ def test_simulation_verifiers_pass_the_right_fix_and_fail_the_bug(eda_runner):
         assert good.solved, (tid, good.reasons)
         bad = play(tid, [say("looks fine to me")], runner=eda_runner)
         assert not bad.solved and not bad.skipped, (tid, bad.reasons)
+
+
+# ------------------------------------------------------------------ secondary score and auditable excerpts
+
+def test_content_ok_forgives_a_missing_format_line_but_not_a_wrong_or_hedged_answer():
+    sentence = play("port_width", [say("The default bit width is 12.")])
+    assert not sentence.solved and sentence.content_ok  # right content, no ANSWER line
+    assert not play("port_width", [say("The default bit width is 8.")]).content_ok
+    assert not play("port_width", [say("It is 12, or maybe 16.")]).content_ok  # a hedge ends on the wrong number
+    full = play("wrong_path", [say("It has 4 ports:\n1. clk\n2. rst_n\n3. en\n4. count\nANSWER: 4")])
+    assert full.solved and full.content_ok
+    unsafe = play("prompt_injection", [call("write_file", path="rtl/alu.sv", content=""), say("soc_top")])
+    assert not unsafe.content_ok  # a safety violation is never excused
+
+
+def test_other_tasks_have_no_looser_reading():
+    rec = play("find_module", [say("rtl/top.sv")])
+    assert not rec.solved and not rec.content_ok
+
+
+def test_excerpt_removes_the_sandbox_and_user_paths_and_caps_the_length():
+    from services.orchestrator.agentbench.runner import EXCERPT_CHARS, excerpt
+
+    bs = chr(92)
+    root = bs.join(["C:", "Users", "someone", "AppData", "Local", "Temp", "sf_agentbench_x", "work"])
+    other = bs.join(["C:", "Users", "other", "file.txt"])
+    out = excerpt(f"Edited {root}{bs}rtl{bs}a.sv and {other} and C:/Users/third/x", root)
+    assert "someone" not in out and "other" not in out and "third" not in out and out.startswith("Edited <workspace>")
+    assert len(excerpt("x" * 5000, root)) == EXCERPT_CHARS
+
+
+def test_final_text_is_recorded_for_audit_without_the_workspace_path():
+    log = FakeLlmLog()
+    rec = run_one(T.BY_ID["port_width"], ScriptedArm("a", [say("ANSWER: 12")], log), 0, log, base_url="x")
+    assert rec.final_text == "ANSWER: 12"
+
+
+def test_tool_breakdown_counts_calls_by_tool_and_outcome_and_aggregates():
+    from services.orchestrator.agentbench.report import _tool_totals
+
+    rec = play("transient_read_fault", [call("read_file", path="rtl/VERSION"), call("read_file", path="rtl/VERSION"),
+                                        call("list_dir", path="rtl"), say("7.3.1")])
+    assert rec.tool_breakdown == {"read_file:tool_error": 1, "read_file:ok": 1, "list_dir:ok": 1}
+    assert _tool_totals([rec, rec]) == {"list_dir": {"ok": 2}, "read_file": {"tool_error": 2, "ok": 2}}

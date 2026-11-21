@@ -140,6 +140,23 @@ server on Windows with the `mcp` 2.x SDK; not yet tried against third-party EDA 
   `[redacted ...]` in tool output before the model sees it and in saved sessions. It is pattern-based and will miss a secret with
   an unusual shape; a secret you paste into your own message is sent to the model as typed.
 
+## Project memory
+
+Set `memory: true` in `siliconforge.yaml` and the agent gets a `remember` tool that saves one short, durable fact (a convention, a
+decision, a command that works) to `.siliconforge/memory.md`; every later session starts with the newest notes in its prompt.
+It is a plain Markdown list you can open and edit, `siliconforge memory show|add|clear` manages it, and `/memory` shows it in the TUI.
+Saved notes are secret-masked before they are written, capped (60 notes, about 2,400 characters in the prompt, newest first), and a note
+is a hint: the prompt tells the model to trust the files over a note. `remember` is an edit-class tool, so in `ask` mode you approve each
+note. With the file present but `memory:` unset, the notes are still read, but the agent cannot add to them.
+
+## Investigating without filling the context
+
+The `investigate` tool hands a question to a read-only helper with a fresh, empty transcript and a small step budget (8). The helper
+runs in `plan` mode (it cannot edit or run commands), has no `investigate` tool of its own (no recursion), and only its answer (at most
+1,800 characters, with the step count) comes back. The reading it did stays out of the main conversation, which matters most for small
+local models with 16k contexts. Its model calls are counted like any other (same router, cost ledger and traces). It is a helper for
+search and understanding; it does not make the answer more correct than the model that wrote it.
+
 ## Saved conversations
 
 Nothing is saved by default. `siliconforge chat --save` (or `agent --save "task"`) writes the conversation to

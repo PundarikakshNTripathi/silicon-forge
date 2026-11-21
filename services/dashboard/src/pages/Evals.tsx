@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { useMemo, useState } from "react";
+import { AgentLoops } from "./AgentLoops";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api";
 import { Empty, Panel, Prov } from "../ui";
@@ -67,8 +68,8 @@ function IntervalBar({ r }: { r: EvalResult }) {
     <svg width={W} height={22} role="img" aria-label={`pass@${r.k} ${pct(r.mean)}, 95% interval ${pct(r.lo)} to ${pct(r.hi)}`}>
       <line x1={4} x2={W - 4} y1={11} y2={11} stroke="var(--rule)" strokeWidth={1} />
       {[0, 0.25, 0.5, 0.75, 1].map((t) => <line key={t} x1={x(t)} x2={x(t)} y1={8} y2={14} stroke="var(--rule-strong)" strokeWidth={1} />)}
-      <line x1={x(r.lo)} x2={x(r.hi)} y1={11} y2={11} stroke="var(--ink)" strokeWidth={5} strokeLinecap="butt" opacity={0.28} />
-      <line x1={x(r.mean)} x2={x(r.mean)} y1={3} y2={19} stroke="var(--ink)" strokeWidth={2.5} />
+      <line x1={x(r.lo)} x2={x(r.hi)} y1={11} y2={11} stroke="var(--accent)" strokeWidth={6} strokeLinecap="butt" opacity={0.32} />
+      <line x1={x(r.mean)} x2={x(r.mean)} y1={3} y2={19} stroke="var(--accent)" strokeWidth={3} />
     </svg>
   );
 }
@@ -94,6 +95,7 @@ export function EvalsPage() {
   const tele = files.find((b) => b.file.startsWith("telemetry-"));
   const [open, setOpen] = useState<string | null>(null);
   const [pick, setPick] = useState<string[]>([]);
+  const [view, setView] = useState<"models" | "agents">("models");
   const byFile = new Map(results.map((r) => [r.file, r]));
   const models = [...new Set(results.map((r) => r.model))].sort();
   const toggle = (f: string) => setPick((p) => (p.includes(f) ? p.filter((x) => x !== f) : [...p.slice(-1), f]));
@@ -108,6 +110,11 @@ export function EvalsPage() {
           overlap, the data do not separate the two setups. Method and limits are in <code>docs/evals.md</code>.
         </p>
 
+        <div className="tabs" role="tablist">
+          <button role="tab" aria-selected={view === "models"} onClick={() => setView("models")}>Model quality</button>
+          <button role="tab" aria-selected={view === "agents"} onClick={() => setView("agents")}>Agent loops</button>
+        </div>
+        {view === "agents" ? <AgentLoops files={files} /> : <>
         <Panel title="Model quality on VerilogEval (spec to RTL)" flush>
           {results.length === 0 ? (
             <Empty title="No evaluation results yet">
@@ -175,6 +182,7 @@ export function EvalsPage() {
             <div className="body small muted">{tele.data.note}</div>
           </Panel>
         )}
+        </>}
       </div>
     </>
   );
