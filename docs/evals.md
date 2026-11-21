@@ -99,7 +99,7 @@ siliconforge evals run verilogeval --serve model.gguf --arm single --split test 
   -0.1 for a candidate that does not compile (the compiler message comes back as the observation), 0.0 for one that compiles but fails
   the testbench, 1.0 for a pass. The testbench output is never in the observation.
 
-## Fine-tuning on verified samples (code ready, experiment not yet run)
+## Fine-tuning on verified samples (one round, measured)
 
 One round of rejection-sampling fine-tuning, using the pieces above:
 
@@ -116,12 +116,35 @@ siliconforge evals run verilogeval --hf Qwen/Qwen2.5-Coder-1.5B-Instruct --adapt
 siliconforge evals compare <base>.json <rft1>.json
 ```
 
-Status: the data preparation (answer-only loss masking, template checks, dropping examples with no room for an answer, padding),
-the batched sampling pool and the command-line wiring are unit-tested without a GPU. **The training and the evaluation have not
-been run**: the GPU window ended before this step. No result is claimed. When it is run, expect the effect to come mostly from
-the most common failure of small models here, answers that do not compile (about half of the 7-9B models' answers in the
-single-shot runs above), and judge it with `compare` on the test problems, where the interval says whether the gain is real. Adapters
-are not committed; they derive from a model with its own license.
+### Result of the first run (Qwen2.5-Coder-1.5B-Instruct, one round, one seed)
+
+| Step | Outcome |
+| :--- | :--- |
+| Sampling the base model on the 101 training problems, 8 samples each | pass@1 6.3% (95% interval 3.7 to 9.4), compile rate 42.7%; 38 minutes |
+| Verified answers kept (at most two per problem) | **37 examples from 23 problems** |
+| LoRA (rank 16, alpha 32, learning rate 1e-4, 3 epochs, answer-only loss) | mean loss 0.162, 0.130, 0.111; 35 seconds; 71 MB adapter |
+| Base model on the 54 held-out test problems, 8 samples each | pass@1 **14.8%** (8.8 to 22.0), compile rate 46.3% |
+| Tuned model on the same problems | pass@1 **22.9%** (14.1 to 32.2), compile rate 59.0% |
+| Paired comparison (`evals compare`) | **+8.1 points, 95% interval +3.7 to +12.7**: the intervals separate them |
+
+Per problem, the tuned model did better on 18 of 54, worse on 6 and the same on 30; it solved at least once 22 problems against 19.
+Files: `eval-...hf-Qwen-Qwen2.5-Coder-1.5B-Instruct-*-rft-train-samples-*.json`, `...-single-test-base-*.json`,
+`...-lora-adapter-single-test-rft1-*.json`.
+
+How far to trust it:
+
+- **Train and test problems are disjoint** (split by a hash of the problem id; zero shared ids), and only the training split was
+  sampled for training data. VerilogEval contains families of near-identical problems, so disjoint ids do not guarantee disjoint
+  content. A name-stem check found 3 of the 54 test problems resembling a training problem; their mean gain was 0.083 against 0.081
+  for the other 51, so the result does not hinge on them. This is a heuristic, not a proof.
+- **One round, one training seed, one small model.** The base model is weak (6% on the training split), so the 37 examples are
+  mostly easy problems; the gain is larger in compile rate (+12.7 points) than in anything else, which matches the expectation that
+  most of what was learned is producing complete, compilable modules. The result is a demonstration that the pipeline works end to
+  end, not a claim about 7-9B models and not a rival to published reinforcement-learning results. A second round, more problems and
+  several training seeds are the obvious next steps and have not been run.
+- The measurement is on VerilogEval's own testbenches, as everywhere else in this document, and the grader is the one validated above.
+
+Adapters are not committed; they derive from a model with its own license. The recipe is the four commands above.
 
 ## Limits
 
