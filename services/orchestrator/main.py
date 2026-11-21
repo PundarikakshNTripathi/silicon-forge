@@ -173,8 +173,14 @@ def cmd_models(args: argparse.Namespace) -> int:
         if not model.exists():
             print(f"model not found: {model}")
             return 1
+        draft = Path(args.draft_model) if args.draft_model else None
+        if draft is not None and not draft.exists():
+            print(f"draft model not found: {draft}")
+            return 1
+        spec = args.spec_type or ("draft-simple" if draft else "none")
         server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, port=args.port,
-                                               gpu_layers=0 if args.cpu else 99))
+                                               gpu_layers=0 if args.cpu else 99, spec_type=spec, draft_model=draft,
+                                               draft_max=args.draft_max))
         from services.orchestrator.inference.gpu import GpuBusyError
 
         try:
@@ -182,6 +188,9 @@ def cmd_models(args: argparse.Namespace) -> int:
         except GpuBusyError as exc:
             print(f"not started: {exc}")
             return 3
+        except ValueError as exc:
+            print(f"not started: {exc}")
+            return 2
         print(f"serving {model.name} on {server.base_url} (Ctrl+C to stop)")
         try:
             while True:
@@ -594,6 +603,9 @@ def build_parser() -> argparse.ArgumentParser:
     m.add_argument("--cpu", action="store_true", help="Run on the CPU and leave the GPU alone")
     m.add_argument("--ctx", type=int, default=16384)
     m.add_argument("--port", type=int, default=8189)
+    m.add_argument("--spec-type", default=None, help="speculative decoding: draft-simple, ngram-simple, ngram-mod, ... (default: none)")
+    m.add_argument("--draft-model", default=None, help="smaller GGUF of the same family used as the speculative draft")
+    m.add_argument("--draft-max", type=int, default=None, help="most tokens drafted per step")
     m.set_defaults(func=cmd_models)
 
     i = sub.add_parser("init", help="Create a workspace (siliconforge.yaml) in a directory")

@@ -43,6 +43,27 @@ arrived **8.6× sooner** (CPU run; see `benchmarks/results/llamacpp-prefix-cache
 Prompts put stable content (system prompt, PDK skill packs, contract) first and volatile content (diagnostics, RTL
 slices) last so prefix caches hit.
 
+### Speculative decoding
+
+llama.cpp can draft several tokens cheaply and have the main model verify them in one step. Two forms are exposed:
+
+```bash
+# model-free: draft from n-grams already in the context. Suits edits, where the output repeats the file.
+siliconforge models start --path models/gguf/Qwen3.5-9B-Q4_K_M.gguf --spec-type ngram-mod
+# draft model: a smaller model of the same family and tokenizer
+siliconforge models start --path big.gguf --draft-model small.gguf --draft-max 8
+```
+
+It is off by default. The flags are the ones the bundled llama.cpp build (b12600) lists (`--spec-type`, `--spec-draft-model`,
+`--spec-draft-n-max`); a combination that cannot work (a draft type without a draft model, a draft model with speculation
+off, more than one slot) is refused with a message rather than passed through. A draft model's weights count against the free
+VRAM check, and the guard still refuses to start when another program holds the GPU.
+
+**Not yet measured on this machine.** Speculation can slow generation when few drafted tokens are accepted, so it is
+not turned on by default until a run shows it helps. `python benchmarks/bench_speed.py --model <gguf> --arms
+baseline,ngram-mod,kv-f16,ctx-32k` records decode and prompt tokens per second, draft acceptance and VRAM for each
+configuration, on a fresh-generation prompt and an edit prompt, and needs a free GPU.
+
 ## Cloud providers
 
 API keys are read from the environment or your **operating system keychain** (set them on the Models page). They are

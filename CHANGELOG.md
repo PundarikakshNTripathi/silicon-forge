@@ -7,6 +7,8 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - Manifest `mcp_servers:` lets the agent use tools from external stdio MCP servers (`mcp__<server>__<tool>`). They share the built-in path: permission modes (default `command`), allow/deny rules, hooks, loop guard, redaction, output fencing. Start-up failures are reported, not hidden; calls time out; servers stop with the session. Tested against a real stdio server (21 tests); not yet against third-party servers. `docs/workspaces.md`.
 ### Added (agent hooks)
 - Manifest `hooks:` (`pre_tool` blocks on a non-zero exit, a failed start or a timeout; `post_tool` appends its output to the tool result). Argument lists, no shell, strict validation, environment describing the call. `docs/workspaces.md`.
+### Added (local inference)
+- Speculative decoding options for the managed llama-server (`--spec-type`, `--draft-model`, `--draft-max`), validated, with the draft model counted in the VRAM guard; and `benchmarks/bench_speed.py`, a speed sweep over KV type, context length and speculation. **No speedup has been measured yet** (the GPU was busy); speculation stays off by default.
 ### Added (agent safety and context)
 - Workspace `permissions: allow/deny` rules (`tool` or `tool(glob)`; deny wins and applies in `auto`; paths normalised so `..` and backslashes cannot dodge a pattern).
 - Staged context compaction: the transcript stays inside `context_chars`; earlier turns become a deterministic digest, no model call.
