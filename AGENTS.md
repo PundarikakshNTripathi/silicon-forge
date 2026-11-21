@@ -17,17 +17,24 @@ python scripts/dev.py build-cpp   # CMake build of services/telemetry_engine (MS
 python scripts/dev.py test        # ctest + pytest
 python scripts/dev.py lint        # ruff
 python -m pytest -q tests/test_guardrails.py    # one file
-cd services/dashboard && pnpm install && pnpm dev   # UI at :5173 (proxies /api to :8000)
+siliconforge serve                # API + built UI at http://127.0.0.1:8000
+cd services/dashboard && pnpm install && pnpm dev   # UI dev server :5173 (proxies /api to :8000)
+siliconforge tui                  # terminal UI
+pytest -m real_eda                # real Yosys/SymbiYosys checks (auto-skipped without tools)
 ```
-Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,dev]"`. Python >= 3.11.
+Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,tui,mcp,dev]"`. Python >= 3.11.
 
 ## Layout
-- `services/orchestrator/` Python backend: `pipeline.py` (DAG), `agents/`, `guardrails/`, `eda/` (bridge, formal IR,
-  backends), `inference/` (router, providers, cost, cache), `rl/` (PPA optimizer), `skills/` (BM25 skill packs).
+- `services/orchestrator/` Python backend: `pipeline.py` (DAG), `agents/`, `guardrails/`, `eda/` (bridge, `backends/`
+  simulated+real, `runner.py`, `librelane.py`, `formal_ir.py`, `vcd.py`), `inference/` (`router.py`, `providers/`,
+  `catalog.py`, `cache.py`, `llamacpp.py`), `rl/` (PPA optimizer), `api/` (FastAPI, SQLite store, run manager),
+  `skills/` (BM25 skill packs), `schemas.py` (pydantic IR), `paths.py` (resource vs data dir).
 - `services/telemetry_engine/` C++20 log parser + static RTL linter (`sf-telemetry`), CMake.
-- `services/dashboard/` React + Vite UI. `apps/desktop/` Electron shell. `apps/tui/` Textual TUI.
-- `configs/` flow, PDK allowlists, system prompts, model profiles. `docs/` setup guides, `benchmarks/` measured results.
-- `hardware/examples/` reference designs + specs. `tests/` pytest. `docs/`, `assets/` README visuals.
+- `services/dashboard/` React + Vite web UI (built to `dist/`, served by the API). `services/tui/` Textual TUI.
+- `apps/desktop/` Electron shell (supervises a PyInstaller-frozen backend). Build: `python scripts/build_desktop.py`.
+- `configs/` flow, PDK allowlists, system prompts, `models.yaml` (providers, prices, profiles).
+- `hardware/examples/` designs: `spec.md`, `rtl/`, and `fixtures/` (contract, props, buggy RTL) for the replay provider.
+- `benchmarks/` scripts + committed `results/*.json` (every README number cites one). `docs/` guides. `tests/` pytest.
 
 ## Rules that matter
 1. **Honesty / provenance.** Every EDA result carries `mode: simulated|native|wsl|docker`. Never present simulated

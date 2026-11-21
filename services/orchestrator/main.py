@@ -23,6 +23,14 @@ from services.orchestrator.state import FlowState
 
 def _build_pipeline(args: argparse.Namespace) -> SiliconForgePipeline:
     cfg = load_flow_config(args.config)
+    if getattr(args, "episodes", None):
+        cfg.pipeline["max_pnr_rl_episodes"] = args.episodes
+    if getattr(args, "parallel", None):
+        cfg.rl_optimizer["parallel_episodes"] = args.parallel
+    if getattr(args, "relax", False):
+        cfg.rl_optimizer["allow_clock_relax"] = True
+    if getattr(args, "verify_only", False):
+        cfg.pipeline["stop_after"] = "lec"
     if getattr(args, "backend", None):
         cfg.eda_mode = normalize_mode(args.backend)
     profile = getattr(args, "profile", None) or getattr(args, "provider", None)
@@ -156,6 +164,26 @@ def cmd_models(args: argparse.Namespace) -> int:
     return 2
 
 
+def cmd_tui(args: argparse.Namespace) -> int:
+    try:
+        from services.tui.app import main as tui_main
+    except ImportError:
+        print("Install the TUI extra: uv pip install -e '.[tui]'")
+        return 1
+    tui_main()
+    return 0
+
+
+def cmd_mcp(args: argparse.Namespace) -> int:
+    try:
+        from services.orchestrator.mcp_server import main as mcp_main
+    except ImportError:
+        print("Install the MCP extra: uv pip install -e '.[mcp]'")
+        return 1
+    mcp_main()
+    return 0
+
+
 def cmd_serve(args: argparse.Namespace) -> int:
     try:
         import uvicorn
@@ -182,6 +210,10 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--run-id", default=None)
     r.add_argument("--inject-bug", action="store_true", help="Replay provider: start with a known-buggy RTL to exercise repair")
     r.add_argument("--quiet", action="store_true", help="Only print the final JSON summary")
+    r.add_argument("--episodes", type=int, default=None, help="Max place-and-route optimizer episodes")
+    r.add_argument("--parallel", type=int, default=None, help="Layout episodes to run concurrently")
+    r.add_argument("--relax", action="store_true", help="Let the optimizer try relaxed clock periods")
+    r.add_argument("--verify-only", action="store_true", help="Stop after formal proof and equivalence check")
     common(r)
     r.set_defaults(func=cmd_run)
 
@@ -201,6 +233,12 @@ def build_parser() -> argparse.ArgumentParser:
     m.add_argument("--ctx", type=int, default=16384)
     m.add_argument("--port", type=int, default=8189)
     m.set_defaults(func=cmd_models)
+
+    t = sub.add_parser("tui", help="Terminal UI")
+    t.set_defaults(func=cmd_tui)
+
+    mc = sub.add_parser("mcp", help="MCP server (stdio) for coding agents")
+    mc.set_defaults(func=cmd_mcp)
 
     s = sub.add_parser("serve", help="Start the HTTP API (and web UI)")
     s.add_argument("--host", default="127.0.0.1")

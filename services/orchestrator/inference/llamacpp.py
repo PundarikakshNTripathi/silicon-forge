@@ -20,8 +20,10 @@ from pathlib import Path
 
 import httpx
 
+from services.orchestrator.paths import data_root
+
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_HOME = ROOT / "models"
+DEFAULT_HOME = data_root() / "models"
 GITHUB_API = "https://api.github.com/repos/ggml-org/llama.cpp"
 
 

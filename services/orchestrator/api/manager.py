@@ -50,6 +50,8 @@ class RunManager:
         cfg.eda_mode = normalize_mode(req.backend)
         cfg.inference.profile = req.profile
         cfg.workspace_root = self.runs_root
+        if cfg.inference.cache_path:
+            cfg.inference.cache_path = str(self.runs_root / "_cache" / "llm.sqlite")
         if req.pdk:
             cfg.pdk = req.pdk
         if req.clock_period_ns:
