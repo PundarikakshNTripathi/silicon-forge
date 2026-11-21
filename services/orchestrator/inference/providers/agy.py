@@ -135,7 +135,9 @@ class AgyProvider(BaseLLMProvider):
         line = json.dumps({"event": "user", "message": {"content": prompt}}) + "\n"
         assert AgyProvider._slots is not None
         t0 = time.perf_counter()
-        with AgyProvider._slots, tempfile.TemporaryDirectory(prefix="sf_agy_") as cwd:
+        # On Windows the CLI can still hold a handle on its working directory for a moment after it exits; failing to delete a
+        # scratch folder must not discard an answer that was already received (it cost a sample in a full evaluation run).
+        with AgyProvider._slots, tempfile.TemporaryDirectory(prefix="sf_agy_", ignore_cleanup_errors=True) as cwd:
             try:
                 proc = subprocess.run(
                     self.argv(exe, model, json_schema), input=line, capture_output=True, text=True,
