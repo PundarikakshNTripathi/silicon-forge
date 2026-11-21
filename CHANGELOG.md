@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (fine-tuning code, not yet run)
+- `evals run --hf MODEL [--adapter DIR]` evaluates a Hugging Face model (with a LoRA adapter) through the same harness, grader and result schema, with batched sampling; `scripts/train_lora.py` is a plain PyTorch LoRA loop with answer-only loss; `evals/sft.py` holds the tested data preparation. **The training and the held-out evaluation have not been run yet.**
 ### Changed (knowledge packs)
 - A ninth pack, `iverilog_errors`, written after the first full VerilogEval run: 54 of the Qwen3-8B answers that failed to compile were the same mistake (assigning in an `always` block to an output declared as a plain net), and the packs had no entry for Icarus messages. New evaluation arm `feedback-guided` adds retrieved guidance to the repair prompt, so the value of the packs is measured against `feedback`.
 - **Knowledge packs rebuilt**: retrieval is over `## ` sections instead of whole files (the three stub packs were ~690 bytes each), with headings weighted, identifiers split at underscores, and a **relevance floor** set from measured scores so that an irrelevant query returns nothing instead of "the first packs anyway". Eight new packs (Verilator warnings, synthesizable idioms, handshakes and FIFOs, CDC and resets, SDC, LibreLane variables, cocotb, formal) and a rewritten formal pack. The old formal pack told the model to use an `f_past_valid` register, which the typed-property guardrail rejects. `docs/knowledge-packs.md`.
