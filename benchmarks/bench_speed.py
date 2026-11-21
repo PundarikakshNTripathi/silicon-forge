@@ -7,18 +7,24 @@ temperature 0 and thinking off, and records decode and prompt tokens per second 
 acceptance when speculation is on, and VRAM in use once the model is loaded. Two kinds of prompt are used, because
 speculative decoding helps one and not the other:
 
-* `generate`: write a module from a spec (new text: little to copy);
-* `edit`: rewrite an existing file with one change (most of the output repeats the prompt).
+* `generate`: write a module from the spec of one of the bundled designs (new text: little to copy);
+* `edit`: rewrite one of the bundled RTL files adding comments (most of the output repeats the prompt).
+
+**Every prompt is sent exactly once per arm.** An earlier version sent one prompt three times; llama.cpp's n-gram speculation
+keeps a pool that is shared across requests, so the repeats were drafted from the previous answer (100% acceptance, 375 tok/s on
+a fresh-generation prompt) and the speed-up was an artifact. With distinct prompts the pool can only help when the text really
+repeats.
 
 Arms: `baseline`, `kv-f16`, `kv-q4_0`, `ctx-4k`, `ctx-32k`, `ngram-mod`, `ngram-simple`, `draft:<path/to/draft.gguf>`.
 
 Usage:
-    python benchmarks/bench_speed.py --model models/gguf/Qwen3.5-9B-Q4_K_M.gguf --arms baseline,ngram-mod,kv-f16
+    python benchmarks/bench_speed.py --model models/gguf/Qwen3.5-9B-Q4_K_M.gguf --arms baseline,ngram-mod,kv-q4_0
 Writes benchmarks/results/speed-<model>-<date>.json (file names only, no local paths).
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import statistics
 import subprocess
@@ -31,12 +37,23 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 SCHEMA = "siliconforge.speed/1"
-GENERATE = ("Write a synthesizable SystemVerilog module `up_down_counter` with a 4-bit count output, inputs clk, rst_n (active-low "
-            "asynchronous reset), up_down and enable. It counts up when up_down is 1 and down otherwise, only while enable is 1. "
-            "Reply with the module only.")
-EDIT_TEMPLATE = ("Here is a SystemVerilog file:\n\n```systemverilog\n{src}\n```\n\nRewrite the whole file so the counter wraps "
-                 "silently instead of saturating (if it saturates) and add a comment above each always block. Output the complete "
-                 "file in one code block and nothing else.")
+GENERATE_TEMPLATE = ("Write a synthesizable SystemVerilog module that implements this specification. Reply with the module only.\n\n"
+                     "{spec}")
+EDIT_TEMPLATE = ("Here is a SystemVerilog file:\n\n```systemverilog\n{src}\n```\n\nRewrite the whole file with a one-line comment "
+                 "above every always block and every assign, without changing behaviour. Output the complete file in one code "
+                 "block and nothing else.")
+
+
+def build_prompts(root: Path) -> dict[str, list[str]]:
+    """One generate prompt and one edit prompt per bundled example design (four of each), all distinct."""
+    out: dict[str, list[str]] = {"generate": [], "edit": []}
+    for d in sorted((root / "hardware" / "examples").iterdir()):
+        spec, rtl = d / "spec.md", next(iter(sorted((d / "rtl").glob("*.sv"))), None)
+        if not spec.is_file() or rtl is None:
+            continue
+        out["generate"].append(GENERATE_TEMPLATE.format(spec=spec.read_text(encoding="utf-8").strip()))
+        out["edit"].append(EDIT_TEMPLATE.format(src=rtl.read_text(encoding="utf-8").strip()))
+    return out
 
 
 def summarize(samples: list[dict[str, Any]]) -> dict[str, Any]:
@@ -67,9 +84,11 @@ def speedup(arm: dict[str, Any], base: dict[str, Any]) -> float | None:
 
 
 def arm_config(name: str, model: Path, base_ctx: int, port: int):
-    """(ServerConfig for the arm). Unknown arm names are an error."""
+    """(ServerConfig for the arm). Unknown arm names are an error. `name@label` is the same configuration run again under another
+    label (e.g. `baseline@end`), which shows drift in the machine's own speed over the course of a sweep."""
     from services.orchestrator.inference.llamacpp import ServerConfig
 
+    name = name.split("@", 1)[0]
     kw: dict[str, Any] = {"model_path": model, "ctx": base_ctx, "port": port, "reasoning": "off"}
     if name == "baseline":
         pass
@@ -99,21 +118,31 @@ def vram_used_mib() -> int | None:
         return None
 
 
-def ask(base_url: str, prompt: str, max_tokens: int) -> dict[str, Any]:
+def output_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
+def identical_count(hashes: list[str], reference: list[str]) -> dict[str, int]:
+    """How many of an arm's outputs match the reference arm's, prompt for prompt."""
+    return {"identical": sum(a == b for a, b in zip(hashes, reference, strict=False)), "of": min(len(hashes), len(reference))}
+
+
+def ask(base_url: str, prompt: str, max_tokens: int) -> tuple[dict[str, Any], str]:
+    """(llama-server timings, answer text)."""
     import httpx
 
     body = {"model": "local", "messages": [{"role": "user", "content": prompt}], "temperature": 0.0, "max_tokens": max_tokens,
             "chat_template_kwargs": {"enable_thinking": False}, "cache_prompt": False}
     r = httpx.post(f"{base_url}/v1/chat/completions", json=body, timeout=600)
     r.raise_for_status()
-    return r.json().get("timings", {})
+    data = r.json()
+    return data.get("timings", {}), data["choices"][0]["message"].get("content") or ""
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--arms", default="baseline,ngram-mod")
-    ap.add_argument("--reps", type=int, default=3, help="requests per prompt kind per arm")
     ap.add_argument("--max-tokens", type=int, default=700)
     ap.add_argument("--ctx", type=int, default=16384)
     ap.add_argument("--port", type=int, default=8190)
@@ -125,8 +154,7 @@ def main() -> int:
 
     model = Path(args.model)
     exe = LlamaCpp().server_exe
-    src = (ROOT / "hardware" / "examples" / "up_down_counter" / "rtl" / "up_down_counter.sv").read_text(encoding="utf-8")
-    prompts = {"generate": GENERATE, "edit": EDIT_TEMPLATE.format(src=src)}
+    prompts = build_prompts(ROOT)
     snap = snapshot()
     results: dict[str, Any] = {}
     for name in [a.strip() for a in args.arms.split(",") if a.strip()]:
@@ -143,11 +171,15 @@ def main() -> int:
             print(f"{name}: failed to start: {exc}", flush=True)
             continue
         try:
-            ask(server.base_url, "Say OK.", 8)  # warm-up: weights paged in, graphs built
+            # warm-up: weights paged in, graphs built, GPU clocks up. A neutral prompt, so it does not seed the n-gram pool
+            # with RTL text, and long enough to reach steady state (the first arm of an earlier sweep ran 25% slow without it)
+            ask(server.base_url, "Describe, in plain prose, how a silicon wafer becomes a packaged chip.", 200)
+            ask(server.base_url, "Explain what a flip-flop is and why timing matters, in about two hundred words.", 200)
             row: dict[str, Any] = {"vram_used_mib": vram_used_mib(), "ctx": cfg.ctx, "kv": cfg.kv_type, "spec_type": cfg.spec_type}
-            for kind, prompt in prompts.items():
-                timings = [ask(server.base_url, prompt, args.max_tokens) for _ in range(args.reps)]
-                row[kind] = summarize(timings)
+            for kind, plist in prompts.items():
+                answers = [ask(server.base_url, p, args.max_tokens) for p in plist]  # each distinct prompt exactly once
+                row[kind] = summarize([t for t, _ in answers])
+                row[kind]["output_hashes"] = [output_hash(text) for _, text in answers]
                 print(f"{name:<14} {kind:<9} {row[kind].get('decode_tok_s_median')} tok/s decode, "
                       f"acceptance {row[kind].get('draft_acceptance', '-')}", flush=True)
             results[name] = row
@@ -160,10 +192,14 @@ def main() -> int:
         for kind in prompts:
             if kind in row and kind in base:
                 row[kind]["speedup_vs_baseline"] = speedup(row[kind], base[kind])
-    doc = {"schema": SCHEMA, "model": model.name, "gpu": snap.name, "gpu_total_mib": snap.total_mib, "reps": args.reps,
-           "max_tokens": args.max_tokens, "temperature": 0.0, "thinking": "off", "arms": results,
-           "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-           "note": "decode speed is llama-server's own predicted_per_second; one request at a time; same prompts for every arm"}
+                # greedy (temperature 0) answers compared with the baseline's, prompt by prompt. The baseline's own re-run
+                # (`baseline@...`) is the control: if that differs too, the difference is not speculation's doing.
+                row[kind]["same_output_as_baseline"] = identical_count(row[kind]["output_hashes"], base[kind]["output_hashes"])
+    doc = {"schema": SCHEMA, "model": model.name, "gpu": snap.name, "gpu_total_mib": snap.total_mib,
+           "prompts_per_kind": {k: len(v) for k, v in prompts.items()}, "max_tokens": args.max_tokens, "temperature": 0.0,
+           "thinking": "off", "arms": results, "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+           "note": "decode speed is llama-server's own predicted_per_second; one request at a time; the same distinct prompts "
+                   "for every arm, each sent once (repeating a prompt inflates n-gram speculation)"}
     out = ROOT / "benchmarks" / "results" / f"speed-{model.stem}{('-' + args.tag) if args.tag else ''}-{time.strftime('%Y-%m-%d')}.json"
     out.write_text(json.dumps(doc, indent=2), encoding="utf-8")
     print(f"wrote {out.name}")

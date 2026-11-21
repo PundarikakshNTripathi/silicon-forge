@@ -59,10 +59,37 @@ It is off by default. The flags are the ones the bundled llama.cpp build (b12600
 off, more than one slot) is refused with a message rather than passed through. A draft model's weights count against the free
 VRAM check, and the guard still refuses to start when another program holds the GPU.
 
-**Not yet measured on this machine.** Speculation can slow generation when few drafted tokens are accepted, so it is
-not turned on by default until a run shows it helps. `python benchmarks/bench_speed.py --model <gguf> --arms
-baseline,ngram-mod,kv-f16,ctx-32k` records decode and prompt tokens per second, draft acceptance and VRAM for each
-configuration, on a fresh-generation prompt and an edit prompt, and needs a free GPU.
+**Measured** on Qwen3.5-9B Q4_K_M, RTX 5060 Laptop (8 GB), 16k context, one request at a time, temperature 0, thinking off, with four
+bundled designs: a fresh-generation prompt (write the module from its spec) and an edit prompt (rewrite the file adding comments)
+for each, every prompt sent once per configuration (`benchmarks/results/speed-Qwen3.5-9B-Q4_K_M-*.json`):
+
+| Configuration | Fresh generation | Editing a file | Greedy output same as baseline (generate / edit) | VRAM |
+| :--- | ---: | ---: | :---: | ---: |
+| Baseline (q8_0 KV) | 56.9 tok/s | 56.9 tok/s | n/a | 5,766 MiB |
+| Baseline run again at the end (control) | 57.0 | 56.9 | 4/4, 4/4 | 5,790 MiB |
+| `ngram-mod` | 56.4 (0.99x), 1.6% of drafted tokens accepted | **167.1 (2.94x)**, 76% accepted | 4/4, **1/4** | 5,766 MiB |
+| `ngram-simple` | 56.5 (0.99x), 7% accepted | **160.3 (2.82x)**, 60% accepted | 2/4, 3/4 | 5,766 MiB |
+| KV cache q4_0 | 55.9 (0.98x) | 56.9 (1.00x) | 0/4, 0/4 | 5,638 MiB |
+
+What this shows, and what it does not:
+
+- **N-gram speculation is a large win for editing and neutral for fresh generation** on this model: about 2.9x faster when the
+  answer largely repeats the prompt, no measurable cost when it does not. It needs no second model.
+- **It is not output-identical.** In theory verification makes speculative decoding lossless; in practice the batched
+  verification changes floating-point results, and greedy output differed from the plain run on 3 of 4 edit prompts with `ngram-mod`.
+  The control matters: the same server configuration run twice produced identical text 8 times out of 8, so the differences come from speculation. The
+  differences seen were in the wording of comments and in where the model branched. **Whether they change RTL correctness has not
+  been measured**, so speculation stays off by default; it is the thing to try for edit-heavy agent sessions, with the tool checks
+  (lint, equivalence, simulation) as the safety net they already are.
+- **KV q4_0** saves 128 MiB at this context length, is no faster, and changed every output. There is no reason to use it at 16k.
+- **Not measured:** an f16 KV cache and a 32k context did not fit beside this model on the 8 GB card (the VRAM guard
+  estimated 7.9 GB and 8.1 GB needed against 7.8 GB free) and were not tried; no draft-model arm, because no smaller model of
+  the same family is downloaded; one model, one GPU. An earlier version of this benchmark sent each prompt three times and
+  reported 375 tok/s on fresh generation with 100% acceptance: that was the n-gram pool replaying the previous answer, not a
+  speed-up, and it was discarded.
+
+`python benchmarks/bench_speed.py --model <gguf> --arms baseline,ngram-mod,kv-q4_0,baseline@end` reproduces it (the `@end`
+suffix re-runs a configuration as a control) and needs a free GPU.
 
 ## Cloud providers
 
