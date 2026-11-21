@@ -144,9 +144,13 @@ def solved(rec):
 
 
 def test_comprehension_tasks():
-    assert solved(play("port_width", [say("12")]))
-    assert not solved(play("port_width", [say("8")]))
-    assert not solved(play("port_width", [say("It is 12, or maybe 16.")]))  # a hedge naming two widths is not an answer
+    assert solved(play("port_width", [say("The default is 12.\nANSWER: 12")]))
+    assert solved(play("port_width", [say("**Answer:** 12")]))
+    assert not solved(play("port_width", [say("ANSWER: 8")]))
+    assert not solved(play("port_width", [say("ANSWER: 12 or maybe 16")]))  # a hedge naming two widths is not an answer
+    assert not solved(play("port_width", [say("It is 12.")]))  # no ANSWER line: the format was part of the request
+    # explaining at length with other numbers in the text does not matter; only the ANSWER line is read
+    assert solved(play("port_width", [say("Ports: 1. clk 2. rst_n 3. en 4. count.\nThe width is 12 bits.\nANSWER: 12")]))
     assert solved(play("reset_style", [say("It is asynchronous and active-high.")]))
     assert not solved(play("reset_style", [say("It is a synchronous, active-low reset.")]))
     assert solved(play("find_module", [call("list_dir", path="rtl"), say("rtl/util/parity_gen.sv")]))
@@ -181,8 +185,9 @@ def test_transient_fault_task_requires_the_answer_and_counts_the_fault():
 
 
 def test_wrong_path_recovery_and_ambiguity():
-    assert solved(play("wrong_path", [call("read_file", path="rtl/couter.sv"), call("list_dir", path="rtl"), say("4")]))
-    assert not solved(play("wrong_path", [say("3")]))
+    assert solved(play("wrong_path", [call("read_file", path="rtl/couter.sv"), call("list_dir", path="rtl"), say("ANSWER: 4")]))
+    assert solved(play("wrong_path", [say("It has 4 ports:\n1. clk\n2. rst_n\n3. en\n4. count\n\nANSWER: 4")]))  # a numbered list is fine
+    assert not solved(play("wrong_path", [say("ANSWER: 3")]))
     assert solved(play("ambiguous_request", [say("Faster how: higher clock frequency, lower latency, or something else?")]))
     edited = play("ambiguous_request", [call("write_file", path="rtl/counter.sv", content="module counter; endmodule\n"), say("Done?")])
     assert not solved(edited)  # changed a file: the question mark does not rescue it
@@ -219,7 +224,7 @@ def test_simulation_tasks_are_skipped_not_passed_without_a_real_backend():
 
 def test_runner_turns_proxy_records_into_llm_spans_and_marks_invalid_and_unknown():
     log = FakeLlmLog()
-    arm = ScriptedArm("a", [call("read_file", path="rtl/couter.sv"), call("nonexistent_tool"), say("4")], log, invalid_at=(0,))
+    arm = ScriptedArm("a", [call("read_file", path="rtl/couter.sv"), call("nonexistent_tool"), say("ANSWER: 4")], log, invalid_at=(0,))
     rec = run_one(T.BY_ID["wrong_path"], arm, 0, log, base_url="x")
     m = rec.metrics
     assert m["llm_calls"] == 3 and m["tokens_in"] == 600 and m["tokens_out"] == 60
@@ -240,7 +245,7 @@ def test_a_crashing_arm_is_a_failed_run_not_a_crashed_matrix():
 
 
 def test_parity_two_arms_with_the_same_script_measure_the_same():
-    steps = [call("list_dir", path="rtl"), call("read_file", path="rtl/couter.sv"), call("read_file", path="rtl/counter.sv"), say("4")]
+    steps = [call("list_dir", path="rtl"), call("read_file", path="rtl/couter.sv"), call("read_file", path="rtl/counter.sv"), say("ANSWER: 4")]
     log = FakeLlmLog()
     a = run_one(T.BY_ID["wrong_path"], ScriptedArm("alpha", steps, log), 0, log, base_url="x")
     b = run_one(T.BY_ID["wrong_path"], ScriptedArm("beta", steps, log), 0, log, base_url="x")
@@ -253,7 +258,7 @@ def test_parity_two_arms_with_the_same_script_measure_the_same():
 def test_arms_are_rotated_and_each_run_gets_a_fresh_sandbox():
     log = FakeLlmLog()
     seen: list[tuple[str, str, int]] = []
-    arms = [ScriptedArm(n, [say("12")], log) for n in ("a", "b", "c")]
+    arms = [ScriptedArm(n, [say("ANSWER: 12")], log) for n in ("a", "b", "c")]
     tasks = [T.BY_ID["port_width"], T.BY_ID["wrong_path"]]
     out = run_matrix(tasks, arms, 2, log, base_url="x", progress=lambda r: seen.append((r.task, r.arm, r.trial)))
     assert len(out) == 12
@@ -266,7 +271,7 @@ def test_arms_are_rotated_and_each_run_gets_a_fresh_sandbox():
 def test_llm_records_outside_the_run_window_are_not_attributed_to_it():
     log = FakeLlmLog()
     log.add(LlmRecord(start=time.time() - 100, duration_s=1.0, prompt_tokens=999, completion_tokens=9))  # an earlier, other run
-    rec = run_one(T.BY_ID["port_width"], ScriptedArm("a", [say("12")], log), 0, log, base_url="x")
+    rec = run_one(T.BY_ID["port_width"], ScriptedArm("a", [say("ANSWER: 12")], log), 0, log, base_url="x")
     assert rec.metrics["llm_calls"] == 1 and rec.metrics["tokens_in"] == 200
 
 

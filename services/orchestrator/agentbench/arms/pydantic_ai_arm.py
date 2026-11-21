@@ -8,11 +8,13 @@ redaction. That is the point of the comparison. Needs `pip install "siliconforge
 """
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from services.orchestrator.agentbench.arms.base import SHARED_ROLE, ArmContext, ArmResult
 from services.orchestrator.agentbench.toolkit import InstrumentedToolBox, tool_json_schema
 
+os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")  # the framework prints a banner to stdout otherwise
 EXTRA_BODY = {"chat_template_kwargs": {"enable_thinking": False}}
 
 

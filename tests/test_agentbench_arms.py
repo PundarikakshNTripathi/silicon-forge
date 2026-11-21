@@ -82,8 +82,8 @@ def run_arm(arm, task_id, messages, **kw):
 
 
 # the same story told in each arm's own protocol: read a mistyped path (fails), list the folder, answer 4
-WRONG_PATH_FRAMEWORK = [tool_call("read_file", {"path": "rtl/couter.sv"}), tool_call("list_dir", {"path": "rtl"}), text("4")]
-WRONG_PATH_CUSTOM = [action("", "read_file", path="rtl/couter.sv"), action("", "list_dir", path="rtl"), action("4")]
+WRONG_PATH_FRAMEWORK = [tool_call("read_file", {"path": "rtl/couter.sv"}), tool_call("list_dir", {"path": "rtl"}), text("ANSWER: 4")]
+WRONG_PATH_CUSTOM = [action("", "read_file", path="rtl/couter.sv"), action("", "list_dir", path="rtl"), action("ANSWER: 4")]
 
 
 def common_checks(rec, model):
@@ -104,7 +104,7 @@ def test_custom_arm_end_to_end():
 
 
 def test_custom_arm_reports_invalid_replies_and_unknown_tools():
-    msgs = [({"role": "assistant", "content": "I will just talk."}, "stop"), action("", "no_such_tool"), action("4")]
+    msgs = [({"role": "assistant", "content": "I will just talk."}, "stop"), action("", "no_such_tool"), action("ANSWER: 4")]
     rec, _ = run_arm(CustomArm(), "wrong_path", msgs)
     assert rec.metrics["invalid_actions"] == 1 and rec.metrics["failures_by_class"].get("unknown_tool") == 1
     assert rec.solved  # it recovered and answered
@@ -143,7 +143,7 @@ def test_framework_arms_pass_bad_arguments_to_the_shared_tool_seam(arm_name):
     from services.orchestrator.agentbench.arms.pydantic_ai_arm import PydanticAiArm
 
     arm = PydanticAiArm() if arm_name == "pydantic_ai" else LangGraphArm()
-    msgs = [tool_call("read_file", {"wrong_name": "x"}), tool_call("read_file", {"path": "rtl/counter.sv"}), text("4")]
+    msgs = [tool_call("read_file", {"wrong_name": "x"}), tool_call("read_file", {"path": "rtl/counter.sv"}), text("ANSWER: 4")]
     rec, _ = run_arm(arm, "wrong_path", msgs)
     assert rec.metrics["failures_by_class"] == {"bad_args": 1}, rec.metrics["failures_by_class"]
     assert rec.metrics["args_valid_first_try"] == 0.5 and rec.solved
@@ -166,6 +166,6 @@ def test_a_framework_asking_for_a_nonexistent_tool_is_counted_as_a_failure():
     pytest.importorskip("pydantic_ai")
     from services.orchestrator.agentbench.arms.pydantic_ai_arm import PydanticAiArm
 
-    msgs = [tool_call("teleport", {"to": "mars"}), tool_call("list_dir", {"path": "rtl"}), text("4")]
+    msgs = [tool_call("teleport", {"to": "mars"}), tool_call("list_dir", {"path": "rtl"}), text("ANSWER: 4")]
     rec, _ = run_arm(PydanticAiArm(), "wrong_path", msgs)
     assert rec.metrics["failures_by_class"].get("unknown_tool") == 1  # seen at the HTTP seam, not at the (never-reached) tool seam

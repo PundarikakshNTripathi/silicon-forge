@@ -12,7 +12,7 @@ import pytest
 from services.orchestrator.agentbench import report, tasks
 from services.orchestrator.main import cli_main
 
-ANSWERS = {"couter.sv": "4", "default bit width": "12"}
+ANSWERS = {"couter.sv": "ANSWER: 4", "default bit width": "ANSWER: 12"}
 
 
 class Oracle:
