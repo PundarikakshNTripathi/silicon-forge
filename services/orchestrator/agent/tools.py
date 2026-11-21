@@ -94,7 +94,9 @@ class ToolBox:
                      "Mutation-test a test suite: plant bugs in the given RTL files and report the kill rate and every "
                      "surviving mutant (file, line, change). test_command must exit 0 when the tests pass.",
                      {"files": "list of strings", "test_command": "string", "top": "string, optional",
-                      "max_mutants": "integer, default 40", "seed": "integer, default 1"}, self.mutate),
+                      "max_mutants": "integer, default 40", "seed": "integer, default 1",
+                      "includes": "list of include dirs, optional", "support": "list of other sources the top needs, optional"},
+                     self.mutate),
             ToolSpec("tt_check", READ,
                      "Tiny Tapeout preflight: info.yaml, top-module ports, reset, outputs, simulation-only constructs.",
                      {}, self.tt_check),
@@ -319,13 +321,14 @@ class ToolBox:
                 "seeds": rep["seeds"], "failure_excerpts": [e[:900] for e in rep["failure_excerpts"][:3]]}
 
     def mutate(self, files: list[str], test_command: str, top: str | None = None, max_mutants: int = 40,
-               seed: int = 1) -> dict:
+               seed: int = 1, includes: list[str] | None = None, support: list[str] | None = None) -> dict:
         from services.orchestrator import verify
 
         runner = self._real_runner()
         try:
             rep = verify.mutation_test(runner, self.ws.root, list(files), test_command, top=top,
-                                       max_mutants=int(max_mutants), seed=int(seed))
+                                       max_mutants=int(max_mutants), seed=int(seed), includes=tuple(includes or ()),
+                                       support=tuple(support or ()))
         except verify.VerifyError as exc:
             raise ToolError(str(exc)) from exc
         return {k: rep[k] for k in ("provenance", "score", "killed", "survived", "equivalent", "invalid", "evaluated")} | {
