@@ -31,6 +31,10 @@ def add_parser(sub) -> None:
     r.add_argument("--reasoning", default="auto", choices=["auto", "on", "off"],
                    help="thinking phase of a served model: off skips it (much faster), auto keeps the model's default")
     r.add_argument("--port", type=int, default=8189)
+    r.add_argument("--hf", default=None, metavar="MODEL_ID",
+                   help="evaluate a Hugging Face model in-process (needs torch, transformers, peft) instead of a routed one")
+    r.add_argument("--adapter", default=None, metavar="DIR", help="LoRA adapter directory to merge into the --hf model")
+    r.add_argument("--max-new-tokens", type=int, default=768)
     r.add_argument("--arm", default="single", help="single | feedback | feedback-plain | sampled")
     r.add_argument("--rounds", type=int, default=3, help="model calls per candidate for the feedback arms")
     r.add_argument("--candidates", type=int, default=3, help="candidates for the sampled arm")
@@ -222,7 +226,16 @@ def _run(args: argparse.Namespace) -> int:
             server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port, reasoning=args.reasoning))
             server.start()
             label = label or model.stem
-        llm, routed = make_llm(cfg, args.task_type)
+        extra_info: dict = {}
+        if args.hf:
+            from services.orchestrator.evals.hf import HFModel
+
+            hfm = HFModel(args.hf, args.adapter, max_new_tokens=args.max_new_tokens)
+            llm, routed = hfm.llm(n_hint=args.n), f"hf:{args.hf}" + (f"+lora:{Path(args.adapter).name}" if args.adapter else "")
+            label = label or routed
+            extra_info = {"hf": args.hf, "adapter": Path(args.adapter).name if args.adapter else None}
+        else:
+            llm, routed = make_llm(cfg, args.task_type)
         arm = build_arm(args.arm, args.rounds, args.candidates)
         result = run_verilogeval(
             arm, llm, runner, model=label or routed, n=args.n, k=args.k, temperature=args.temperature,
@@ -230,7 +243,8 @@ def _run(args: argparse.Namespace) -> int:
             trajectory=(TrajectoryWriter(Path(args.save_trajectories) if args.save_trajectories else default_path(args.tag))
                         if args.save_trajectories is not None else None),
             on_progress=None if args.quiet else lambda s: print(s, flush=True),
-            extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default"},
+            extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default",
+                   **extra_info},
         )
     finally:
         if server is not None:

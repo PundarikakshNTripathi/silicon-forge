@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (fine-tuning code, not yet run)
+- `evals run --hf MODEL [--adapter DIR]` evaluates a Hugging Face model (with a LoRA adapter) through the same harness, grader and result schema, with batched sampling; `scripts/train_lora.py` is a plain PyTorch LoRA loop with answer-only loss; `evals/sft.py` holds the tested data preparation. **The training and the held-out evaluation have not been run yet.**
 ### Added (place-and-route search)
 - `rl/bo.py`: a Gaussian-process Bayesian optimizer over knob spaces, with random and Latin-hypercube samplers; `benchmarks/bench_ppa.py` compares default knobs, random, Latin hypercube, the original bandit and the GP optimizer on the real flow. **First result: no strategy was separated from the others (8 evaluations, 3 seeds, one design), and the GP did not beat random search.** The bandit stays the default. `docs/ppa-search.md`.
 - A flow that fails to complete (detailed placement at too high a utilization, for example) is now an outcome in the PPA environment: recorded, scored -50, cached, and logged, instead of aborting the whole search.

@@ -99,6 +99,30 @@ siliconforge evals run verilogeval --serve model.gguf --arm single --split test 
   -0.1 for a candidate that does not compile (the compiler message comes back as the observation), 0.0 for one that compiles but fails
   the testbench, 1.0 for a pass. The testbench output is never in the observation.
 
+## Fine-tuning on verified samples (code ready, experiment not yet run)
+
+One round of rejection-sampling fine-tuning, using the pieces above:
+
+```bash
+# 1. sample the base model on the training problems and keep the graded samples (needs torch, transformers, peft)
+siliconforge evals run verilogeval --hf Qwen/Qwen2.5-Coder-1.5B-Instruct --split train --n 8 --save-trajectories
+# 2. keep only verified answers, at most two per problem, training problems only
+siliconforge evals export-sft trajectories/traj-*.jsonl --out sft.jsonl --split train --per-problem 2
+# 3. LoRA fine-tune (plain PyTorch loop, loss on the answer tokens only)
+python scripts/train_lora.py --model Qwen/Qwen2.5-Coder-1.5B-Instruct --data sft.jsonl --out adapters/rft1
+# 4. judge base and tuned model on the held-out test problems, same grader, n=8 samples each
+siliconforge evals run verilogeval --hf Qwen/Qwen2.5-Coder-1.5B-Instruct --split test --n 8 --tag base
+siliconforge evals run verilogeval --hf Qwen/Qwen2.5-Coder-1.5B-Instruct --adapter adapters/rft1 --split test --n 8 --tag rft1
+siliconforge evals compare <base>.json <rft1>.json
+```
+
+Status: the data preparation (answer-only loss masking, template checks, dropping examples with no room for an answer, padding),
+the batched sampling pool and the command-line wiring are unit-tested without a GPU. **The training and the evaluation have not
+been run**: the GPU window ended before this step. No result is claimed. When it is run, expect the effect to come mostly from
+the most common failure of small models here, answers that do not compile (about half of the 7-9B models' answers in the
+single-shot runs above), and judge it with `compare` on the test problems, where the interval says whether the gain is real. Adapters
+are not committed; they derive from a model with its own license.
+
 ## Limits
 
 - One suite so far. CVDP (Apache-2.0) is the next candidate; ChipBench declares no license and is not used.
