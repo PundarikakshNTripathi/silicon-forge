@@ -313,3 +313,20 @@ details.adv > summary { cursor: pointer; color: var(--ink-2); font-weight: 700; 
 .msg.ask { background: var(--amber-wash); box-shadow: inset 4px 0 0 var(--amber); padding-left: 10px; }
 .composer { display: flex; gap: 10px; align-items: flex-end; padding-top: 12px; }
 .composer textarea { font-family: var(--font); font-size: 15px; min-height: 72px; }
+
+/* ---- evals ---- */
+.mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+.linklike { background: none; border: 0; padding: 0; margin: 0; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
+.linklike:hover { text-decoration: underline; text-underline-offset: 3px; }
+.linklike:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.t tr.picked td { background: var(--amber-wash); }
+.pstrip { display: flex; flex-wrap: wrap; gap: 3px; max-width: 760px; }
+.pcell { width: 11px; height: 11px; border: 1.5px solid var(--ink); box-sizing: border-box; }
+.pcell.pass { background: var(--ink); }
+.pcell.part { background: linear-gradient(135deg, var(--ink) 50%, transparent 50%); }
+.pcell.nocomp { background: var(--hatch); border-color: var(--fail); }
+.ends { display: flex; flex-wrap: wrap; gap: 4px; }
+.end { font-family: var(--mono); font-size: 12px; padding: 1px 6px; border: 1.5px solid var(--ink); white-space: nowrap; }
+.end.ok { background: var(--ink); color: var(--paper); }
+.end.no { background: transparent; color: var(--ink-2); border-color: var(--rule-strong); }
+table.t th:last-child, table.t td:last-child { padding-left: 16px; }
