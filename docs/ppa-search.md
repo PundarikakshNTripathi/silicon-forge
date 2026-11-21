@@ -35,8 +35,9 @@ its recipes in a fixed order, so it has one run). Result: `benchmarks/results/pp
 
 - Every search strategy improved on the default knobs, by about 0.2 to 0.4 reward points (a few percent of area and power).
 - The strategies are **not separated**: the ranges overlap completely, with three seeds and eight evaluations. The Gaussian-process
-  mean is the lowest of the stochastic strategies, but two of its three runs ended below every random run's best by a small margin
-  and one run matched the best result of the whole experiment; with this sample that is noise-sized, not a finding.
+  mean is the lowest of the stochastic strategies: two of its three runs ended at 4.234 and 4.262, below the lowest random run
+  (4.318), and the third reached 4.649, level with the best result of the whole experiment. With three seeds that spread is
+  noise-sized, not a finding.
 - On this design the flow fails when core utilization is 59% or more (3 of the 21 random points, all at 59, 63 and 64%). The failure
   handling is therefore needed, and the knob range should be narrowed for this design.
 - One small design, one process, eight evaluations. A Gaussian process normally needs more points than this to learn a
