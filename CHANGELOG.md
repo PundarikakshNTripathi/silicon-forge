@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Fixed (evals)
+- **Thinking was not what the results said it was.** The local provider's catalog entry sends `enable_thinking: false` with every request, which overrides the server's `--reasoning` flag; result files recorded the flag. All local runs were therefore non-thinking (correct in effect), but the run labelled "thinking on" was another non-thinking run: it produced token-for-token identical output on all 40 shared problems. Added `evals run --thinking on|off|catalog` (a per-request switch, recorded as `thinking`), corrected the docs and the Evals page, and re-ran the thinking comparison with the switch actually on.
 ### Added (fine-tuning code, not yet run)
 - `evals run --hf MODEL [--adapter DIR]` evaluates a Hugging Face model (with a LoRA adapter) through the same harness, grader and result schema, with batched sampling; `scripts/train_lora.py` is a plain PyTorch LoRA loop with answer-only loss; `evals/sft.py` holds the tested data preparation. **The training and the held-out evaluation have not been run yet.**
 ### Added (place-and-route search)
