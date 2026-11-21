@@ -180,15 +180,21 @@ def ppa_search() -> None:
         width = max(len(r) for r in runs)
         if arm == "default":
             ax.axhline(runs[0][0], color=colors[arm], ls="--", lw=1.2)
-            ax.text(width, runs[0][0], " default knobs", color=colors[arm], va="bottom", ha="right", fontsize=8)
+            ax.text(0.99, runs[0][0], "default knobs ", color=colors[arm], va="top", ha="right", fontsize=8,
+                    transform=ax.get_yaxis_transform())
             continue
         xs = list(range(1, width + 1))
         cols = [[r[min(i, len(r) - 1)] for r in runs] for i in range(width)]
         ax.fill_between(xs, [min(c) for c in cols], [max(c) for c in cols], color=colors.get(arm, BLUE), alpha=0.15, lw=0)
         ax.plot(xs, [sum(c) / len(c) for c in cols], color=colors.get(arm, BLUE), lw=2, label=f"{arm} ({len(runs)} run{'s' if len(runs) != 1 else ''})")
+    valid = [v for a in d["arms"].values() for r in a["runs"] for v in r["best_curve"] if v > -10]
+    lo, hi = min(valid), max(valid)
+    pad = max(0.05, (hi - lo) * 0.08)
+    ax.set_ylim(lo - pad, hi + pad)  # a failed first flow scores -50 and would flatten everything else
+    ax.text(0.99, 0.02, "runs whose first flow failed start below the axis", transform=ax.transAxes, ha="right", fontsize=7.5, color=MUTED)
     ax.set_xlabel("Place-and-route evaluations")
     ax.set_ylabel("Best reward so far (higher is better)")
-    ax.legend(frameon=False, fontsize=8.5, loc="lower right")
+    ax.legend(frameon=False, fontsize=8.5, loc="lower right", bbox_to_anchor=(1.0, 0.07))
     ax.set_title(f"Knob search on {d['design']} (sky130A, real flow): mean and range over seeds", loc="left", fontsize=10.5, color=INK)
     fig.savefig(OUT / "ppa_search.png")
     plt.close(fig)

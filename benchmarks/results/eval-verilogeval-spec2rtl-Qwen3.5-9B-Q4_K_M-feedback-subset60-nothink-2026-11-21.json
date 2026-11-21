@@ -1,0 +1,1260 @@
+{
+  "schema": "siliconforge.eval/1",
+  "suite": "verilogeval-spec2rtl",
+  "dataset": {
+    "source": "https://github.com/NVlabs/verilog-eval",
+    "commit": "c498220d0a52248f8e3fdffe279075215bde2da6",
+    "license": "MIT",
+    "problems_total": 155,
+    "excluded": {
+      "Prob099_m2014_q6c": "the prompt and testbench use outputs Y2 and Y4, the reference module declares Y1 and Y3, so no candidate (the reference included) can compile with the testbench"
+    },
+    "testbench_patch": "removed the waveform-dump block ($dumpfile/$dumpvars): it refers to `tb_mismatch` before its declaration, which Icarus Verilog 14 rejects ('Unable to bind wire/reg/memory'); it writes a VCD and has no effect on the mismatch count"
+  },
+  "model": "Qwen3.5-9B-Q4_K_M",
+  "arm": {
+    "arm": "feedback",
+    "rounds": 3,
+    "debug_context": true,
+    "knowledge_packs": false
+  },
+  "n": 1,
+  "k": 1,
+  "temperature": 0.0,
+  "selection": {
+    "count": 60,
+    "seed": 0,
+    "all": false,
+    "split": "all",
+    "pool": 155,
+    "trajectories": null
+  },
+  "runner": "wsl",
+  "tools": {
+    "iverilog": "Icarus Verilog version 14.0 (devel) (s20260301-1233-gadb65230d-dirty)"
+  },
+  "pass_at_1": {
+    "k": 1,
+    "mean": 0.48333333333333334,
+    "ci95": [
+      0.36666666666666664,
+      0.6166666666666667
+    ],
+    "problems": 60,
+    "skipped": 0
+  },
+  "compile_rate": 0.9167,
+  "errors": 0,
+  "tokens": {
+    "prompt": 34950,
+    "completion": 58093,
+    "calls": 74
+  },
+  "wall_s": 1097.1,
+  "created": "2026-11-21T15:59:03+0530",
+  "profile": "local",
+  "routed": "llamacpp:local",
+  "reasoning": "off",
+  "per_problem": [
+    {
+      "id": "Prob001_zero",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 20,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 146,
+          "completion_tokens": 31,
+          "latency_s": 0.86,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob002_m2014_q4i",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 150,
+          "completion_tokens": 31,
+          "latency_s": 0.65,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob008_m2014_q4h",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 162,
+          "completion_tokens": 35,
+          "latency_s": 0.74,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob009_popcount3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 121,
+          "testbench_samples": 220,
+          "calls": 2,
+          "rounds": 2,
+          "prompt_tokens": 443,
+          "completion_tokens": 6054,
+          "latency_s": 112.24,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob011_norgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 156,
+          "completion_tokens": 45,
+          "latency_s": 0.9,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob012_xnorgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 158,
+          "completion_tokens": 45,
+          "latency_s": 0.9,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob019_m2014_q4f",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 202,
+          "completion_tokens": 49,
+          "latency_s": 1.01,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob025_reduction",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 224,
+          "completion_tokens": 42,
+          "latency_s": 0.9,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob026_alwaysblock1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 176,
+          "completion_tokens": 74,
+          "latency_s": 1.45,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob027_fadd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 214,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 188,
+          "completion_tokens": 81,
+          "latency_s": 1.59,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob032_vector0",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 21,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 220,
+          "completion_tokens": 99,
+          "latency_s": 1.9,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob034_dff8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 41,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 184,
+          "completion_tokens": 96,
+          "latency_s": 1.87,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob036_ringer",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 19,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 252,
+          "completion_tokens": 65,
+          "latency_s": 1.36,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob038_count15",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 421,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 216,
+          "completion_tokens": 83,
+          "latency_s": 1.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob042_vector4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 338,
+          "completion_tokens": 55,
+          "latency_s": 1.19,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob043_vector5",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 285,
+          "completion_tokens": 412,
+          "latency_s": 7.48,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob052_gates100",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 433,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 245,
+          "completion_tokens": 76,
+          "latency_s": 1.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob056_ece241_2013_q7",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 422,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 236,
+          "completion_tokens": 138,
+          "latency_s": 2.76,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob057_kmap2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 28,
+          "testbench_samples": 232,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 268,
+          "completion_tokens": 96,
+          "latency_s": 1.92,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob062_bugs_mux2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 110,
+          "testbench_samples": 114,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 203,
+          "completion_tokens": 60,
+          "latency_s": 1.24,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob064_vector3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 126,
+          "testbench_samples": 126,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 331,
+          "completion_tokens": 243,
+          "latency_s": 4.58,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob065_7420",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 239,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 258,
+          "completion_tokens": 169,
+          "latency_s": 3.16,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob067_countslow",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 499,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 256,
+          "completion_tokens": 128,
+          "latency_s": 2.47,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob071_always_casez",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 3,
+          "rounds": 3,
+          "prompt_tokens": 2768,
+          "completion_tokens": 591,
+          "latency_s": 11.87,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:9: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:11: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:13: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:15: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:17: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:19: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:21: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:23: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:8: sorr"
+        }
+      ]
+    },
+    {
+      "id": "Prob073_dff16e",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 288,
+          "completion_tokens": 249,
+          "latency_s": 4.61,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob078_dualedge",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 47,
+          "testbench_samples": 224,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 223,
+          "completion_tokens": 157,
+          "latency_s": 2.93,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob079_fsm3onehot",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 336,
+          "completion_tokens": 349,
+          "latency_s": 6.35,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob080_timer",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 7127,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 383,
+          "completion_tokens": 120,
+          "latency_s": 2.34,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob081_7458",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 417,
+          "completion_tokens": 181,
+          "latency_s": 3.47,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob082_lfsr32",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 199953,
+          "testbench_samples": 200000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 308,
+          "completion_tokens": 499,
+          "latency_s": 9.02,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob085_shift4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 427,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 325,
+          "completion_tokens": 149,
+          "latency_s": 2.87,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob086_lfsr5",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 4280,
+          "testbench_samples": 4443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 348,
+          "completion_tokens": 3443,
+          "latency_s": 61.69,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob091_2012_q2b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 36,
+          "testbench_samples": 600,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 428,
+          "completion_tokens": 442,
+          "latency_s": 8.17,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob092_gatesv100",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 201,
+          "testbench_samples": 201,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 492,
+          "completion_tokens": 387,
+          "latency_s": 7.21,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob093_ece241_2014_q3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 60,
+          "testbench_samples": 60,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 458,
+          "completion_tokens": 97,
+          "latency_s": 1.99,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob094_gatesv",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 174,
+          "testbench_samples": 213,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 473,
+          "completion_tokens": 367,
+          "latency_s": 6.75,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob100_fsm3comb",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 338,
+          "completion_tokens": 374,
+          "latency_s": 6.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob102_circuit3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 24,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 594,
+          "completion_tokens": 107,
+          "latency_s": 2.19,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob105_rotate100",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 4005,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 382,
+          "completion_tokens": 259,
+          "latency_s": 4.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob107_fsm1s",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 57,
+          "testbench_samples": 230,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 241,
+          "completion_tokens": 335,
+          "latency_s": 6.07,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob109_fsm1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 228,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 221,
+          "completion_tokens": 328,
+          "latency_s": 5.94,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob110_fsm2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 241,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 254,
+          "completion_tokens": 311,
+          "latency_s": 5.7,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob112_always_case2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 61,
+          "testbench_samples": 94,
+          "calls": 2,
+          "rounds": 2,
+          "prompt_tokens": 1157,
+          "completion_tokens": 225,
+          "latency_s": 4.71,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob113_2012_q1g",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 40,
+          "testbench_samples": 100,
+          "calls": 2,
+          "rounds": 2,
+          "prompt_tokens": 641,
+          "completion_tokens": 6105,
+          "latency_s": 110.74,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob118_history_shift",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 3,
+          "rounds": 3,
+          "prompt_tokens": 2028,
+          "completion_tokens": 657,
+          "latency_s": 12.78,
+          "error": null,
+          "detail": "dut.sv:17: syntax error\ndut.sv:18: Syntax in assignment statement l-value.\ndut.sv:19: syntax error\ndut.sv:20: Syntax in assignment statement l-value.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob122_kmap4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 132,
+          "testbench_samples": 232,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 263,
+          "completion_tokens": 89,
+          "latency_s": 1.76,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob124_rule110",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 3,
+          "rounds": 3,
+          "prompt_tokens": 2874,
+          "completion_tokens": 2730,
+          "latency_s": 50.34,
+          "error": null,
+          "detail": "dut.sv:24: syntax error\ndut.sv:25: error: Malformed statement\ndut.sv:57: syntax error\ndut.sv:58: Syntax in assignment statement l-value.\ndut.sv:59: syntax error\ndut.sv:60: Syntax in assignment statement l-value.\ndut.sv:61: syntax error\ndut.sv:62: Syntax in assignment statement l-value.\ndut.sv:63: syntax error\ndut.sv:64: Syntax in assignment statement l-value.\ndut.sv:65: syntax error\ndut.sv:66: Syntax in assignment statement l-value.\ndut.sv:67: syntax error\ndut.sv:68: Syntax in assignment statement l-value.\ndut.sv:69: syntax error\ndut.sv:70: Syntax in assignment statement l-value.\ndut.sv:73: syntax error\ndut.sv:77: Syntax in assignment statement l-value.\ndut.sv:79: syntax error\ntest.sv:12: error: Malformed statement\ntest.sv:19: syntax error\ntest.sv:19: error: Malformed statement\ntest.sv:20: syntax error\ntest.sv:22: error: Malformed statement\ntest.sv:24: syntax error\ntest.sv:29: Syntax in assignment statement l-value.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob126_circuit6",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 67,
+          "testbench_samples": 113,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 443,
+          "completion_tokens": 713,
+          "latency_s": 12.98,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob128_fsm_ps2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 69,
+          "testbench_samples": 400,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 355,
+          "completion_tokens": 375,
+          "latency_s": 6.89,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob129_ece241_2013_q8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 8,
+          "testbench_samples": 440,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 263,
+          "completion_tokens": 472,
+          "latency_s": 8.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob131_mt2015_q4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 564,
+          "completion_tokens": 544,
+          "latency_s": 10.12,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob132_always_if2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 246,
+          "completion_tokens": 141,
+          "latency_s": 2.89,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob136_m2014_q6",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 107,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 300,
+          "completion_tokens": 547,
+          "latency_s": 9.95,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob138_2012_q2fsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 163,
+          "testbench_samples": 400,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 366,
+          "completion_tokens": 1208,
+          "latency_s": 21.82,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob144_conwaylife",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 3,
+          "rounds": 3,
+          "prompt_tokens": 2673,
+          "completion_tokens": 8209,
+          "latency_s": 150.03,
+          "error": null,
+          "detail": "dut.sv:23: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:30: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:30: error: Declarations must precede statements.\ndut.sv:31: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:31: error: Declarations must precede statements.\ndut.sv:37: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:37: error: Declarations must precede statements.\ndut.sv:62: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:68: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:68: error: Declarations must precede statements.\ndut.sv:69: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:69: error: Declarations must precede statements.\ndut.sv:74: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:74: error: Declarations must precede statements.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob145_circuit8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 235,
+          "testbench_samples": 240,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 891,
+          "completion_tokens": 587,
+          "latency_s": 11.01,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob148_2013_q2afsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 4,
+          "testbench_samples": 1054,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 683,
+          "completion_tokens": 2135,
+          "latency_s": 39.67,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob150_review2015_fsmonehot",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 91,
+          "testbench_samples": 300,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 816,
+          "completion_tokens": 588,
+          "latency_s": 11.0,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob153_gshare",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 525,
+          "testbench_samples": 1083,
+          "calls": 2,
+          "rounds": 2,
+          "prompt_tokens": 2080,
+          "completion_tokens": 4269,
+          "latency_s": 78.1,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob155_lemmings4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 3,
+          "rounds": 3,
+          "prompt_tokens": 3733,
+          "completion_tokens": 11547,
+          "latency_s": 211.14,
+          "error": null,
+          "detail": "dut.sv:58: syntax error\ndut.sv:59: Syntax in assignment statement l-value.\ndut.sv:62: syntax error\ndut.sv:64: Syntax in assignment statement l-value.\ndut.sv:75: syntax error\ndut.sv:90: syntax error\ndut.sv:92: Syntax in assignment statement l-value.\ndut.sv:77: error: Incomprehensible case expression.\ndut.sv:105: syntax error\ndut.sv:106: Syntax in assignment statement l-value.\ndut.sv:259: syntax error\ndut.sv:269: error: Malformed statement\ndut.sv:271: syntax error\ndut.sv:272: Syntax in assignment statement l-value.\ndut.sv:395: error: Declarations must precede statements.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    }
+  ]
+}

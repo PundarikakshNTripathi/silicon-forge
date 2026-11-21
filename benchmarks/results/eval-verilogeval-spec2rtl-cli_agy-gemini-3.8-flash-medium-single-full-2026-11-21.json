@@ -725,8 +725,8 @@
           "prompt_tokens": 0,
           "completion_tokens": 0,
           "latency_s": 0.0,
-          "error": "PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\pndnt\\\\AppData\\\\Local\\\\Temp\\\\sf_agy__l434oiu'",
-          "detail": "[WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\pndnt\\\\AppData\\\\Local\\\\Temp\\\\sf_agy__l434oiu'"
+          "error": "PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: '<local path>/sf_agy__l434oiu'",
+          "detail": "[WinError 32] The process cannot access the file because it is being used by another process: '<local path>/sf_agy__l434oiu'"
         }
       ]
     },
