@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TAG = "SPDX-License-Identifier: AGPL-3.0-or-later"
 SKIP_PARTS = {"node_modules", "dist", "backend-dist", ".venv", "build", "__pycache__", ".git", "hardware", "models", "runs",
-              "out", "_deps", "cmake-build"}
+              "out", "_deps", "cmake-build", "_resources"}
 COMMENT = {".py": "#", ".ts": "//", ".tsx": "//", ".js": "//", ".cpp": "//", ".h": "//", ".hpp": "//", ".cmake": "#"}
 ROOTS = ["services", "scripts", "benchmarks", "tests", "apps/desktop"]
 
