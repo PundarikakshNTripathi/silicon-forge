@@ -202,6 +202,7 @@ class ServerConfig:
     flash_attn: bool = True
     cache_reuse: int = 256  # reuse KV chunks that match the previous prompt (prefix caching)
     threads: int | None = None
+    reasoning: str = "auto"  # "on" | "off" | "auto" (the model's own default); "off" skips the thinking phase
     extra: tuple[str, ...] = ()
 
     def argv(self, exe: Path) -> list[str]:
@@ -215,6 +216,8 @@ class ServerConfig:
             a += ["-ctk", self.kv_type, "-ctv", self.kv_type]
         if self.threads:
             a += ["-t", str(self.threads)]
+        if self.reasoning in ("on", "off"):
+            a += ["--reasoning", self.reasoning]
         return a + list(self.extra)
 
 

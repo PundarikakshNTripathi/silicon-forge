@@ -27,6 +27,8 @@ def add_parser(sub) -> None:
     r.add_argument("--serve", default=None, metavar="GGUF", help="start a private llama-server for this model file (GPU guard applies)")
     r.add_argument("--ctx", type=int, default=16384)
     r.add_argument("--kv", default="q8_0")
+    r.add_argument("--reasoning", default="auto", choices=["auto", "on", "off"],
+                   help="thinking phase of a served model: off skips it (much faster), auto keeps the model's default")
     r.add_argument("--port", type=int, default=8189)
     r.add_argument("--arm", default="single", help="single | feedback | feedback-plain | sampled")
     r.add_argument("--rounds", type=int, default=3, help="model calls per candidate for the feedback arms")
@@ -195,7 +197,7 @@ def _run(args: argparse.Namespace) -> int:
                 print("llama-server not installed: siliconforge models install", file=sys.stderr)
                 return 2
             model = Path(args.serve).resolve()
-            server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port))
+            server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port, reasoning=args.reasoning))
             server.start()
             label = label or model.stem
         llm, routed = make_llm(cfg, args.task_type)
@@ -204,7 +206,7 @@ def _run(args: argparse.Namespace) -> int:
             arm, llm, runner, model=label or routed, n=args.n, k=args.k, temperature=args.temperature,
             problems=args.problems, seed=args.seed, workers=args.workers,
             on_progress=None if args.quiet else lambda s: print(s, flush=True),
-            extra={"profile": args.profile, "routed": routed},
+            extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default"},
         )
     finally:
         if server is not None:
