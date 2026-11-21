@@ -18,6 +18,7 @@ from typing import Any
 from services.orchestrator.evals import verilogeval as ve
 from services.orchestrator.evals.arms import LLM, Arm
 from services.orchestrator.evals.stats import summarize
+from services.orchestrator.evals.trajectory import TrajectoryWriter
 
 SCHEMA = "siliconforge.eval/1"
 
@@ -36,27 +37,43 @@ def run_verilogeval(
     arm: Arm, llm: LLM, runner, *, model: str, n: int = 1, k: int = 1, temperature: float = 0.0, sample_temperature: float = 0.8,
     problems: int | None = None, seed: int = 0, workers: int = 1, root: Path | None = None,
     on_progress: Callable[[str], None] | None = None, extra: dict[str, Any] | None = None,
+    split: str = "all", trajectory: TrajectoryWriter | None = None,
 ) -> dict:
     """Evaluate `arm` on VerilogEval. With n=1 the single sample uses `temperature`; with n>1 the samples use
-    `sample_temperature` so that pass@k means something."""
+    `sample_temperature` so that pass@k means something. `split` (all, train, test) restricts to a fixed partition of the
+    problems; `trajectory` records every graded sample with its full prompts and replies."""
     allp = ve.load_problems(root)
     if not allp:
         raise RuntimeError("no VerilogEval problems found; run `siliconforge evals fetch verilogeval` first")
-    chosen = ve.select(allp, problems, seed)
+    pool = ve.split_problems(allp, split)
+    chosen = ve.select(pool, problems, seed)
     temp = temperature if n == 1 else sample_temperature
     t_start = time.perf_counter()
 
     def one(p: ve.Problem) -> dict:
         samples = []
-        for _ in range(n):
+        for idx in range(n):
+            calls: list[dict] = []
+
+            def recording(system: str, user: str, temperature_: float, _calls: list = calls):
+                r = llm(system, user, temperature_)
+                _calls.append({"system": system, "user": user, "reply": r.text, "temperature": temperature_,
+                               "prompt_tokens": r.prompt_tokens, "completion_tokens": r.completion_tokens})
+                return r
+
             with tempfile.TemporaryDirectory(prefix="sf_ev_") as tmp:
                 work = Path(tmp)
                 try:
-                    att = arm.solve(p, llm, runner, temp, work)
+                    att = arm.solve(p, recording if trajectory else llm, runner, temp, work)
                     g = ve.grade(runner, work, p, att.rtl)
                     err = None
                 except Exception as exc:  # a failed call is a failed sample, recorded, not hidden
                     att, g, err = None, ve.Grade(False, False, detail=str(exc)[:300]), f"{type(exc).__name__}: {str(exc)[:200]}"
+            if trajectory is not None and att is not None:
+                trajectory.write({"suite": ve.SUITE, "problem": p.id, "model": model, "arm": arm.describe(), "sample": idx,
+                                  "temperature": temp, "calls": calls, "rtl": att.rtl,
+                                  "graded": {"passed": g.passed, "compiled": g.compiled, "mismatches": g.mismatches,
+                                             "testbench_samples": g.samples}})
             samples.append({
                 "passed": g.passed, "compiled": g.compiled, "mismatches": g.mismatches, "testbench_samples": g.samples,
                 "calls": att.calls if att else 0, "rounds": att.rounds if att else 0,
@@ -85,7 +102,8 @@ def run_verilogeval(
         "model": model,
         "arm": arm.describe(),
         "n": n, "k": k, "temperature": temp,
-        "selection": {"count": len(chosen), "seed": seed, "all": len(chosen) == len(allp)},
+        "selection": {"count": len(chosen), "seed": seed, "all": len(chosen) == len(allp), "split": split,
+                      "pool": len(pool), "trajectories": trajectory.path.name if trajectory else None},
         "runner": getattr(runner, "name", "unknown"),
         "tools": _tool_versions(runner),
         f"pass_at_{k}": agg,

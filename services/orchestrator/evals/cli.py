@@ -10,6 +10,7 @@ from services.orchestrator.evals import verilogeval as ve
 from services.orchestrator.evals.arms import LLM, LLMReply, build_arm
 from services.orchestrator.evals.runner import load_result, run_verilogeval, write_result
 from services.orchestrator.evals.stats import paired_difference
+from services.orchestrator.evals.trajectory import TrajectoryWriter, default_path, export_sft
 from services.orchestrator.paths import RESOURCE_ROOT, data_root
 
 
@@ -45,6 +46,17 @@ def add_parser(sub) -> None:
     r.add_argument("--tag", default="")
     r.add_argument("--out", default=None, help="result directory (default: <data dir>/benchmarks/results)")
     r.add_argument("--quiet", action="store_true")
+    r.add_argument("--split", default="all", choices=["all", "train", "test"],
+                   help="a fixed partition of the problems (test is 35%%, chosen by hashing the problem id)")
+    r.add_argument("--save-trajectories", nargs="?", const="", default=None, metavar="PATH",
+                   help="keep every sample with its full prompts and replies, locally, for training (default path: data dir)")
+
+    x = es.add_parser("export-sft", help="Turn verified trajectory samples into chat-format training examples")
+    x.add_argument("trajectories", nargs="+")
+    x.add_argument("--out", required=True)
+    x.add_argument("--split", default="train", choices=["all", "train", "test"],
+                   help="only problems in this partition (use train; exporting test would contaminate the evaluation)")
+    x.add_argument("--per-problem", type=int, default=2, help="distinct verified answers kept per problem")
 
     sc = es.add_parser("selfcheck", help="Grade each problem's own reference as the candidate: every one must pass")
     sc.add_argument("suite", choices=["verilogeval"])
@@ -110,6 +122,16 @@ def cmd_evals(args: argparse.Namespace) -> int:
                 m = r[key]
                 print(f"{f.name}\n    {r['model']}  arm={r['arm']['arm']}  {key}={m['mean']:.3f} "
                       f"[{m['ci95'][0]:.3f}, {m['ci95'][1]:.3f}] over {m['problems']} problems")
+        return 0
+    if args.evals_cmd == "export-sft":
+        problems = ve.load_problems()
+        allowed = None if args.split == "all" else {p.id for p in ve.split_problems(problems, args.split)}
+        if allowed is not None and not allowed:
+            print("dataset missing: run `siliconforge evals fetch verilogeval` first", file=sys.stderr)
+            return 2
+        info = export_sft([Path(t) for t in args.trajectories], Path(args.out), allowed, args.per_problem)
+        print(f"{info['examples_written']} examples from {info['samples_read']} samples over {info['problems']} problems "
+              f"({args.split} split) -> {info['out']}")
         return 0
     if args.evals_cmd == "selfcheck":
         return _selfcheck(args)
@@ -204,7 +226,9 @@ def _run(args: argparse.Namespace) -> int:
         arm = build_arm(args.arm, args.rounds, args.candidates)
         result = run_verilogeval(
             arm, llm, runner, model=label or routed, n=args.n, k=args.k, temperature=args.temperature,
-            problems=args.problems, seed=args.seed, workers=args.workers,
+            problems=args.problems, seed=args.seed, workers=args.workers, split=args.split,
+            trajectory=(TrajectoryWriter(Path(args.save_trajectories) if args.save_trajectories else default_path(args.tag))
+                        if args.save_trajectories is not None else None),
             on_progress=None if args.quiet else lambda s: print(s, flush=True),
             extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default"},
         )

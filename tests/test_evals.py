@@ -265,7 +265,7 @@ def test_run_produces_a_self_describing_versioned_result(dataset, tmp_path):
     llm = Script([_fence(GOOD), _fence(WRONG), _fence(BROKEN)])
     res = run_verilogeval(build_arm("single"), llm, FakeRunner(), model="fake-model", root=root, seed=0)
     assert res["schema"] == SCHEMA and res["suite"] == ve.SUITE and res["runner"] == "fake"
-    assert res["dataset"]["commit"] == ve.PINNED_COMMIT and res["selection"] == {"count": 3, "seed": 0, "all": True}
+    assert res["dataset"]["commit"] == ve.PINNED_COMMIT and res["selection"]["count"] == 3 and res["selection"]["seed"] == 0 and res["selection"]["all"] is True and res["selection"]["split"] == "all"
     agg = res["pass_at_1"]
     assert agg["mean"] == pytest.approx(1 / 3) and agg["problems"] == 3
     assert res["compile_rate"] == pytest.approx(2 / 3, abs=1e-3) and res["tools"]["iverilog"].startswith("Icarus")
@@ -352,3 +352,90 @@ def test_excluded_problems_are_left_out_by_default_and_recorded_in_results(datas
     res = run_verilogeval(build_arm("single"), Script([_fence(GOOD)] * 2), FakeRunner(), model="m", root=root)
     assert res["dataset"]["excluded"] == {"Prob002_zero": "broken on purpose"} and res["selection"]["count"] == 2
     assert "Icarus Verilog 14" in res["dataset"]["testbench_patch"]
+
+
+# ---------------------------------------------------------------------------- trajectories, split, environment
+
+
+def _problems(n=40):
+    return [ve.Problem(f"Prob{i:03d}_x", "p", "r", "t") for i in range(1, n + 1)]
+
+
+def test_split_is_disjoint_complete_stable_and_about_the_requested_fraction():
+    ps = _problems(100)
+    train, test = ve.split_problems(ps, "train"), ve.split_problems(ps, "test")
+    assert {p.id for p in train}.isdisjoint({p.id for p in test}) and len(train) + len(test) == 100
+    assert len(test) == 35 and ve.split_problems(ps, "all") == ps
+    assert [p.id for p in test] == [p.id for p in ve.split_problems(list(reversed(ps)), "test")][::-1]  # order does not matter
+    with pytest.raises(ValueError):
+        ve.split_problems(ps, "dev")
+
+
+def test_removing_a_problem_moves_only_that_problem_between_splits():
+    ps = _problems(100)
+    before = {p.id for p in ve.split_problems(ps, "test")}
+    after = {p.id for p in ve.split_problems(ps[:-1], "test")}
+    assert len(before ^ after) <= 3  # the rounding of 35% can shift one boundary problem, not reshuffle the split
+
+
+def test_trajectories_record_full_text_and_export_only_verified_training_samples(dataset, tmp_path):
+    from services.orchestrator.evals.trajectory import SCHEMA as TSCHEMA
+    from services.orchestrator.evals.trajectory import TrajectoryWriter, export_sft, read
+
+    root, _ = dataset
+    w = TrajectoryWriter(tmp_path / "t" / "a.jsonl")
+    llm = Script([_fence(GOOD), _fence(WRONG), _fence(GOOD)])
+    res = run_verilogeval(build_arm("single"), llm, FakeRunner(), model="m", root=root, trajectory=w)
+    recs = list(read([w.path]))
+    assert len(recs) == 3 == w.count and res["selection"]["trajectories"] == "a.jsonl" and all(r["schema"] == TSCHEMA for r in recs)
+    first = recs[0]
+    assert first["calls"][0]["user"].startswith("I would like you") and "TopModule" in first["calls"][0]["reply"]
+    assert first["graded"]["passed"] is True and recs[1]["graded"]["passed"] is False
+
+    out = tmp_path / "sft.jsonl"
+    info = export_sft([w.path], out, allowed_problems=None)
+    lines = [json.loads(x) for x in out.read_text().splitlines()]
+    assert info["examples_written"] == len(lines) == 2  # the wrong answer is not exported
+    assert [m["role"] for m in lines[0]["messages"]] == ["system", "user", "assistant"]
+    assert lines[0]["messages"][2]["content"].startswith("```verilog\nmodule TopModule")
+
+
+def test_export_respects_the_split_and_deduplicates_per_problem(tmp_path):
+    from services.orchestrator.evals.trajectory import TrajectoryWriter, export_sft
+
+    w = TrajectoryWriter(tmp_path / "b.jsonl")
+    for pid, code in (("P1", "module A(); endmodule  // v1"), ("P1", "module A(); endmodule  // v1"), ("P1", "module A(); endmodule  // v2"),
+                      ("P1", "module A(); endmodule  // v3"), ("P2", "module B(); endmodule  // held out")):
+        w.write({"problem": pid, "model": "m", "rtl": code, "graded": {"passed": True},
+                 "calls": [{"system": "s", "user": f"u-{pid}", "reply": "r"}]})
+    out = tmp_path / "o.jsonl"
+    info = export_sft([w.path], out, allowed_problems={"P1"}, per_problem=2)
+    assert info["examples_written"] == 2 and info["problems"] == 1  # P2 is outside the training split; v1 counted once; v3 over the cap
+
+
+def test_runs_on_the_test_split_only_touch_test_problems(dataset):
+    root, _ = dataset
+    res = run_verilogeval(build_arm("single"), Script([_fence(GOOD)] * 3), FakeRunner(), model="m", root=root, split="test")
+    expected = {p.id for p in ve.split_problems(ve.load_problems(root), "test")}
+    assert {p["id"] for p in res["per_problem"]} == expected and res["selection"]["split"] == "test"
+
+
+def test_environment_rewards_follow_the_verifier_cascade_and_hide_the_testbench(dataset):
+    from services.orchestrator.evals.env import COMPILE_PENALTY, PASSED, VerilogEnv
+    from services.orchestrator.evals.env import WRONG as NO_REWARD
+
+    root, _ = dataset
+    env = VerilogEnv(FakeRunner(), split="all", max_turns=2, root=root)
+    obs, info = env.reset(seed=1)
+    assert obs["turn"] == 0 and obs["diagnostic"] == "" and obs["prompt"].startswith("I would like you")
+    obs, r, done, trunc, info = env.step(_fence(BROKEN))
+    assert r == COMPILE_PENALTY and not done and "syntax error" in obs["diagnostic"] and obs["turn"] == 1
+    obs, r, done, _, info = env.step(_fence(GOOD))
+    assert r == PASSED and done and info["passed"] is True and "Mismatches" not in json.dumps(obs)
+    env.reset(seed=1)
+    assert env.step(_fence(WRONG))[1:3] == (NO_REWARD, True)  # compiles, fails the hidden test: episode over
+    env.reset(seed=1)
+    env.step(_fence(BROKEN))
+    assert env.step(_fence(BROKEN))[1:3] == (COMPILE_PENALTY, True)  # turn budget exhausted
+    with pytest.raises(RuntimeError, match="reset"):
+        VerilogEnv(FakeRunner(), root=root).step("x")

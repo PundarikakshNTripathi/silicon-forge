@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (training data)
+- Opt-in **trajectories** (`evals run --save-trajectories`): every graded sample with its full prompt and reply text, kept locally under `trajectories/` (gitignored). `evals export-sft` turns verified samples into chat-format training examples for a chosen split.
+- A fixed **train/test split** of VerilogEval (`--split`), disjoint and stable under file order and exclusions, so a fine-tuned model is judged on problems it never saw.
+- `VerilogEnv`: a Gymnasium-style environment (`reset`, `step`) over the same problems with a verifier-cascade reward and the testbench output withheld.
 ### Added (project flow)
 - **`siliconforge flow`: your own RTL through the real flow, with no model involved.** A `project:` section in `siliconforge.yaml` (top, sources and globs, include directories, defines, clock, SDC, PDK, allowlisted LibreLane variables, waivers) drives Verilator lint, Yosys synthesis with an equivalence proof, and LibreLane place and route with signoff gates read from `metrics.json`: setup and hold, DRC, LVS, antenna, XOR, linter, max slew/capacitance/fanout, IR drop. Every gate is pass, fail or *not reported*; an absent metric is never a pass, and a stage that cannot run is an error, not a pass. Reports are JSON plus a self-contained HTML page with provenance (runner, tool versions, input fingerprint, config hash) and no absolute local paths; `flow diff` compares two. `docs/flow.md`.
 - First real result: `pio16` (two source files and an include directory) on sky130A at 20 ns through WSL: lint clean, flattened equivalence proven (1,894 generic cells), timing met (setup +1.99 ns, hold +0.11 ns), DRC/LVS/antenna/XOR clean, GDSII produced, and 1,097 max-slew, 49 max-capacitance and 22 max-fanout violations, which fail the electrical gates. See `benchmarks/results/flow-pio16-sky130A-2026-11-21.json`.
