@@ -1,0 +1,6 @@
+# pnpm 11 stops the install with ERR_PNPM_IGNORED_BUILDS when a dependency has a build script nobody has decided about.
+# electron-winstaller (a dependency of electron-builder) builds Squirrel installers, which this app does not use: the
+# Windows targets are NSIS and portable, produced by electron-builder itself. Decline its script explicitly so a clean
+# machine (CI) installs the same way as a developer machine that has `ignore-scripts` set globally.
+allowBuilds:
+  electron-winstaller: false
