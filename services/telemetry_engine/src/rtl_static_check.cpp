@@ -31,6 +31,43 @@ std::string strip_line_comment(const std::string& line) {
     return line.substr(0, pos);
 }
 
+// Finds non-blocking assignments (`lhs <= rhs;`) in a stream of lines without mistaking the less-or-equal comparison for one.
+// `<=` is an assignment only when it is the first assignment-like operator of a statement and sits outside parentheses,
+// brackets and braces. So `if (count <= LIMIT)`, `y = (a <= b) ? c : d;` and `y = a <= b;` are comparisons, while `q <= d;`
+// and `if (en) q <= d;` are assignments. State carries across lines because conditions and statements are often wrapped.
+struct NonBlockingScanner {
+    int depth = 0;
+    bool blocking_seen = false;
+
+    bool feed(const std::string& line) {
+        bool found = false;
+        for (std::size_t i = 0; i < line.size(); ++i) {
+            const char c = line[i];
+            const char next = i + 1 < line.size() ? line[i + 1] : '\0';
+            const char prev = i > 0 ? line[i - 1] : '\0';
+            if (c == '(' || c == '[' || c == '{') {
+                ++depth;
+            } else if (c == ')' || c == ']' || c == '}') {
+                if (depth > 0) --depth;
+            } else if (c == ';' && depth == 0) {
+                blocking_seen = false;  // the statement ended
+            } else if (depth == 0 && !blocking_seen) {
+                if (c == '<' && next == '=' && prev != '<') {
+                    found = true;
+                    ++i;
+                } else if (c == '=') {
+                    if (next == '=') {
+                        ++i;  // == or ===
+                    } else if (prev != '!' && prev != '>' && prev != '<') {
+                        blocking_seen = true;  // a plain `=`: whatever `<=` follows is part of the right-hand side
+                    }
+                }
+            }
+        }
+        return found;
+    }
+};
+
 }  // namespace
 
 RtlLintReport lint_systemverilog(const std::string& rtl_source) {
@@ -51,7 +88,7 @@ RtlLintReport lint_systemverilog(const std::string& rtl_source) {
     const std::regex re_initial(R"(\binitial\b)");
     const std::regex re_unsynth_sys(R"(\$(?:display|finish|stop|monitor|write)\b)");
     const std::regex re_blocking_assign(R"(\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^=])");
-    const std::regex re_nonblocking_assign(R"(\b[a-zA-Z_][a-zA-Z0-9_]*\s*<=)");
+    NonBlockingScanner comb_scanner;
     const std::regex re_always_ff(R"(\balways_ff\b|\balways\s*@\s*\(\s*(?:posedge|negedge))");
     const std::regex re_always_comb(R"(\balways_comb\b|\balways\s*@\s*\(\s*\*\s*\))");
     const std::regex re_if(R"(\bif\s*\()");
@@ -103,6 +140,7 @@ RtlLintReport lint_systemverilog(const std::string& rtl_source) {
             block_depth = 0;
         } else if (std::regex_search(line, re_always_comb)) {
             in_always_comb = true;
+            comb_scanner = NonBlockingScanner{};
             comb_has_if = false;
             comb_has_else = false;
             comb_has_default = false;
@@ -122,7 +160,7 @@ RtlLintReport lint_systemverilog(const std::string& rtl_source) {
                             "Blocking assignment ('=') inside sequential always_ff block.");
             }
             if (in_always_comb) {
-                if (std::regex_search(line, re_nonblocking_assign)) {
+                if (comb_scanner.feed(line)) {
                     add_finding("SF-RTL-005", "ERROR", line_no,
                                 "Non-blocking assignment ('<=') inside combinational always_comb block.");
                 }

@@ -91,10 +91,77 @@ endmodule
     CHECK(buggy_rep.error_count >= 3);
 }
 
+static int count_rule(const siliconforge::RtlLintReport& rep, const std::string& id) {
+    int n = 0;
+    for (const auto& f : rep.findings) {
+        if (f.rule_id == id) ++n;
+    }
+    return n;
+}
+
+// SF-RTL-005 used to flag any `identifier <=` inside always_comb, so a correct less-or-equal comparison was reported as a
+// non-blocking assignment and a model could not "fix" it. Comparisons must pass; real non-blocking assignments must not.
+static void test_comparison_is_not_a_nonblocking_assignment() {
+    const std::string comparisons = R"(
+module cmp (input logic [7:0] count, input logic [7:0] limit, input logic [7:0] a, input logic [7:0] b,
+            output logic done, output logic [7:0] y, output logic [7:0] z, output logic w);
+  always_comb begin
+    done = 1'b0;
+    y = 8'd0;
+    z = 8'd0;
+    w = 1'b0;
+    if (count <= limit) done = 1'b1;
+    if (count <= limit &&
+        a <= b) y = a;
+    if (
+        a
+        <= b) z = b;
+    y = (a <= b) ? a : b;
+    w = a <= b;
+    for (int i = 0; i <= 3; i = i + 1) z = z + 8'd1;
+  end
+endmodule
+)";
+    auto rep = siliconforge::lint_systemverilog(comparisons);
+    CHECK(count_rule(rep, "SF-RTL-005") == 0);
+
+    const std::string real = R"(
+module bad (input logic en, input logic [7:0] d, output logic [7:0] q, output logic [7:0] r);
+  always_comb begin
+    q <= d;
+    if (en) r <= d;
+  end
+endmodule
+)";
+    auto bad = siliconforge::lint_systemverilog(real);
+    CHECK(count_rule(bad, "SF-RTL-005") == 2);
+    CHECK(!bad.passed);
+
+    // a wrapped statement: the `<=` on the continuation line belongs to a blocking assignment's right-hand side
+    const std::string wrapped = R"(
+module wr (input logic [7:0] a, input logic [7:0] b, output logic w);
+  always_comb begin
+    w =
+      a <= b;
+  end
+endmodule
+)";
+    CHECK(count_rule(siliconforge::lint_systemverilog(wrapped), "SF-RTL-005") == 0);
+
+    // sequential blocks are unaffected: non-blocking assignments there are the normal case
+    const std::string seq = R"(
+module s (input logic clk, input logic [7:0] d, output logic [7:0] q);
+  always_ff @(posedge clk) q <= d;
+endmodule
+)";
+    CHECK(count_rule(siliconforge::lint_systemverilog(seq), "SF-RTL-005") == 0);
+}
+
 int main() {
     test_legacy_log_format();
     test_real_tool_log_format();
     test_lint();
+    test_comparison_is_not_a_nonblocking_assignment();
     if (g_failures != 0) {
         std::cerr << g_failures << " check(s) failed\n";
         return 1;

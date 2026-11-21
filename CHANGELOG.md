@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Fixed (guardrails)
+- **`SF-RTL-005` rejected correct RTL.** The static linter reported any `identifier <=` inside `always_comb` as a non-blocking assignment, so a less-or-equal comparison such as `if (count <= LIMIT)` was an ERROR the model could not repair (a local-model run failed `uart_tx` three times with unchanged code). `<=` now counts as an assignment only when it is the first assignment-like operator of a statement outside parentheses, with state carried across wrapped lines. Tests in the C++ suite fail against the old rule.
 ### Added (training data)
 - Opt-in **trajectories** (`evals run --save-trajectories`): every graded sample with its full prompt and reply text, kept locally under `trajectories/` (gitignored). `evals export-sft` turns verified samples into chat-format training examples for a chosen split.
 - A fixed **train/test split** of VerilogEval (`--split`), disjoint and stable under file order and exclusions, so a fine-tuned model is judged on problems it never saw.
