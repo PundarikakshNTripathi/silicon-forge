@@ -3,6 +3,11 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (infrastructure)
+- **`vllm` provider and profile**: any OpenAI-compatible server (vLLM, SGLang, TGI), URL from `SILICONFORGE_VLLM_URL`, optional `VLLM_API_KEY`, JSON-schema constrained output, cached-token accounting. Tested against a stub server, not a real vLLM process. Providers can take a `base_url_env` in `configs/models.yaml`.
+- **`docs/infrastructure.md`**: what was left out and why (TensorRT, Triton, a distributed vector database, Postgres and pgvector, Kubernetes), what is in use, and what would change the answers.
+- `evals compare A B --gate --max-drop N`: exit 1 only on a proven drop (large enough and the paired interval excludes zero). A manually started **Canary** workflow uses it against a provider you name.
+- **Hardened container**: a two-stage image (UI built from the lockfile) that runs as an unprivileged user with a health check; compose publishes on loopback only, drops capabilities and sets `no-new-privileges`; a **Docker** workflow builds it, checks the health check and non-root user, and writes an SBOM. The obsolete compose `version:` key, the stale `mock` mode and the npm-based dashboard service are gone; five stray design-review PNGs were removed from the repository root.
 ### Added (agent)
 - **Project memory** (`memory: true`): a `remember` tool and `.siliconforge/memory.md` that every later session reads, plain Markdown you can edit, secret-masked and bounded; `siliconforge memory show|add|clear` and `/memory` in the TUI (`docs/workspaces.md`).
 - **`investigate` subagent**: a read-only helper with its own fresh context that returns only a short answer, so searching a large project does not fill a small model's window. It cannot edit or recurse.

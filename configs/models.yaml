@@ -23,6 +23,16 @@ providers:
     max_tokens: 6000
     extra_body:                   # thinking models (Qwen3.x): skip hidden reasoning, it conflicts with JSON constraints
       chat_template_kwargs: {enable_thinking: false}
+  vllm:                           # any OpenAI-compatible server: vLLM, SGLang, TGI, LM Studio (see docs/infrastructure.md)
+    kind: openai_compat
+    base_url: "http://127.0.0.1:8000/v1"
+    base_url_env: SILICONFORGE_VLLM_URL     # set this to point at a server elsewhere, for example a team's GPU box
+    api_key_env: VLLM_API_KEY               # optional: only if the server was started with --api-key
+    local: true                             # you run it; no per-token billing
+    supports_json_schema: true              # vLLM enforces response_format json_schema with guided decoding
+    max_tokens: 6000
+    extra_body:
+      chat_template_kwargs: {enable_thinking: false}
   openai:
     kind: openai_compat
     base_url: "https://api.openai.com/v1"
@@ -79,6 +89,11 @@ profiles:
     local_fast:         [{provider: llamacpp, model: local}]
     balanced:           [{provider: llamacpp, model: local}]
     frontier_reasoning: [{provider: llamacpp, model: local}]
+
+  vllm:                           # an OpenAI-compatible server you run (start it with --served-model-name local)
+    local_fast:         [{provider: vllm, model: local}]
+    balanced:           [{provider: vllm, model: local}]
+    frontier_reasoning: [{provider: vllm, model: local}]
 
   hybrid:                         # local for cheap tiers, Claude for the hard ones; either falls back to the other
     local_fast:         [{provider: llamacpp, model: local}, {provider: anthropic, model: claude-haiku-5-5}]

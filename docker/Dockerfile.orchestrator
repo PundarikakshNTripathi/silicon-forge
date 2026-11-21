@@ -1,16 +1,45 @@
-FROM python:3.11-slim AS base
+# syntax=docker/dockerfile:1
+# SiliconForge API and web UI. Build from the repository root:  docker build -f docker/Dockerfile.orchestrator -t siliconforge .
+# The image holds the orchestrator and the built dashboard. It does not hold EDA tools: use docker/Dockerfile.eda (or a native/WSL
+# install) for those, and mount your runs and data at /data.
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    g++ make cmake \
+# ---- 1. the web UI ------------------------------------------------------------------------------------------------------
+FROM node:22-bookworm-slim AS ui
+WORKDIR /ui
+RUN corepack enable
+COPY services/dashboard/package.json services/dashboard/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --ignore-scripts
+COPY services/dashboard/ ./
+RUN pnpm run build
+
+# ---- 2. the runtime ------------------------------------------------------------------------------------------------------
+FROM python:3.12-slim-bookworm AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    SILICONFORGE_HOME=/data
+
+# build tools only for the C++ log parser and linter, removed in the same layer
+RUN apt-get update && apt-get install -y --no-install-recommends g++ make cmake \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY . /app
+RUN cmake -S services/telemetry_engine -B services/telemetry_engine/build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build services/telemetry_engine/build \
+    && pip install -e ".[api,providers]" \
+    && apt-get purge -y --auto-remove g++ make cmake
+COPY --from=ui /ui/dist /app/services/dashboard/dist
 
-# Build native C++20 EDA telemetry & RTL static linter engine
-RUN cmake -S services/telemetry_engine -B services/telemetry_engine/build -DCMAKE_BUILD_TYPE=Release && cmake --build services/telemetry_engine/build
-
-RUN pip install --no-cache-dir -e ".[api,providers]"
-
+# a fixed, unprivileged user; /data is the only place the app writes
+RUN useradd --uid 10001 --create-home --shell /usr/sbin/nologin sf \
+    && mkdir -p /data && chown -R sf:sf /data
+USER sf
+VOLUME ["/data"]
 EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4).status == 200 else 1)"
+
 CMD ["uvicorn", "services.orchestrator.api.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
