@@ -25,6 +25,7 @@ from services.orchestrator.inference.providers.base import (
     ProviderError,
     RefusalError,
 )
+from services.orchestrator.inference.ratelimit import RateLimiter, RateLimitWait
 
 # Task complexity -> model tier mapping
 TASK_TIER_MAP: dict[str, str] = {
@@ -51,6 +52,7 @@ def _model_allowed(target: Target, patterns: list[str]) -> bool:
 class RouterStats:
     fallbacks: int = 0
     refusals: int = 0
+    rate_wait_s: float = 0.0  # time spent pacing requests to stay under a provider's configured rate limit
     attempts: list[dict] = field(default_factory=list)
 
 
@@ -70,6 +72,7 @@ class ModelRouter:
         self._override = provider  # a single provider serving every target (tests, CLI replay mode)
         self._providers: dict[str, BaseLLMProvider] = {}
         self._breakers: dict[str, CircuitBreaker] = {}
+        self._limiters: dict[str, RateLimiter | None] = {}
         self.stats = RouterStats()
         self.ledger = Ledger(config.ledger_path) if config.ledger_path else None
         #: optional observer called once per completed call (used to stream the agent log to the UI)
@@ -105,6 +108,12 @@ class ModelRouter:
         if name not in self._providers:
             self._providers[name] = build_provider(name, self.catalog, self.config.cli_bridge_enabled)
         return self._providers[name]
+
+    def limiter(self, name: str) -> RateLimiter | None:
+        """The provider's pacing limiter from its `rate_limit` catalog entry, or None when it has none."""
+        if name not in self._limiters:
+            self._limiters[name] = RateLimiter.from_config(self.catalog.providers.get(name, {}).get("rate_limit"))
+        return self._limiters[name]
 
     def breaker(self, name: str) -> CircuitBreaker:
         return self._breakers.setdefault(name, CircuitBreaker())
@@ -160,6 +169,9 @@ class ModelRouter:
                 continue
             try:
                 provider = self.provider_for(target.provider)
+                limiter = self.limiter(target.provider)
+                if limiter is not None:
+                    self.stats.rate_wait_s += limiter.acquire((len(system_prompt) + len(user_prompt)) // 4)
                 resp = provider.generate(
                     model=target.model,
                     system_prompt=system_prompt,
@@ -171,6 +183,10 @@ class ModelRouter:
                 self.stats.refusals += 1
                 last_error = exc
                 self.stats.attempts.append({"target": target.provider, "error": "refusal"})
+                continue
+            except RateLimitWait as exc:  # our own pacing, not the provider failing: no breaker penalty
+                last_error = exc
+                self.stats.attempts.append({"target": target.provider, "skipped": f"rate limit: {exc}"[:200]})
                 continue
             except ProviderError as exc:
                 breaker.failure()

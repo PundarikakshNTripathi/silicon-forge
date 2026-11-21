@@ -31,7 +31,29 @@ class ProviderError(RuntimeError):
 
 
 class TransientProviderError(ProviderError):
-    """Retryable failure (rate limit, 5xx, timeout, connection)."""
+    """Retryable failure (rate limit, 5xx, timeout, connection). `retry_after` is the server's own advice in seconds
+    (an HTTP `Retry-After` header) when it gave one."""
+
+    def __init__(self, message: str = "", retry_after: float | None = None) -> None:
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+def parse_retry_after(value: object, now: float | None = None) -> float | None:
+    """Seconds to wait from a `Retry-After` header: a number of seconds, or an HTTP date. None when absent or unusable."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    try:
+        seconds = float(text)
+    except ValueError:
+        try:
+            from email.utils import parsedate_to_datetime
+
+            seconds = parsedate_to_datetime(text).timestamp() - (now if now is not None else time.time())
+        except (TypeError, ValueError):
+            return None
+    return max(0.0, seconds) if seconds == seconds and seconds != float("inf") else None
 
 
 class RefusalError(ProviderError):
@@ -63,8 +85,11 @@ def retry_call(
     base_delay: float = 0.5,
     max_delay: float = 8.0,
     sleep: Callable[[float], None] = time.sleep,
+    max_retry_after: float = 60.0,
 ) -> T:
-    """Retry `fn` on TransientProviderError with exponential backoff and full jitter."""
+    """Retry `fn` on TransientProviderError with exponential backoff and full jitter. When the error carries the server's
+    `retry_after`, wait that long instead (at most `max_retry_after`; a longer ask is not waited out, the error is raised so
+    the router can fall back to another target)."""
     last: TransientProviderError | None = None
     for i in range(attempts):
         try:
@@ -73,7 +98,12 @@ def retry_call(
             last = exc
             if i == attempts - 1:
                 break
-            sleep(random.uniform(0, min(max_delay, base_delay * (2**i))))
+            if exc.retry_after is not None:
+                if exc.retry_after > max_retry_after:
+                    break
+                sleep(exc.retry_after)
+            else:
+                sleep(random.uniform(0, min(max_delay, base_delay * (2**i))))
     assert last is not None
     raise last
 
