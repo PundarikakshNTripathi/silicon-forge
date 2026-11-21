@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (local inference)
+- Speculative decoding options for the managed llama-server (`--spec-type`, `--draft-model`, `--draft-max`), validated, with the draft model counted in the VRAM guard; and `benchmarks/bench_speed.py`, a speed sweep over KV type, context length and speculation. **No speedup has been measured yet** (the GPU was busy); speculation stays off by default.
 ### Added (verification)
 - `siliconforge triage sim.json ...`: buckets failing runs by a normalised signature (lockstep divergences by the fields that disagree), with seeds, tests, an example and a replay line per bucket. `docs/verification.md`.
 ### Fixed (verification)

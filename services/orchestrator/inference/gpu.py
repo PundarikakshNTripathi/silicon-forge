@@ -128,10 +128,11 @@ class GpuVerdict:
 
 
 def can_load(model_path: Path | None, ctx: int, kv_type: str = "q8_0", parallel: int = 1, gpu_layers: int = 99,
-             snap: GpuSnapshot | None = None, headroom_mib: int = 256, weights_mib: float | None = None) -> GpuVerdict:
-    """Would our server fit in the VRAM that is free right now?"""
+             snap: GpuSnapshot | None = None, headroom_mib: int = 256, weights_mib: float | None = None,
+             draft_mib: int = 0) -> GpuVerdict:
+    """Would our server fit in the VRAM that is free right now? `draft_mib` is the speculative draft model's weights."""
     snap = snap or snapshot()
-    need = estimate_vram_mib(model_path, ctx, kv_type, parallel, gpu_layers, weights_mib)
+    need = estimate_vram_mib(model_path, ctx, kv_type, parallel, gpu_layers, weights_mib) + draft_mib
     if gpu_layers == 0:
         return GpuVerdict(True, 0, snap.free_mib, "CPU only: no VRAM needed")
     if not snap.present:
@@ -152,8 +153,9 @@ def can_load(model_path: Path | None, ctx: int, kv_type: str = "q8_0", parallel:
     )
 
 
-def require_free_vram(model_path: Path, ctx: int, kv_type: str, parallel: int, gpu_layers: int) -> GpuVerdict:
-    verdict = can_load(model_path, ctx, kv_type, parallel, gpu_layers)
+def require_free_vram(model_path: Path, ctx: int, kv_type: str, parallel: int, gpu_layers: int,
+                      draft_mib: int = 0) -> GpuVerdict:
+    verdict = can_load(model_path, ctx, kv_type, parallel, gpu_layers, draft_mib=draft_mib)
     if not verdict.ok:
         raise GpuBusyError(verdict.reason + " Options: " + " ".join(f"({i}) {o}" for i, o in enumerate(verdict.options, 1)))
     return verdict
