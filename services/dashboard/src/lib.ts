@@ -26,6 +26,8 @@ export const modeLabel = (mode: string) =>
 // ---------- theme ----------
 export function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark" | "system">(() => {
+    const asked = new URLSearchParams(window.location.search).get("theme"); // ?theme=dark: a link or a screenshot can pick the theme
+    if (asked === "light" || asked === "dark") return asked;
     try { return (localStorage.getItem("sf-theme") as "light" | "dark" | "system") ?? "system"; } catch { return "system"; }
   });
   useEffect(() => {

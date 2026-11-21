@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Download, GitCompare, Play, Repeat, Square } from "lucide-react";
 import { api, artifactUrl, post, type PPA, type RunDetail as Run } from "../api";
 import { deriveView, STAGE_OF, type FormalIter, type LlmCall, type RunView, type StageKey } from "../derive";
@@ -17,7 +17,10 @@ export default function RunDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const qc = useQueryClient();
-  const [tab, setTab] = useState<Tab>("overview");
+  // the tab lives in the URL (?tab=verify) so a view can be linked to, reloaded, and captured for the docs
+  const [sp, setSp] = useSearchParams();
+  const tab = (sp.get("tab") as Tab | null) ?? "overview";
+  const setTab = (t: Tab) => setSp(t === "overview" ? {} : { tab: t }, { replace: true });
   const run = useQuery({
     queryKey: ["run", id], queryFn: () => api<Run>(`/runs/${id}`),
     refetchInterval: (q) => (q.state.data && (q.state.data.status === "running" || q.state.data.status === "queued") ? 3000 : false),

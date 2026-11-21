@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" role="img" aria-labelledby="t d"><title id="t">SiliconForge system</title><desc id="d">Desktop, web, terminal and MCP clients feed the workspace agent and pipeline, which call the model router and the EDA runner.</desc>
 <style>
-  :root { --paper:#f5f6f8; --card:#ffffff; --ink:#0e1520; --ink2:#3c4657; --ink3:#626c7b; --rule:#c9cfd8; --amber:#f2a900; --wash:#fbeec7; }
-  @media (prefers-color-scheme: dark) { :root { --paper:#0f151d; --card:#141c26; --ink:#e8edf4; --ink2:#b2bccb; --ink3:#8593a6; --rule:#33415a; --amber:#ffb81c; --wash:#2e2410; } }
+  :root { --paper:#f7f5f0; --card:#fffefb; --ink:#0b1b33; --ink2:#37435c; --ink3:#5b6680; --rule:#ddd8cb; --amber:#f2a900; --wash:#e3ebfb; --l-contract:#5b4bd6; --l-rtl:#d9482b; --l-guardrails:#b07d00; --l-formal:#1f6feb; --l-lec:#0f9d74; --l-pnr:#b4309a; --l-signoff:#0b1b33; }
+  @media (prefers-color-scheme: dark) { :root { --paper:#0a1424; --card:#101c30; --ink:#e6ecf7; --ink2:#b3c0d6; --ink3:#8496b3; --rule:#1f3050; --amber:#ffb81c; --wash:#13284d; --l-contract:#8d82ff; --l-rtl:#ff7a5c; --l-guardrails:#f0b429; --l-formal:#5aa2ff; --l-lec:#3ddc9b; --l-pnr:#e870cf; --l-signoff:#dbe4f3; } }
   text { font-family: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }
   .bg { fill: var(--paper); }
   .box { fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }
@@ -15,9 +15,10 @@
   .loop { stroke: var(--amber); stroke-width: 3; fill: none; } .arrowhead { fill: var(--ink); }
   .redo { fill: var(--amber); stroke: var(--ink); stroke-width: 1.4; }
   .hatch { fill: url(#h); stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  .band { stroke: none; }
 </style>
 <defs>
-  <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.5"/></pattern>
+  <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.6"/></pattern>
   <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrowhead"/></marker>
   <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--amber)"/></marker>
 </defs>
