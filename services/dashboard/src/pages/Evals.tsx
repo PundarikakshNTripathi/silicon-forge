@@ -67,8 +67,8 @@ function IntervalBar({ r }: { r: EvalResult }) {
     <svg width={W} height={22} role="img" aria-label={`pass@${r.k} ${pct(r.mean)}, 95% interval ${pct(r.lo)} to ${pct(r.hi)}`}>
       <line x1={4} x2={W - 4} y1={11} y2={11} stroke="var(--rule)" strokeWidth={1} />
       {[0, 0.25, 0.5, 0.75, 1].map((t) => <line key={t} x1={x(t)} x2={x(t)} y1={8} y2={14} stroke="var(--rule-strong)" strokeWidth={1} />)}
-      <line x1={x(r.lo)} x2={x(r.hi)} y1={11} y2={11} stroke="var(--ink)" strokeWidth={5} strokeLinecap="butt" opacity={0.28} />
-      <line x1={x(r.mean)} x2={x(r.mean)} y1={3} y2={19} stroke="var(--ink)" strokeWidth={2.5} />
+      <line x1={x(r.lo)} x2={x(r.hi)} y1={11} y2={11} stroke="var(--accent)" strokeWidth={6} strokeLinecap="butt" opacity={0.32} />
+      <line x1={x(r.mean)} x2={x(r.mean)} y1={3} y2={19} stroke="var(--accent)" strokeWidth={3} />
     </svg>
   );
 }

@@ -123,7 +123,7 @@ export default function NewRun() {
                       <div className="grow">
                         <div className="t">{copy.title}</div>
                         <div className="muted small">{copy.text}</div>
-                        {!r.ok && <div className="small" style={{ color: "var(--amber)", marginTop: 2 }}>{r.why}. <Link to="/models">Set up</Link></div>}
+                        {!r.ok && <div className="small" style={{ color: "var(--repair-ink)", marginTop: 2 }}>{r.why}. <Link to="/models">Set up</Link></div>}
                       </div>
                     </button>
                   );
@@ -141,7 +141,7 @@ export default function NewRun() {
                       <div className="grow">
                         <div className="row"><span className="t">{b === "simulated" ? "Simulated" : b === "wsl" ? "WSL2" : b === "native" ? "This machine" : "Docker"}</span><Prov mode={b} /></div>
                         <div className="muted small">{BACKEND_COPY[b]}</div>
-                        {!ok && !doctor.isLoading && <div className="small" style={{ color: "var(--amber)" }}>Tools not found{unavailable?.error ? `: ${unavailable.error}` : ""}. <Link to="/system">Check toolchain</Link></div>}
+                        {!ok && !doctor.isLoading && <div className="small" style={{ color: "var(--repair-ink)" }}>Tools not found{unavailable?.error ? `: ${unavailable.error}` : ""}. <Link to="/system">Check toolchain</Link></div>}
                       </div>
                     </button>
                   );
@@ -190,7 +190,7 @@ export default function NewRun() {
           {backend === "simulated" ? <><Prov mode="simulated" /> Results will be labelled simulated.</> : <><Prov mode={backend} /> Real tool results.</>}
           {" "}Estimated model cost: <strong>{est.data ? usd(est.data.usd) : "…"}</strong>
           {est.data && est.data.usd === 0 && profile !== "replay" ? " (runs on your hardware)" : ""}.
-          {!ready.ok && <span style={{ color: "var(--amber)" }}> {ready.why}.</span>}
+          {!ready.ok && <span style={{ color: "var(--repair-ink)" }}> {ready.why}.</span>}
         </div>
         <button className="btn primary big" disabled={!canStart} onClick={() => start.mutate()}>
           <Play size={16} /> {start.isPending ? "Starting…" : "Start run"}
