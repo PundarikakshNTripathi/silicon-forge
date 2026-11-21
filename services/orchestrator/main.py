@@ -23,6 +23,13 @@ from services.orchestrator.state import FlowState
 
 def _build_pipeline(args: argparse.Namespace) -> SiliconForgePipeline:
     cfg = load_flow_config(args.config)
+    ws_path = getattr(args, "workspace", None)
+    if ws_path:
+        from services.orchestrator.workspace import load_workspace, remember_workspace
+
+        ws = load_workspace(ws_path)
+        ws.apply(cfg)  # profile, backend, model policy, runs and the ledger all live in the workspace
+        remember_workspace(ws)
     if getattr(args, "episodes", None):
         cfg.pipeline["max_pnr_rl_episodes"] = args.episodes
     if getattr(args, "parallel", None):
@@ -128,12 +135,20 @@ def cmd_models(args: argparse.Namespace) -> int:
     )
 
     lc = LlamaCpp()
-    if args.action == "status":
+    if args.action in ("status", "detect"):
         gpu = gpu_info()
         print(f"GPU: {gpu.get('name', 'none')}  VRAM {gpu.get('vram_used_mib', '-')}/{gpu.get('vram_total_mib', '-')} MiB")
         print(f"llama.cpp: {lc.installed_tag() or 'not installed'}")
-        for m in lc.models():
-            print(f"  model: {m.name} ({m.stat().st_size / 1e9:.1f} GB)")
+        for m in lc.discover_models():
+            print(f"  model: {m['name']} ({m['size_gb']} GB, {m['source']})  {m['path']}")
+        from services.orchestrator.inference.gpu import foreign_servers
+
+        servers = foreign_servers(own_port=args.port)
+        for sv in servers:
+            tag = "ours" if sv["ours"] else "other program (read-only, SiliconForge will not touch it)"
+            print(f"  server: {sv['url']}  {', '.join(sv['models']) or '?'}  [{tag}]")
+        if not servers:
+            print("  no model server found on 8080/8000/1234/11434/8189")
         return 0
     if args.action == "install":
         print(f"installed: {lc.install()}")
@@ -149,12 +164,23 @@ def cmd_models(args: argparse.Namespace) -> int:
         print("llama-server not installed: run `siliconforge models install`")
         return 1
     if args.action == "start":
-        if not args.file:
-            print("usage: siliconforge models start --file <name.gguf> [--ctx N]")
+        if not (args.file or args.path):
+            print("usage: siliconforge models start (--file <name.gguf> | --path <file.gguf>) [--ctx N] [--cpu]")
             return 2
-        server = LlamaServer(exe, ServerConfig(model_path=lc.home / "gguf" / args.file, ctx=args.ctx, port=args.port))
-        server.start()
-        print(f"serving {args.file} on {server.base_url} (Ctrl+C to stop)")
+        model = Path(args.path) if args.path else lc.home / "gguf" / args.file
+        if not model.exists():
+            print(f"model not found: {model}")
+            return 1
+        server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, port=args.port,
+                                               gpu_layers=0 if args.cpu else 99))
+        from services.orchestrator.inference.gpu import GpuBusyError
+
+        try:
+            server.start()
+        except GpuBusyError as exc:
+            print(f"not started: {exc}")
+            return 3
+        print(f"serving {model.name} on {server.base_url} (Ctrl+C to stop)")
         try:
             while True:
                 time.sleep(3600)
@@ -162,6 +188,44 @@ def cmd_models(args: argparse.Namespace) -> int:
             server.stop()
         return 0
     return 2
+
+
+def cmd_init(args: argparse.Namespace) -> int:
+    from services.orchestrator.workspace import WorkspaceError, init_workspace, remember_workspace
+
+    try:
+        ws = init_workspace(args.path, name=args.name, profile=args.profile, backend=args.backend, pdk=args.pdk,
+                            allowed_models=args.allow_model or None, max_budget_usd=args.max_budget,
+                            overwrite=args.force)
+    except WorkspaceError as exc:
+        print(f"error: {exc}")
+        return 1
+    remember_workspace(ws)
+    print(f"workspace ready: {ws.root}")
+    print(f"  profile={ws.profile} backend={ws.backend} pdk={ws.pdk or 'default'} "
+          f"allowed_models={ws.allowed_models or 'any'}")
+    print("  add SILICONFORGE.md (or AGENTS.md) there to give the agent standing instructions")
+    return 0
+
+
+def cmd_report(args: argparse.Namespace) -> int:
+    from services.orchestrator.inference.ledger import read_ledger, render_report
+    from services.orchestrator.workspace import load_workspace
+
+    ws = load_workspace(args.workspace)
+    if args.kind != "ai-usage":
+        return 2
+    rows = read_ledger(ws.ledger_path)
+    if not rows:
+        print(f"No AI calls recorded yet in {ws.ledger_path}. Run something through this workspace first.")
+        return 1
+    text = render_report(rows, project=ws.name, allowed_models=ws.allowed_models)
+    if args.out:
+        Path(args.out).write_text(text, encoding="utf-8")
+        print(f"wrote {args.out}")
+    else:
+        print(text)
+    return 0
 
 
 def cmd_tui(args: argparse.Namespace) -> int:
@@ -202,8 +266,9 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--config", default="configs/flow_default.yaml", help="Flow YAML config")
         sp.add_argument("--backend", choices=MODES, default=None, help="EDA backend (overrides config eda_mode)")
         sp.add_argument("--profile", default=None,
-                        help="Model routing profile: replay | local | hybrid | cloud | openai | gemini | subscription")
+                        help="Model routing profile: replay | local | hybrid | dev | gemini-agy | competition | cloud | ...")
         sp.add_argument("--provider", dest="provider", default=None, help=argparse.SUPPRESS)
+        sp.add_argument("--workspace", default=None, help="Run inside this workspace (its profile, policy and ledger apply)")
 
     r = sub.add_parser("run", help="Run the full flow on a spec")
     r.add_argument("--spec", required=True, help="Path to hardware specification (markdown/text)")
@@ -227,12 +292,32 @@ def build_parser() -> argparse.ArgumentParser:
     d.set_defaults(func=cmd_doctor)
 
     m = sub.add_parser("models", help="Manage local llama.cpp models")
-    m.add_argument("action", choices=["status", "install", "pull", "start"])
+    m.add_argument("action", choices=["status", "detect", "install", "pull", "start"])
     m.add_argument("--repo", default=None)
-    m.add_argument("--file", default=None)
+    m.add_argument("--file", default=None, help="GGUF name inside SiliconForge's model folder")
+    m.add_argument("--path", default=None, help="GGUF anywhere on disk (e.g. your Hugging Face cache), used in place")
+    m.add_argument("--cpu", action="store_true", help="Run on the CPU and leave the GPU alone")
     m.add_argument("--ctx", type=int, default=16384)
     m.add_argument("--port", type=int, default=8189)
     m.set_defaults(func=cmd_models)
+
+    i = sub.add_parser("init", help="Create a workspace (siliconforge.yaml) in a directory")
+    i.add_argument("path", nargs="?", default=".")
+    i.add_argument("--name", default=None)
+    i.add_argument("--profile", default="dev", help="Routing profile (replay | local | dev | gemini-agy | competition ...)")
+    i.add_argument("--backend", choices=MODES, default="wsl")
+    i.add_argument("--pdk", default=None)
+    i.add_argument("--allow-model", action="append", default=[], metavar="GLOB",
+                   help="Restrict the workspace to models matching this glob (repeatable), e.g. 'gemini-3.8-flash-*'")
+    i.add_argument("--max-budget", type=float, default=None, help="USD budget for metered models")
+    i.add_argument("--force", action="store_true", help="Overwrite an existing siliconforge.yaml")
+    i.set_defaults(func=cmd_init)
+
+    rp = sub.add_parser("report", help="Generate reports from a workspace")
+    rp.add_argument("kind", choices=["ai-usage"])
+    rp.add_argument("--workspace", default=".")
+    rp.add_argument("--out", default=None)
+    rp.set_defaults(func=cmd_report)
 
     t = sub.add_parser("tui", help="Terminal UI")
     t.set_defaults(func=cmd_tui)

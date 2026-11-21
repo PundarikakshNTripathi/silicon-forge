@@ -28,6 +28,7 @@ DEFAULT_COMMANDS: dict[str, list[str]] = {
     "claude": ["claude", "-p", "--output-format", "text"],
     "codex": ["codex", "exec", "-"],
     "gemini": ["gemini", "-p", ""],
+    "agy": ["agy"],  # executed by AgyProvider (stream-json), listed here for install detection
 }
 
 TOS_WARNING = (
