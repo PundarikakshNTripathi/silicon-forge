@@ -2,6 +2,9 @@
 """Builds an agent session for a workspace: config, router with policy and ledger, EDA runner, pipeline hook."""
 from __future__ import annotations
 
+import atexit
+
+from services.orchestrator.agent.mcp_client import McpBridge, parse_servers
 from services.orchestrator.agent.session import AgentSession, Approver, Mode
 from services.orchestrator.agent.tools import ToolBox
 from services.orchestrator.config import load_flow_config
@@ -44,7 +47,16 @@ def create_session(ws: Workspace, *, profile: str | None = None, mode: Mode = "a
         }
 
     tools = ToolBox(ws, runner_factory=runner_factory, pipeline_factory=pipeline_factory)
-    return AgentSession(router, ws, tools, mode=mode, approver=approver, on_event=on_event, max_steps=max_steps)
+    bridge = None
+    servers = parse_servers(ws.mcp_servers)  # a malformed entry is an error here, before any model call
+    if servers:
+        bridge = McpBridge(servers, ws.root)
+        bridge.start()
+        tools.extra.extend(bridge.tool_specs())
+        atexit.register(bridge.close)  # do not leave server subprocesses behind if the process exits without close()
+    session = AgentSession(router, ws, tools, mode=mode, approver=approver, on_event=on_event, max_steps=max_steps)
+    session.bridge = bridge
+    return session
 
 
 class _Simulated:

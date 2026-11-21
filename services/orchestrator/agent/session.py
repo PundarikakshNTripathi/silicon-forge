@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from services.orchestrator.agent import compaction
+from services.orchestrator.agent.hooks import HookSet
 from services.orchestrator.agent.safety import LoopGuard, Rules, redact
 from services.orchestrator.agent.store import SessionStore
 from services.orchestrator.agent.tools import COMMAND, EDIT, READ, ToolBox, ToolError
@@ -106,7 +107,7 @@ class AgentSession:
     def __init__(self, router: ModelRouter, ws: Workspace, tools: ToolBox, *, mode: Mode = "ask",
                  approver: Approver | None = None, on_event: Callable[[AgentEvent], None] | None = None,
                  max_steps: int = 14, result_chars: int = 3500, context_chars: int = 36000,
-                 rules: Rules | None = None) -> None:
+                 rules: Rules | None = None, hooks: HookSet | None = None) -> None:
         if mode not in MODES:
             raise ValueError(f"mode must be one of {MODES}")
         self.router, self.ws, self.tools = router, ws, tools
@@ -117,6 +118,9 @@ class AgentSession:
         self.result_chars = result_chars
         self.context_chars = context_chars  # transcript budget in characters (about 4 per token)
         self.rules = rules if rules is not None else Rules.parse(getattr(ws, "allow", None), getattr(ws, "deny", None))
+        self.hooks = hooks if hooks is not None else HookSet.parse(getattr(ws, "hooks", None))  # a bad hook is an error now
+        self.bridge: Any = None  # McpBridge when the workspace configures MCP servers (set by the factory)
+        self._mcp_announced = False
         self.loop_guard = LoopGuard()
         self.compaction_stage = "full"  # which stage the last prompt needed; exposed for the UI and tests
         #: transcript entries: {"role": user|assistant|tool, ...}
@@ -180,7 +184,20 @@ class AgentSession:
 
     # ----------------------------------------------------------------------------------------------- turn
 
+    def close(self) -> None:
+        """Stop anything the session started (MCP server subprocesses). Safe to call twice."""
+        if self.bridge is not None:
+            self.bridge.close()
+
+    def _announce_mcp(self) -> None:
+        if self._mcp_announced or self.bridge is None:
+            return
+        self._mcp_announced = True  # the status is only known to the session, so it is reported with the first message
+        for name, status in self.bridge.status.items():
+            self._emit("error" if status.startswith("error") else "assistant", f"MCP server {name}: {status}")
+
     def send(self, message: str) -> TurnResult:
+        self._announce_mcp()
         self._log({"role": "user", "text": message})
         corrected = False
         for step in range(1, self.max_steps + 1):
@@ -230,13 +247,22 @@ class AgentSession:
             self._emit("approval", f"{name}: {why}", {"tool": name, "denied": True})
             stop = self._finish(name, args, f"denied: {why}")
             return stop or (("denied", why) if why.startswith("the user declined") else None)
+        pre = self.hooks.run("pre_tool", name, args, self.ws.root)
+        if pre.blocked:
+            self._emit("approval", f"{name}: blocked by a hook", {"tool": name, "denied": True, "hook": True})
+            return self._finish(name, args, f"blocked by a pre_tool hook:\n{pre.output}")
+        ok_call = True
         try:
             out = self.tools.call(name, args)
             text = json.dumps(out, ensure_ascii=False) if not isinstance(out, str) else out
         except ToolError as exc:
-            text = f"error: {exc}"
+            text, ok_call = f"error: {exc}", False
         except Exception as exc:  # noqa: BLE001 - a tool crash goes to the model as an error, never kills the session
-            text = f"error: {type(exc).__name__}: {exc}"
+            text, ok_call = f"error: {type(exc).__name__}: {exc}", False
+        if ok_call:
+            post = self.hooks.run("post_tool", name, args, self.ws.root, result=text)
+            if post.output:
+                text += "\n[post_tool hook]\n" + post.output
         return self._finish(name, args, text)
 
     def _finish(self, name: str, args: dict, text: str) -> tuple[str, str] | None:
