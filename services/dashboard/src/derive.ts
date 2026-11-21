@@ -47,6 +47,12 @@ export interface RunView {
   cancelled: boolean;
   finished: boolean;
   active: StageKey | null;
+  /** when each stage first and last produced an event (seconds since the epoch), for the timeline */
+  times: Record<StageKey, { start: number | null; end: number | null }>;
+  /** moments a stage sent the design back for repair */
+  retries: { stage: StageKey; ts: number }[];
+  t0: number | null;
+  t1: number | null;
 }
 
 const blank = (): RunView["stages"] =>
@@ -57,9 +63,11 @@ export function deriveView(events: EventRec[]): RunView {
     stages: blank(), mode: "simulated", contract: null, rtl: [], guardrails: [], sim: null, formal: [], lec: null,
     episodes: [], signoff: null, calls: [], cost: { usd: 0, tokens: 0, saved: 0, calls: 0, cacheHits: 0 },
     error: null, cancelled: false, finished: false, active: null,
+    times: Object.fromEntries(STAGES.map((x) => [x.key, { start: null, end: null }])) as RunView["times"], retries: [], t0: null, t1: null,
   };
   let guardAttempt = 0;
   for (const e of events) {
+    if (e.stage !== "LLM") { v.t0 = v.t0 == null ? e.ts : Math.min(v.t0, e.ts); v.t1 = v.t1 == null ? e.ts : Math.max(v.t1, e.ts); }
     const key = STAGE_OF[e.stage];
     const p = e.payload ?? {};
     if (e.stage === "INIT" && p.eda_mode) v.mode = p.eda_mode;
@@ -91,7 +99,9 @@ export function deriveView(events: EventRec[]): RunView {
     if (e.stage === "PNR_RL_OPT" && e.status === "EPISODE" && p.metrics) v.episodes.push(p.metrics as PPA);
     if (e.stage === "SIGNOFF" && p.checks) v.signoff = { ok: e.status === "PASS", checks: p.checks, eco: p.eco };
 
-    if (e.status === "RETRY") st.loops += 1;
+    const tm = v.times[key];
+    tm.start = tm.start == null ? e.ts : Math.min(tm.start, e.ts); tm.end = tm.end == null ? e.ts : Math.max(tm.end, e.ts);
+    if (e.status === "RETRY") { st.loops += 1; v.retries.push({ stage: key, ts: e.ts }); }
     st.detail = e.detail;
     if (e.status === "PASS" || e.status === "INFO" || e.status === "VERSION" || e.status === "EPISODE") {
       st.status = e.status === "EPISODE" || e.status === "VERSION" ? "active" : "done";
