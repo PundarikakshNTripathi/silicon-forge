@@ -31,6 +31,17 @@ jobs:
       - name: Test
         run: uv run pytest -q
 
+  agentbench:  # the harness against the real LangGraph and Pydantic AI, so a breaking framework release is noticed here
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv venv --python 3.12
+      - name: Install (frameworks included)
+        run: uv pip install -e ".[api,providers,bench,dev]"
+      - name: Agent benchmark harness
+        run: uv run pytest -q tests/test_agentbench.py tests/test_agentbench_proxy.py tests/test_agentbench_arms.py tests/test_agentbench_cli.py
+
   cpp:
     strategy:
       fail-fast: false

@@ -50,6 +50,12 @@ otel = [  # export agent traces as OpenTelemetry (GenAI conventions) to any OTLP
     "opentelemetry-sdk>=1.25",
     "opentelemetry-exporter-otlp-proto-http>=1.25",
 ]
+bench = [  # the agent frameworks `siliconforge agentbench` compares against our own loop (benchmarks only; never imported otherwise)
+    "langgraph>=1.2",
+    "langchain>=1.5",
+    "langchain-openai>=1.8",
+    "pydantic-ai-slim[openai]>=2.0",
+]
 plots = [
     "matplotlib>=3.8",
 ]

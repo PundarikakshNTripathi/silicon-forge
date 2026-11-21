@@ -610,6 +610,9 @@ def build_parser() -> argparse.ArgumentParser:
     from services.orchestrator.evals.cli import add_parser as add_evals_parser
 
     add_evals_parser(sub)
+    from services.orchestrator.agentbench.cli import add_parser as add_agentbench_parser
+
+    add_agentbench_parser(sub)
     from services.orchestrator.flow.cli import add_parser as add_flow_parser
 
     add_flow_parser(sub)

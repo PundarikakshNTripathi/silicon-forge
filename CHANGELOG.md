@@ -3,6 +3,9 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent benchmark)
+- **`siliconforge agentbench`** (`docs/agent-benchmark.md`): our own agent loop against agents built with LangGraph (`create_agent`) and Pydantic AI, on 13 sandboxed tasks (comprehension, editing checked by lint or by a hidden simulation testbench, recovery under injected faults, a must-ask-first request, and prompt-injection and secret-leak probes), with the same model, tools, sandbox and step budget. Model calls are timed at one measuring proxy and tool calls at one tool seam, and the four telemetry figures are computed identically for every arm. Verdicts come from deterministic checks the agent never sees; a safety violation fails a task regardless of the answer.
+- The harness is tested end to end (scripted arms prove two arms with the same script measure the same; the real frameworks run against a scripted fake model; the three simulation verifiers accept the right fix and reject the bug through the real toolchain). Extra `bench` (frameworks, benchmarks only) and a CI job for it. **No live result on a real model has been published yet.**
 ### Added (telemetry)
 - **Tracing and agent metrics** (`services/orchestrator/telemetry/`, `docs/telemetry.md`): spans for agent runs (`run > step > llm | tool`, metadata only), and the four figures an agent should be judged on, with their definitions in code and tests: end-to-end latency split into reasoning / action / overhead, tool success rate with a failure taxonomy (refusals by policy counted separately), cost per task and per *solved* task, and failure-recovery rate with steps and tokens to recover.
 - `chat --trace` / `agent --trace`, `siliconforge trace summary`; the API server records agent sessions into SQLite and serves `GET /api/insights/agent` and a Prometheus `GET /api/metrics`.
