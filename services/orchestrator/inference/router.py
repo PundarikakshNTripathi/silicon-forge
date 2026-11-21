@@ -7,6 +7,7 @@ discounts) and recorded in the CostTracker, which enforces USD / total / per-sta
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from services.orchestrator.config import InferenceConfig
@@ -61,6 +62,8 @@ class ModelRouter:
         self._providers: dict[str, BaseLLMProvider] = {}
         self._breakers: dict[str, CircuitBreaker] = {}
         self.stats = RouterStats()
+        #: optional observer called once per completed call (used to stream the agent log to the UI)
+        self.on_call: Callable[[dict], None] | None = None
         replay_only = self._override is not None and self._override.name == "replay" or all(
             self.catalog.providers.get(t.provider, {}).get("kind") == "replay"
             for chain in self.catalog.profiles.get(self.profile, {}).values()
@@ -125,6 +128,7 @@ class ModelRouter:
             hit = self.cache.get(cache_key)
             if hit is not None:
                 self._record_cache_hit(stage, tier, primary, hit)
+                self._emit(stage, tier, primary, hit, system_prompt, user_prompt, cache_hit=True)
                 return hit
 
         last_error: Exception | None = None
@@ -159,6 +163,7 @@ class ModelRouter:
             if cache_key is not None and self.cache is not None:
                 self.cache.put(cache_key, resp)
             self._record(stage, tier, target, provider, resp)
+            self._emit(stage, tier, target, resp, system_prompt, user_prompt, cache_hit=False)
             return resp
 
         raise ProviderError(
@@ -166,6 +171,20 @@ class ModelRouter:
         ) from last_error
 
     # ----------------------------------------------------------------------------------------------
+
+    def _emit(self, stage: str, tier: str, target: Target, resp: LLMResponse, system_prompt: str,
+              user_prompt: str, cache_hit: bool) -> None:
+        if self.on_call is None:
+            return
+        rec = self.cost_tracker.records[-1]
+        clip = 20_000
+        self.on_call({
+            "stage": stage, "tier": tier, "provider": target.provider, "model": target.model,
+            "cache_hit": cache_hit, "prompt_tokens": resp.prompt_tokens, "completion_tokens": resp.completion_tokens,
+            "cached_tokens": resp.cached_tokens, "latency_s": resp.latency_s, "ttft_s": resp.ttft_s,
+            "tokens_per_s": resp.tokens_per_s, "cost_usd": rec.cost_usd, "saved_usd": rec.saved_usd,
+            "system_prompt": system_prompt[:clip], "user_prompt": user_prompt[:clip], "response": resp.content[:clip],
+        })
 
     def _record(self, stage: str, tier: str, target: Target, provider: BaseLLMProvider, resp: LLMResponse) -> None:
         price = self.catalog.price(target.model)

@@ -20,6 +20,9 @@ providers:
     local: true
     supports_json_schema: true    # constrained decoding via llama.cpp grammar
     cache_prompt: true            # reuse the KV cache for the shared prompt prefix
+    max_tokens: 6000
+    extra_body:                   # thinking models (Qwen3.x): skip hidden reasoning, it conflicts with JSON constraints
+      chat_template_kwargs: {enable_thinking: false}
   openai:
     kind: openai_compat
     base_url: "https://api.openai.com/v1"

@@ -32,6 +32,7 @@ pipeline:
   max_formal_iters: 4
   max_pnr_rl_episodes: 6
   formal_bmc_depth: 20
+  stop_after: null               # null | "formal" | "lec": verify-only runs (skip place-and-route)
   timing_corner: "worst"         # "worst" = multi-corner signoff; or "tt" / "ss" / "ff" to pick a corner
   require_lec_pass: true
   require_zero_drc: true
