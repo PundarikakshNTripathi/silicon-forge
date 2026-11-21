@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """LibreLane (OpenLane 2 successor) driver: config generation, execution via a Runner, metrics.json parsing."""
 from __future__ import annotations
 

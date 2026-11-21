@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """A conversational, tool-using agent session that works with any model the router can reach.
 
 Local llama.cpp models and subscription CLIs do not all support native tool calling, so the protocol is one that every

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Generators: Verilog decoder, formal decoder check, ISA reference (Markdown + bit-field SVGs).
 
 Output is Verilog-2001, not SystemVerilog packages, so it drops into any Yosys/LibreLane flow unchanged.

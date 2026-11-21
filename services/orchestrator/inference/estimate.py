@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Pre-run cost estimate for a routing profile (typical per-stage token volumes; an estimate, not a quote)."""
 from __future__ import annotations
 

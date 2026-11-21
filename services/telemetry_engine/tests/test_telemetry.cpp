@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // Unit tests for sf-telemetry. Uses an always-on CHECK macro: assert() is compiled out under -DNDEBUG
 // (CMake Release), which previously made these tests pass vacuously.
 #include <cmath>

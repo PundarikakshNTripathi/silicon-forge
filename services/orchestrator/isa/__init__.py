@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """ISA toolchain: one `isa.yaml` -> assembler, disassembler, Verilog decoder, golden model, docs, timing checker."""
 from __future__ import annotations
 

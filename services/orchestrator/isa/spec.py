@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """ISA specification: one `isa.yaml` is the single source of truth for encoding, assembly syntax, timing and semantics.
 
 Encoding is a pattern string of `word_bits` characters (whitespace ignored), MSB first:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Principal RTL Coder Agent: generates synthesizable SystemVerilog & performs COI-sliced repairs."""
 from __future__ import annotations
 

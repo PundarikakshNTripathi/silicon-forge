@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Assemble captioned PNG frames into a looping GIF.
 
 Usage: python scripts/make_gif.py OUT.gif WIDTH FRAMES_DIR  "caption 1" "caption 2" ...

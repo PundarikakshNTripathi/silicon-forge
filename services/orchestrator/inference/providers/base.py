@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Provider abstractions: normalized responses and usage, error taxonomy, retry with jitter, circuit breaker."""
 from __future__ import annotations
 

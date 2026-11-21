@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Real EDA backend: Yosys / SymbiYosys / Verilator / LibreLane (OpenROAD) via a Runner.
 
 The same flow logic serves three environments; only the Runner differs, and provenance is the runner name:

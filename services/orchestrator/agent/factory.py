@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Builds an agent session for a workspace: config, router with policy and ledger, EDA runner, pipeline hook."""
 from __future__ import annotations
 

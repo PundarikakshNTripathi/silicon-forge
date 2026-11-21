@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Secret lookup: environment variable first, then the OS keychain (never a config file)."""
 from __future__ import annotations
 

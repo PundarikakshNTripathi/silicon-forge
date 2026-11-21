@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Lockstep co-simulation and functional coverage helpers for cocotb testbenches. Standard library only.
 
 Lockstep means the RTL and a Python golden model run the same program, and after every retired instruction their

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """LLM providers: replay (offline), OpenAI-compatible (llama.cpp / OpenAI / Gemini / Ollama), Anthropic, CLI bridge."""
 from services.orchestrator.inference.providers.base import (
     BaseLLMProvider,

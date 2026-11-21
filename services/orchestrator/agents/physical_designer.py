@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Principal Physical Design Agent: OpenROAD/LibreLane timing closure & DRC/LVS advisor."""
 from __future__ import annotations
 

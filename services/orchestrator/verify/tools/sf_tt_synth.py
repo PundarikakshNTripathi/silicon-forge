@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Synthesize a design with Yosys against a real PDK liberty file and report cells and area. Standard library only.
 
     sf_tt_synth.py --sources rtl/top.v rtl/core.v --top tt_um_example [--include src] [--pdk-root ~/pdk]

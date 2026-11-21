@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Independent protocol decoders (UART, SPI, I2C, WS2812) over pin traces, plus reference encoders to test them with.
 
 Why independent: a protocol engine that drives its pins wrongly will happily agree with a decoder written from the same

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Tiered model router: profile-driven fallback chains, circuit breakers, response cache, real cost accounting.
 
 Per call: pick a tier from the task (escalating on repeated failures), take that tier's ordered chain of

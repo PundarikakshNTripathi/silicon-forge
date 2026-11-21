@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CI check: agent harness files stay thin pointers to AGENTS.md and referenced commands exist."""
 from __future__ import annotations
 

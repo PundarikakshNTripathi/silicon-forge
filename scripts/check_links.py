@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Check that every external link in the docs still loads.
 
     python scripts/check_links.py [docs/learning docs/landscape.md ...]   # default: all of docs/ and README.md

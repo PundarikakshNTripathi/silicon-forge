@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 import { useMemo, type ReactNode } from "react";
 import { diffLines } from "diff";
 import { AlertTriangle, CheckCircle2, CircleSlash, FlaskConical, ShieldCheck, XCircle } from "lucide-react";

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Builds provider instances from catalog definitions (lazily, so missing keys only matter when used)."""
 from __future__ import annotations
 

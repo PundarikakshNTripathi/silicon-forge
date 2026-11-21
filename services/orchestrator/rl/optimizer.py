@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Hybrid Clipped-PPO + UCB Exploration + Evolutionary Pareto-Front PPA Optimizer.
 
 Supports batched, parallel episode evaluation (real P&R episodes take minutes) and early stopping once a

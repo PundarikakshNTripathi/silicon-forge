@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Workspaces: the directory the agent works in, plus the rules it must follow there.
 
 A workspace is any folder. If it holds a `siliconforge.yaml` that file sets the profile, backend, PDK and a model

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """TypedPropertyIR -> SVA / .sby compiler, witness parsing and signal grounding."""
 from __future__ import annotations
 

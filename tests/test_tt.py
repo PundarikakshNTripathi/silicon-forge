@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Tiny Tapeout (IHP SG13CMOS5L) support: validation, budget, scaffold, preflight; real synthesis + gate-level simulation."""
 from __future__ import annotations
 

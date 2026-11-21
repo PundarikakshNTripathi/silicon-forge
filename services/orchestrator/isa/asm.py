@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Assembler and disassembler generated from an `IsaSpec`.
 
 Syntax: one statement per line; `;`, `//` or `#` start a comment; `label:` may precede a statement.

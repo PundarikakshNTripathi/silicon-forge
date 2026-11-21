@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Run a cocotb test module against Verilog sources with Icarus, for one or many seeds, and write JSON results.
 
 Uses cocotb's own Python runner, so it needs neither `make` nor a shell:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Verification toolkit: mutation testing, functional and toggle coverage, protocol decoding, cocotb regression.
 
 The heavy lifting is done by standard-library-only scripts in `verify/tools/` that run wherever the EDA tools run

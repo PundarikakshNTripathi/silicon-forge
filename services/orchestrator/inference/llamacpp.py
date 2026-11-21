@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Local llama.cpp manager: install the official `llama-server` build, download GGUF models, run the server.
 
 Downloads use official upstream release assets (ggml-org/llama.cpp) and Hugging Face file URLs, are resumable, and
@@ -204,7 +205,8 @@ class ServerConfig:
     extra: tuple[str, ...] = ()
 
     def argv(self, exe: Path) -> list[str]:
-        a = [str(exe), "-m", str(self.model_path), "--host", self.host, "--port", str(self.port),
+        # the server runs with its own directory as cwd, so a relative path would silently point somewhere else
+        a = [str(exe), "-m", str(Path(self.model_path).resolve()), "--host", self.host, "--port", str(self.port),
              "-c", str(self.ctx), "-ngl", str(self.gpu_layers), "--parallel", str(self.parallel),
              "--cache-reuse", str(self.cache_reuse), "--jinja"]
         if self.flash_attn:

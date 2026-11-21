@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Six-gate anti-hallucination guardrail engine for SiliconForge."""
 from __future__ import annotations
 

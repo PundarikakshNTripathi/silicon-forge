@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Multi-objective PPA reward shaping and Pareto-front dominance utilities."""
 from __future__ import annotations
 

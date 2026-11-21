@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Tiny Tapeout project support (IHP SG13CMOS5L): info.yaml validation, tile budget, scaffold, preflight, submission pack.
 
 What this does NOT do: it is not the official precheck. Tiny Tapeout's own GDS action (hardening) and precheck (DRC and

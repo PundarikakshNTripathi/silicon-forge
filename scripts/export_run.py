@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Export a finished run's results as a committed benchmark artifact (benchmarks/results/<name>.json).
 
 Usage: python scripts/export_run.py <run_id> <name>

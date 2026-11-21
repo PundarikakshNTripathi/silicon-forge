@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // Typed client for the SiliconForge API. The desktop app passes a per-launch token as ?token=…
 
 const params = new URLSearchParams(window.location.search);

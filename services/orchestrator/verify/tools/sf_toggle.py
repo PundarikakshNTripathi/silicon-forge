@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Toggle coverage from a waveform dump: which signal bits never moved in both directions?
 
     sf_toggle.py DUMP.vcd|DUMP.fst [--scope tb.dut] [--exclude clk --exclude rst_n] [--out toggle.json]

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Persistent SQLite response cache (exact-match on model + params + prompt + schema).
 
 This is an exact-match cache, not a semantic one: it only helps when an identical request repeats (re-runs of the same

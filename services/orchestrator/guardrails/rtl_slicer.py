@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Static signal dependency slicer (Cone of Influence) for minimal-diff RTL repair.
 
 Inspired by Veri-Sure (arXiv:2601.19747): localizes the backward signal dependency cone

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Write a logo concept sheet as SVG for review (an SVG sheet). Concepts are plain SVG strings.
 
 The mark has to say "silicon, verified, forged" without drawing a chip with pins: that is the category cliche. Ideas:

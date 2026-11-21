@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Mutation engine: operator enumeration (pure Python) and an end-to-end run with real Icarus + Yosys (auto-skipped)."""
 from __future__ import annotations
 

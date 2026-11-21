@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """HTTP API: runs, live SSE streaming, artifacts, auth, settings, providers (simulated backend, replay profile)."""
 from __future__ import annotations
 

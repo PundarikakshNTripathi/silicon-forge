@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Export SVG frames of the terminal UI following a stored run (used for the README GIF).
 
 Usage: python scripts/tui_frames.py <run_id> <out_dir> <n1,n2,...>   # frames after n1, n2... events

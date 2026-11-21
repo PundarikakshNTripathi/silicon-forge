@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Measure the C++ sf-telemetry engine against the pure-Python fallbacks (no claims without numbers).
 
 Usage: python benchmarks/bench_telemetry.py [--iters 200]
