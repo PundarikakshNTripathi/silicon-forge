@@ -1,19 +1,26 @@
 <div align="center">
 
-<img src="assets/logo.svg" width="84" alt="SiliconForge logo">
+<img src="assets/logo.svg" width="96" alt="SiliconForge logo: a wafer with a flat edge and a routed S ending on two amber via pads">
 
 # SiliconForge
 
 **Describe a chip block. Get RTL that is formally proven, checked for equivalence, and laid out on real open-source EDA.**
 
-An autonomous spec-to-GDSII agent where tools, not language models, decide what passes. Local-first, with a desktop app, web cockpit and terminal UI.
+A local-first agent where tools, not language models, decide what passes. Desktop app, web cockpit, terminal, and an agent that works in your own folder.
 
 [![CI](https://github.com/PundarikakshNTripathi/silicon-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/PundarikakshNTripathi/silicon-forge/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-2b4a7a)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.11%2B-2b4a7a)
-![EDA](https://img.shields.io/badge/EDA-Yosys%20%C2%B7%20SymbiYosys%20%C2%B7%20OpenROAD-1f7a5c)
+[![License](https://img.shields.io/badge/license-Apache--2.0-0e1520)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.11%2B-0e1520)
+![EDA](https://img.shields.io/badge/EDA-Yosys%20%C2%B7%20SymbiYosys%20%C2%B7%20OpenROAD-0e1520)
+![Tiny Tapeout](https://img.shields.io/badge/Tiny%20Tapeout-IHP%20SG13CMOS5L-f2a900)
 
-<img src="assets/gifs/cockpit.gif" width="860" alt="The SiliconForge cockpit replaying a real run: a bug is found by formal verification, repaired, proven, and laid out">
+<br>
+
+<img src="assets/screenshots/run-overview.png" width="900" alt="A real run: title block, results against the contract, and the flow drawn as signal rows to real time scale. The amber square on Formal is a counterexample repair.">
+
+<sub>A real run on real tools. The amber square marks the moment formal verification sent the design back for repair.</sub>
+
+[What it does](#what-it-does) · [Results](#results) · [Real or simulated](#what-is-real-and-what-is-simulated) · [Quickstart](#quickstart) · [Beyond the pipeline](#beyond-the-pipeline) · [Architecture](#architecture) · [Benchmarks](#benchmarks) · [Learn](docs/learning/roadmap.md)
 
 </div>
 
@@ -21,33 +28,37 @@ An autonomous spec-to-GDSII agent where tools, not language models, decide what 
 
 ## What it does
 
-You write a spec in plain language. SiliconForge turns it into a machine-checked **design contract**, asks a model to write the SystemVerilog, and then refuses to believe it until tools agree:
+You write a spec in plain language. SiliconForge turns it into a machine-checked **design contract**, asks a model for the SystemVerilog, and then refuses to believe it until tools agree.
 
-1. **Guardrails** reject hallucinated ports, cells, flags and unsynthesizable constructs.
-2. **SymbiYosys** tries to break the design (bounded check, unbounded proof, and a cover check so proofs cannot pass vacuously). A failure yields a real counterexample waveform.
-3. The failing logic is **sliced** out of the RTL and sent back to the model for a minimal repair.
-4. **Yosys** proves the synthesized netlist is equivalent to the RTL.
-5. **OpenROAD (via LibreLane)** lays it out. A hybrid RL and Pareto optimizer searches recipes across real timing corners.
-6. **Signoff** checks timing, DRC, LVS, equivalence and budgets, and writes the GDSII.
+| Step | What decides | Tool |
+| :--- | :--- | :--- |
+| 1. Guardrails | invented ports, cells, flags, unsynthesizable code are rejected | rules + Verilator |
+| 2. Formal | tries to break the design; a cover check stops proofs passing vacuously | SymbiYosys (BMC, PDR) |
+| 3. Repair | only the failing cone of logic goes back to the model | counterexample slicing |
+| 4. Equivalence | the synthesized netlist must equal the RTL | Yosys `equiv_*` |
+| 5. Layout | an RL and Pareto search over recipes, across real timing corners | LibreLane / OpenROAD |
+| 6. Signoff | timing, DRC, LVS, equivalence and budgets, then the GDSII | all of the above |
 
-Every result is labelled with where it came from. **Hatched amber means simulated; solid green means a real tool produced it.**
+<p align="center"><img src="assets/diagrams/flow.svg" width="900" alt="The flow from spec to signoff with amber repair loops back to RTL, and the real and simulated stamps"></p>
 
-## The most impressive parts
+Every result carries where it came from: a **solid ink stamp** means a real tool produced it, a **hatched outline** means a surrogate did. The distinction survives greyscale.
 
-**A real bug, found and fixed by real tools.** On the `up_down_counter` example, the first RTL ignores `load` while counting. SymbiYosys produces a counterexample, the cone-of-influence slice goes back to the model, the repaired RTL is proven, Yosys proves equivalence (78 cells), and LibreLane produces a GDSII: worst-corner slack **+3.35 ns**, 1166 µm², 0.23 mW, DRC 0, LVS clean.
+## Results
+
+**A real bug, found and fixed by real tools.** On the `up_down_counter` example the first RTL ignores `load` while counting. SymbiYosys produces a counterexample, the failing cone of logic goes back to the model, the repaired RTL is proven, Yosys proves equivalence (78 cells), and LibreLane produces a GDSII: worst-corner slack **+3.35 ns**, 1166 µm², 0.23 mW, DRC 0, LVS clean.
 
 <table>
 <tr>
-<td width="55%"><img src="assets/screenshots/verification.png" alt="Real counterexample waveform with the violated cycle shaded"></td>
-<td width="45%"><img src="assets/layout/up_down_counter.png" alt="Real layout of the up_down_counter rendered from its GDSII"></td>
+<td width="58%"><img src="assets/screenshots/verification.png" alt="The verification tab: the counterexample SymbiYosys produced, with the violated cycle shaded, beside the passing re-run"></td>
+<td width="42%"><img src="assets/layout/up_down_counter.png" alt="The real layout of up_down_counter rendered from its GDSII"></td>
 </tr>
 <tr>
-<td><sub>The counterexample SymbiYosys produced, with the violated cycle shaded.</sub></td>
-<td><sub>The layout LibreLane produced (rendered from the real GDSII).</sub></td>
+<td><sub>The counterexample SymbiYosys produced. The shaded cycle is where the assertion failed.</sub></td>
+<td><sub>The layout LibreLane produced, rendered from the real GDSII.</sub></td>
 </tr>
 </table>
 
-**It signs off on the corner that actually matters, and searches for a layout that survives it.** The 32-bit `axi_lite_alu` meets 10 ns at the typical corner with almost any recipe, but **8 of 9 layout recipes miss it at the slow corner (by 1.3 to 3.2 ns)**. SiliconForge signs off on the worst corner by default; its optimizer found the one recipe that closes everywhere (`AREA 3`, 65% utilization, a counter-intuitive pick over the `DELAY` strategies), after which all 8 signoff checks passed on real tools: slack **+1.13 ns**, 8682 µm², 0.93 mW, DRC 0, LVS clean, equivalence proven.
+**It signs off on the corner that matters, and searches for a layout that survives it.** The 32-bit `axi_lite_alu` meets 10 ns at the typical corner with almost any recipe, but **8 of 9 layout recipes miss it at the slow corner (by 1.3 to 3.2 ns)**. SiliconForge signs off on the worst corner by default; its optimizer found the one recipe that closes everywhere, after which all 8 signoff checks passed: slack **+1.13 ns**, 8682 µm², 0.93 mW, DRC 0, LVS clean, equivalence proven.
 
 <table>
 <tr>
@@ -56,192 +67,128 @@ Every result is labelled with where it came from. **Hatched amber means simulate
 </tr>
 </table>
 
-**Local-first inference, measured.** With llama.cpp's prefix cache a repeated 394-token prompt reused 390 tokens and its first token arrived **8.6x sooner**. Prompts are laid out with stable content first so provider caches hit too, and spend is capped per run, per stage and per call.
-
-<img src="assets/plots/prefix_cache.png" width="420" alt="Time to first token with and without the prefix cache">
-
-**It admits what it measured.** The C++ telemetry engine costs about 8 ms per call when spawned and in-process Python regex costs about 0.04 ms, so the README does not claim native speed (see [Benchmarks](#benchmarks)).
+**It reports its own gaps.** A mutation run on the worked example's own tests killed 34 planted bugs, proved 6 mutants equivalent, and listed the 4 that survived, each with its line and the exact change: three sit on one reset line whose values the tests never check, and one is a write guard no test exercises. See [Beyond the pipeline](#beyond-the-pipeline).
 
 ## What is real and what is simulated
 
 | Capability | Status |
 | :--- | :--- |
-| Formal verification (BMC, PDR proof, cover), counterexample traces | **Real**: SymbiYosys + Bitwuzla, tested on all 4 example designs, good and buggy |
-| Logical equivalence (RTL vs synthesized netlist) | **Real**: Yosys `equiv_*` (FSM re-encoding disabled so name matching holds) |
-| Lint | **Real**: Verilator plus the C++/Python rule set |
+| Formal verification (BMC, PDR proof, cover), counterexample traces | **Real**: SymbiYosys + Bitwuzla, all 4 example designs, good and buggy |
+| Logical equivalence (RTL vs synthesized netlist) | **Real**: Yosys `equiv_*` |
 | Place and route, GDSII, per-corner PPA | **Real**: LibreLane 3.0 / OpenROAD on Sky130, WSL2 or native |
-| Model inference | **Real**: llama.cpp, Claude (official SDK), OpenAI-compatible, Gemini |
-| Bundled-example replay | Recorded fixtures: the model step is replayed, but the EDA steps are real when you pick a real backend |
+| Verification toolkit (lockstep, mutation, coverage, decoders) | **Real**: Icarus + cocotb, Yosys; needs a real backend and refuses the simulated one |
+| Tiny Tapeout IHP: synthesis, tile budget, gate-level simulation | **Real**: Yosys against the real IHP liberty, PDK cell models in Icarus |
+| Tiny Tapeout IHP: hardening, timing, DRC, precheck | **Not run locally.** Needs the official flow (Docker, or the GitHub `gds` workflow) |
+| Model inference | **Real**: llama.cpp, Claude (official SDK), OpenAI-compatible, Gemini through the Antigravity CLI |
 | `simulated` backend | **Surrogate models**, always labelled. For demos and CI only |
-| Docker backend | Wiring is unit-tested; not run end to end on the reference machine |
-| Subscription CLI bridge | Wiring is unit-tested; opt-in, see [terms note](docs/providers.md#subscription-cli-bridge-opt-in) |
-| GPU benchmark of local models | Pending: see [Benchmarks](#benchmarks) |
+| Docker backend, subscription CLI bridges (Claude, Codex, Gemini) | Wiring is unit-tested; not run end to end on the reference machine |
+| GPU benchmark of local models | **Pending**: the GPU was occupied by another project; see [Benchmarks](#benchmarks) |
 
 Free-form specs need a model. The bundled-examples profile deliberately fails on unknown specs rather than returning someone else's design.
 
 ## Quickstart
 
 ```bash
-# 1. Install (Python 3.11+, uv recommended)
 git clone https://github.com/PundarikakshNTripathi/silicon-forge && cd silicon-forge
 uv venv --python 3.12 .venv && source .venv/bin/activate          # Windows: .venv\Scripts\activate
 uv pip install -e ".[api,providers,tui,mcp,dev]"
 
-# 2. Run a bundled design end to end (offline, free, simulated EDA)
-siliconforge run --spec hardware/examples/axi_lite_alu/spec.md --backend simulated --inject-bug
+siliconforge run --spec hardware/examples/axi_lite_alu/spec.md --backend simulated --inject-bug   # offline, free
 
-# 3. Open the cockpit
 cd services/dashboard && pnpm install && pnpm build && cd ../..
-siliconforge serve            # http://127.0.0.1:8000
+siliconforge serve                                                 # http://127.0.0.1:8000
 ```
 
-For real results install the EDA tools once (about 15 minutes, no root needed): see [docs/eda-setup.md](docs/eda-setup.md), then add `--backend wsl` (Windows) or `--backend native`.
+For real results install the EDA tools once (about 15 minutes, no root): [docs/eda-setup.md](docs/eda-setup.md), then add `--backend wsl` (Windows) or `--backend native`.
 
-## Tutorials
-
-<details open>
-<summary><b>1. Watch the agent catch and fix a bug (offline)</b></summary>
+<details>
+<summary><b>Work in your own folder with the agent</b></summary>
 
 ```bash
-siliconforge run --spec hardware/examples/up_down_counter/spec.md --backend simulated --inject-bug
+cd my-chip
+siliconforge init . --profile dev --backend wsl     # writes siliconforge.yaml (optional)
+siliconforge chat                                   # like Claude Code or Codex, but it knows chip tools
+siliconforge agent --mode auto "add a synchronous reset to rtl/cnt.sv and prove it"
 ```
-You will see a formal counterexample, a repair, and a passing second proof. In the cockpit, open the run and press **Replay**.
+
+In the desktop app and web cockpit, the **Workspace** page has a folder picker, a file tree and the same conversation, with approval prompts for edits and commands. [docs/workspaces.md](docs/workspaces.md)
 </details>
 
 <details>
-<summary><b>2. Real EDA</b> (Windows with WSL2, or Linux/macOS)</summary>
-
-Follow [docs/eda-setup.md](docs/eda-setup.md), then:
-```bash
-siliconforge doctor                      # shows which backends are ready
-siliconforge run --spec hardware/examples/up_down_counter/spec.md --backend wsl --inject-bug
-python scripts/verify_examples.py --backend wsl --lec     # proves good RTL, catches every injected bug
-```
-</details>
-
-<details>
-<summary><b>3. A local model on your GPU</b></summary>
+<summary><b>A local model on your GPU</b></summary>
 
 ```bash
+siliconforge models detect                      # what is on this machine, and who is using the GPU
 siliconforge models install
 siliconforge models pull --repo unsloth/Qwen3.5-9B-GGUF --file Qwen3.5-9B-Q4_K_M.gguf
-siliconforge models start --file Qwen3.5-9B-Q4_K_M.gguf
+siliconforge models start --path <any .gguf>    # refuses if another program holds the VRAM; never evicts it
 siliconforge run --spec my_spec.md --profile local --backend wsl
 ```
-Or use the **Models** page in the cockpit. Details: [docs/providers.md](docs/providers.md).
 </details>
 
 <details>
-<summary><b>4. Claude, OpenAI, Gemini, or a subscription you already have</b></summary>
+<summary><b>Claude, OpenAI, Gemini, or a subscription you already have</b></summary>
 
-Save a key on the **Models** page (stored in your OS keychain) or set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY`, then choose `--profile cloud | openai | gemini | hybrid`. The `subscription` profile drives your signed-in `claude`/`codex`/`gemini` CLI and is **off by default** with a terms note in [docs/providers.md](docs/providers.md).
+Save a key on the **Models** page (OS keychain) or set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY`, then choose `--profile cloud | openai | gemini | hybrid`. Opt-in CLI bridges (`claude`, `codex`, `gemini`, and **Gemini 3.8 Flash through the Antigravity CLI**) never touch your sign-in tokens; see the [terms note](docs/providers.md#subscription-cli-bridge-opt-in).
 </details>
 
 <details>
-<summary><b>5. Desktop app</b></summary>
+<summary><b>Desktop app, terminal UI, and other coding agents</b></summary>
 
 ```bash
 python scripts/build_desktop.py          # UI + C++ engine + frozen backend + Electron installer
-apps/desktop/dist/win-unpacked/SiliconForge.exe
+siliconforge tui                         # terminal UI
+claude mcp add siliconforge -- python -m services.orchestrator.mcp_server
 ```
-The shell starts a private backend on a random localhost port with a per-launch token. Tray icon, menus and `siliconforge://runs/<id>` links included.
-</details>
+MCP tools: `lint_rtl`, `verify_rtl`, `check_equivalence`, `retrieve_skill`, `run_example`, `isa_check`, `run_cocotb`, `mutation_test`. Harness files for Claude Code, Codex, Antigravity, opencode, Cursor and others point to [AGENTS.md](AGENTS.md).
 
-<details>
-<summary><b>6. Terminal UI</b></summary>
-
-```bash
-siliconforge tui
-```
 <img src="assets/gifs/tui.gif" width="760" alt="Terminal UI following a run">
 </details>
 
-<details>
-<summary><b>7. Use it from Claude Code, Codex, opencode and other agents</b></summary>
+## Beyond the pipeline
 
-SiliconForge ships an MCP server and agent harness files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `opencode.json`, shared skills in `.agents/skills`).
+### An agent that works in your folder
+
+Pick any folder. The agent reads and writes only there, follows its `SILICONFORGE.md` or `AGENTS.md`, and has typed tools for the ISA toolchain, simulation, mutation testing and Tiny Tapeout synthesis. Permission modes follow Claude Code (ask, accept-edits, auto, plan). A workspace can **enforce** a model policy: the router drops every model it does not allow, and an empty chain is an error, not a fallback. Every call is recorded (metadata and a prompt hash, never prompt text), and `siliconforge report ai-usage` turns the ledger into a disclosure document. [docs/workspaces.md](docs/workspaces.md)
+
+### One file defines the processor
+
+Write an instruction set once in `isa.yaml`. SiliconForge generates a Verilog decoder (proved one-hot with SymbiYosys), an assembler with line-numbered errors, a golden model, bit-field documentation, and a **timing checker that proves cycle gaps between pin events from the control-flow graph**. Overlapping encodings are rejected at load. [docs/isa-toolchain.md](docs/isa-toolchain.md)
+
+### Evidence for how well something is verified
+
+| Tool | Answers | Worked example (`hardware/isa/pio16`, real tools) |
+| :--- | :--- | :--- |
+| Lockstep co-simulation | does the RTL match the model after *every* instruction? | 9 cocotb tests, 3 seeds, 91.7% functional coverage; a planted `djnz` bug fails it and names the register |
+| Mutation testing | would the tests notice a planted bug? | **89.5%** (34 killed, 4 survived, 6 proven equivalent and excluded); survivors listed by line |
+| Independent decoders | does the pin behaviour really speak UART/SPI/I2C/WS2812? | 10 UART bit gaps proven exactly 16 cycles |
+| Toggle and functional coverage | which behaviour did the tests never reach? | reported, with what it does not measure |
+
+<p align="center"><img src="assets/diagrams/verification.svg" width="900" alt="One isa.yaml generates the decoder, assembler, golden model, timing checker and docs; the RTL is checked by lockstep, mutation, formal proof, coverage and gate-level simulation"></p>
+
+[docs/verification.md](docs/verification.md)
+
+### Tiny Tapeout on IHP, with real numbers and honest limits
+
 ```bash
-claude mcp add siliconforge -- python -m services.orchestrator.mcp_server
+siliconforge tt scaffold my-chip --top tt_um_you_chip --tiles 4x4
+siliconforge tt check --synth     # info.yaml, ports, reset, latches, area against the tile budget
+siliconforge tt gls               # your cocotb tests on the gate-level netlist, PDK cell models
 ```
-Tools: `lint_rtl`, `verify_rtl`, `check_equivalence`, `retrieve_skill`, `list_examples`, `run_example`.
-</details>
 
-## The cockpit
+Synthesis runs against the **real IHP liberty**, so area is measured, not guessed: the `pio16` teaching engine is 1,723 cells and 43,544 µm², **63% of it flip-flops**, which is exactly the kind of fact that decides an architecture on day one. Timing, DRC and the official precheck need the official flow; the tool says so instead of implying a pass. [docs/tiny-tapeout.md](docs/tiny-tapeout.md)
 
-| New run | Run overview (real) |
-| :--- | :--- |
-| <img src="assets/screenshots/new-run.png" alt="New run screen"> | <img src="assets/screenshots/run-overview.png" alt="Run overview with the pipeline strip"> |
-| **Performance** | **Dark theme** |
-| <img src="assets/screenshots/performance.png" alt="Performance tab"> | <img src="assets/screenshots/dark.png" alt="Dark theme"> |
+### Local models without fighting other projects
 
-Pages: **New run** (model readiness and cost estimate, backend choice, targets), **Runs**, **Run detail** (overview, design with RTL diffs, verification waveforms, performance, layout and files, agent log of every prompt and response, cost), **Models and providers**, **Cost**, **Evals**, **Knowledge packs**, **Toolchain and settings**, and a command palette (Ctrl/Cmd+K).
-
----
-
-## Table of contents
-
-- [Architecture](#architecture)
-- [Guardrail gates](#guardrail-gates)
-- [Formal verification loop](#formal-verification-loop)
-- [Place and route and PPA optimization](#place-and-route-and-ppa-optimization)
-- [Inference, caching and cost](#inference-caching-and-cost)
-- [EDA backends and provenance](#eda-backends-and-provenance)
-- [Benchmarks](#benchmarks)
-- [Configuration](#configuration)
-- [CLI reference](#cli-reference)
-- [Repository layout](#repository-layout)
-- [Design decisions](#design-decisions)
-- [Roadmap](#roadmap)
-- [Research foundations](#research-foundations)
-- [Contributing](#contributing)
+SiliconForge starts its own `llama-server`, checks free VRAM first, and **refuses with options rather than evicting** another program's job. `siliconforge models detect` lists models already on the machine (your Hugging Face cache is used in place) and other servers it found, labelled as someone else's.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    S[Spec] --> A[Architect agent<br/>DesignContract]
-    A --> R[RTL agent<br/>SystemVerilog]
-    R --> G{Guardrails<br/>+ lint}
-    G -- violations --> R
-    G -- pass --> F{Formal<br/>BMC, PDR, cover}
-    F -- counterexample<br/>COI-sliced repair --> R
-    F -- proven, non-vacuous --> L{Synthesis<br/>+ LEC}
-    L -- not equivalent --> X[Fail]
-    L -- equivalent --> P[Place and route<br/>RL + Pareto search]
-    P --> O{Signoff<br/>timing, DRC, LVS}
-    O -- closed --> D[GDSII + report]
-    O -- not closed --> E[ECO advice]
-```
+<p align="center"><img src="assets/diagrams/system.svg" width="900" alt="Surfaces feed the core, which uses the model router and the EDA runner"></p>
 
-```mermaid
-flowchart TB
-    subgraph Clients
-      D[Desktop app<br/>Electron]
-      W[Web cockpit<br/>React]
-      T[Terminal UI<br/>Textual]
-      M[MCP server<br/>agents]
-    end
-    subgraph Backend
-      API[FastAPI + SQLite<br/>SSE event stream]
-      PIPE[Pipeline engine]
-      ROUTER[Model router<br/>profiles, fallback, cache, budgets]
-    end
-    subgraph Models
-      L[llama.cpp]
-      C[Claude / OpenAI / Gemini]
-      CLI[CLI bridge, opt-in]
-    end
-    subgraph EDA
-      Y[Yosys, SymbiYosys, Verilator]
-      O[LibreLane / OpenROAD]
-    end
-    D & W --> API
-    T & M --> PIPE
-    API --> PIPE --> ROUTER --> L & C & CLI
-    PIPE --> Y & O
-```
+More in [ARCHITECTURE.md](ARCHITECTURE.md). Contest workflow:
 
-More detail in [ARCHITECTURE.md](ARCHITECTURE.md).
+<p align="center"><img src="assets/diagrams/competition.svg" width="900" alt="From brief to write-up, with a repair loop from verification back to tests and RTL"></p>
 
 ## Guardrail gates
 
@@ -251,105 +198,117 @@ More detail in [ARCHITECTURE.md](ARCHITECTURE.md).
 | 2 Lint | `#delay`, `initial`, blocking/non-blocking misuse, latch risk | C++ `sf-telemetry` (Python fallback) + Verilator |
 | 3 PDK cells | invented standard cells | allowlist from `configs/pdks/` |
 | 4 Flow variables | made-up LibreLane variables, commercial-tool Tcl, impossible clocks | allowlist validated against the real LibreLane source |
-| 5 Formal vacuity | properties on signals that do not exist, unreachable covers | grounding check (also inside expressions) + cover result |
+| 5 Formal vacuity | properties on signals that do not exist, unreachable covers | grounding check + cover result |
 | 6 Equivalence | netlist that differs from the RTL | Yosys `equiv_make/simple/induct` |
 
-Gates 1 and 2 use pattern matching rather than a full SystemVerilog parser (a `pyslang` front end is on the roadmap). Every repair, including those made inside the formal loop, is re-audited.
+Gates 1 and 2 use pattern matching, not a full SystemVerilog parser (a `pyslang` front end is on the roadmap).
 
-## Formal verification loop
+## Formal verification, layout, and inference
 
-The formal agent never writes SVA. It emits a **typed property IR** (reset values, invariants, handshake stability, mutual exclusion, combinational equivalence, latency bounds, cover) which a deterministic compiler lowers to assertions. SymbiYosys runs `bmc` (Bitwuzla), `prove` (`abc pdr`) and `cover`. On failure the real VCD is distilled into the failing property, cycle and stimulus, the failing signal's backward cone of influence is sliced out of the RTL, and only that slice is sent back for repair. This follows the contract-first and slicing ideas in [Veri-Sure](https://arxiv.org/abs/2601.19747).
+<details>
+<summary><b>The formal loop</b></summary>
 
-## Place and route and PPA optimization
+The formal agent never writes SVA. It emits a **typed property IR** (reset values, invariants, handshake stability, mutual exclusion, combinational equivalence, latency bounds, cover) which a deterministic compiler lowers to assertions. SymbiYosys runs `bmc` (Bitwuzla), `prove` (`abc pdr`) and `cover`. On failure the real VCD is distilled into the failing property, cycle and stimulus, the failing signal's backward cone of influence is sliced from the RTL, and only that slice goes back for repair. This follows the contract-first and slicing ideas in [Veri-Sure](https://arxiv.org/abs/2601.19747).
+</details>
 
-LibreLane runs the classic flow on Sky130 and the metrics are read from its `metrics.json` (per-corner setup slack, standard-cell area, power, DRC, LVS) alongside the real GDSII and a layout render. A clipped-PPO-style policy with UCB exploration and a Pareto archive chooses among recipes whose keys are real LibreLane variables. Because a layout takes minutes, the optimizer supports parallel episodes, early stopping once signoff closes, an on-disk result cache keyed by hash(RTL, knobs, PDK), and optional relaxed-clock actions that report the fastest clock that closes. Signoff uses the **worst timing corner** by default (`tt`, `ss`, `ff` selectable).
+<details>
+<summary><b>Place and route and PPA optimization</b></summary>
 
-## Inference, caching and cost
+LibreLane runs the classic flow on Sky130 and metrics come from its `metrics.json` (per-corner setup slack, area, power, DRC, LVS) beside the real GDSII and a layout render. A clipped-PPO-style policy with UCB exploration and a Pareto archive chooses among recipes whose keys are real LibreLane variables. Layouts take minutes, so the optimizer runs parallel episodes, stops early once signoff closes, caches results by hash(RTL, knobs, PDK), and can try relaxed clocks. Signoff uses the **worst timing corner** by default.
+</details>
+
+<details>
+<summary><b>Inference, caching and cost</b></summary>
 
 <img src="assets/plots/profile_cost.png" width="440" alt="Estimated cost by routing profile">
 
-- **Profiles** map three task tiers (routine, balanced, hard reasoning) to ordered fallback chains: `replay`, `local`, `hybrid`, `cloud`, `openai`, `gemini`, `subscription`.
-- **Router**: circuit breakers, refusal fall-through, tier escalation on repeated repair failures.
-- **Caching, three layers**: provider/server prompt-prefix caches (stable content first), an exact-match persistent response cache for low-temperature calls, and an EDA result cache.
-- **Cost control**: pre-run estimate, USD / total-token / per-stage token budgets, cache-aware pricing and savings reporting.
-- **Claude specifics**: official SDK, prompt caching, `output_config.effort` per model, no sampling parameters (Claude 5.x rejects them), refusals surfaced.
-
-Details and the subscription-bridge terms note: [docs/providers.md](docs/providers.md).
-
-## EDA backends and provenance
-
-`simulated`, `native`, `wsl`, `docker`. Every result carries its `mode`; a missing tool raises an error instead of silently falling back. Setup guide: [docs/eda-setup.md](docs/eda-setup.md).
+- **Profiles** map three task tiers to ordered fallback chains: `replay`, `local`, `hybrid`, `dev`, `cloud`, `openai`, `gemini`, `gemini-agy`, `competition`, `subscription`.
+- **Router**: circuit breakers, refusal fall-through, tier escalation on repeated repair failures, enforced model policy.
+- **Caching, three layers**: provider and server prompt-prefix caches (stable content first), an exact-match persistent response cache, an EDA result cache.
+- **Cost control**: pre-run estimate, USD / token / per-stage budgets, cache-aware pricing.
+- Gemini 3.8 Flash via `agy` reports real token usage and carries about 10k tokens of agent overhead per call; details in [docs/providers.md](docs/providers.md).
+</details>
 
 ## Benchmarks
 
-Every number here comes from a file in [`benchmarks/results/`](benchmarks/results). Charts are regenerated with `python scripts/make_plots.py`.
+Every number here comes from a file in [`benchmarks/results/`](benchmarks/results). Reproduce with `python benchmarks/bench_verification.py`, `python scripts/make_plots.py`.
 
 | What | Result | Source |
 | :--- | :--- | :--- |
-| Example designs on real tools | good RTL proven + LEC pass; injected bug caught with a counterexample, for all 4 designs | `scripts/verify_examples.py`, `tests/test_real_eda.py` |
-| `up_down_counter` end to end (real) | slack +3.35 ns (worst corner), 1166 µm², 0.23 mW, DRC 0, LVS clean | `benchmarks/results/real-up_down_counter-*.json` |
+| Example designs on real tools | good RTL proven and equivalent; injected bug caught with a counterexample, all 4 designs | `scripts/verify_examples.py`, `tests/test_real_eda.py` |
+| `up_down_counter` end to end | slack +3.35 ns (worst corner), 1166 µm², 0.23 mW, DRC 0, LVS clean | `real-up_down_counter-*.json` |
+| Lockstep + coverage (`pio16`) | 9 tests over 3 seeds pass; functional coverage 91.7% (uncovered: all-ones pin value, short delays) | `verification-pio16-*.json` |
+| Mutation testing (`pio16`) | 89.5%: 34 killed, 4 survived, 6 proven equivalent | `verification-pio16-*.json` |
+| Real IHP synthesis (`pio16`) | 1,723 cells, 43,544 µm², 63% sequential; smallest fitting tile 2x2 with a 1.2 margin | `verification-pio16-*.json` |
 | llama.cpp prefix cache | first token 8.6x faster on a repeated prefix (CPU) | `llamacpp-prefix-cache-cpu-*.json` |
-| C++ telemetry vs Python | C++ ~8 ms per spawned call, Python ~0.04 ms in-process | `telemetry-*.json` |
-| Local GPU model benchmark | **not yet run**: the GPU was occupied by another process on the reference machine. Three models (Qwen3.5-9B, Qwen2.5-Coder-7B, Qwen3-8B, Q4_K_M) are downloaded and `benchmarks/bench_local_models.py` is ready | |
+| C++ telemetry vs Python | C++ ~8 ms per spawned call, Python ~0.04 ms in-process, so no speed claim | `telemetry-*.json` |
+| Local GPU model benchmark | **not yet run**: the GPU was held by another project; Qwen3.5-9B, Qwen2.5-Coder-7B and Qwen3-8B are downloaded and the harness is ready | |
 
-Reproduce on your machine: `python benchmarks/bench_local_models.py --model models/gguf/<model>.gguf`.
+## Learn the field, and see where this fits
 
-## Configuration
+- [**Landscape**](docs/landscape.md): how SiliconForge compares with research systems, open flows, commercial agentic EDA and public contest entries, and where each wins.
+- [**Learning roadmap**](docs/learning/roadmap.md): six stages from logic to a taped-out chip, with courses, books, practice platforms and tools.
+- [**Papers**](docs/learning/papers.md): annotated, every arXiv reference checked against its abstract page.
+
+## Configuration, CLI, layout
+
+<details>
+<summary><b>Configuration files</b></summary>
 
 | File | Purpose |
 | :--- | :--- |
+| `siliconforge.yaml` (in a workspace) | profile, backend, PDK, model policy |
 | `configs/flow_default.yaml` | backend, PDK, iteration limits, targets, optimizer, budgets |
-| `configs/models.yaml` | providers, per-model prices (with cache pricing), routing profiles |
+| `configs/models.yaml` | providers, prices (with cache pricing), routing profiles |
 | `configs/pdks/*.yaml` | cell and flow-variable allowlists, clock floors |
 | `configs/prompts/` | agent system prompts |
-| `services/orchestrator/skills/packs/` | knowledge packs retrieved into prompts |
+</details>
 
-## CLI reference
+<details>
+<summary><b>CLI reference</b></summary>
 
 ```text
-siliconforge run     --spec FILE [--backend simulated|native|wsl|docker] [--profile P] [--inject-bug]
-                     [--episodes N] [--parallel N] [--relax] [--verify-only]
-siliconforge eval    [--backend B]        # all bundled examples, writes benchmarks/results
-siliconforge doctor                       # toolchain, GPU, backends
-siliconforge models  install|pull|start|status
-siliconforge serve   [--port 8000]        # API + web UI
-siliconforge tui | mcp
+siliconforge run     --spec FILE [--backend simulated|native|wsl|docker] [--profile P] [--workspace DIR]
+siliconforge chat | agent "task"  [--workspace DIR] [--mode ask|accept-edits|auto|plan]
+siliconforge init    [DIR] [--profile P] [--allow-model GLOB]
+siliconforge isa     gen|asm|disasm|check|run isa.yaml [program.asm]
+siliconforge verify  sim|mutate|toggle ...
+siliconforge tt      scaffold|check|synth|gls|pack|doctor|harden
+siliconforge report  ai-usage [--workspace DIR]
+siliconforge models  detect|install|pull|start|status
+siliconforge eval | doctor | serve | tui | mcp
 python scripts/dev.py build-cpp|test|lint|doctor
 ```
+</details>
 
-## Repository layout
+<details>
+<summary><b>Repository layout</b></summary>
 
 ```text
-services/orchestrator/   pipeline, agents, guardrails, EDA backends, inference, RL, API, MCP
+services/orchestrator/   pipeline, agent, workspace, isa, verify, tt, guardrails, EDA backends, inference, RL, API, MCP
 services/telemetry_engine/  C++20 log parser and RTL linter (CMake)
-services/dashboard/      React web cockpit
+services/dashboard/      React cockpit (see DESIGN.md there)
 services/tui/            Textual terminal UI
 apps/desktop/            Electron shell
-configs/  hardware/examples/  benchmarks/  docs/  tests/  scripts/
+hardware/                examples (designs) and isa (the pio16 worked example)
+configs/  benchmarks/  docs/  tests/  scripts/
 ```
+</details>
 
 ## Design decisions
 
-- **No agent framework (LangGraph, Google ADK, Microsoft Agent Framework).** The pipeline is a deterministic graph whose edges are tool verdicts, not model routing, so a framework would add dependencies and a second state model without adding capability. Checkpointing, event streaming and cancellation are small and live in the pipeline and store. Revisit if open-ended, model-routed sub-agents are added.
-- **SymbiYosys over Lean for verification.** Push-button BMC, PDR and equivalence fit RTL. Lean-based RTL proofs (for example Rtl2lean) are a promising research direction but need RTL-to-Lean translation and model-written lemmas, and prove model-level rather than gate-level facts. A Lean track for unbounded arithmetic properties is a possible future addition.
-- **Honest defaults.** Worst-corner signoff, provenance on every result, no silent mock fallback.
+- **No agent framework (LangGraph, Google ADK, Microsoft Agent Framework).** The pipeline is a deterministic graph whose edges are tool verdicts, not model routing, so a framework would add a second state model without adding capability. The workspace agent is a small loop over a JSON action protocol that every model backend can honour.
+- **SymbiYosys over Lean for verification.** Push-button BMC, PDR and equivalence fit RTL. Lean-based RTL proofs ([Rtl2lean](https://arxiv.org/abs/2607.16855)) need RTL-to-Lean translation and model-written lemmas; a possible research track, not a dependency.
+- **Honest defaults.** Worst-corner signoff, provenance on every result, no silent fallback, no personal data in a ledger, and the tool never submits anything for you.
 
 ## Roadmap
 
-- `pyslang`-based port and lint front end
-- GPU benchmark of local models and a recommended default
-- Persistent telemetry server mode (or bindings) so the native path pays off
-- LibreLane inside the Docker backend; mapped-netlist LEC
-- Cocotb simulation gate; more example designs and an eval suite against public RTL benchmarks
-- Optional Lean 4 research track
-
-## Research foundations
-
-- Typed property IR with vacuity detection and counterexample-guided repair: [Open-Source LLM-Driven Formal Verification: A Multi-Agent Pipeline for RTL Repair](https://arxiv.org/abs/2607.28877). That paper reports modest repair rates (one of six benchmarks reliably), so SiliconForge treats the idea as a guardrail, not a guarantee.
-- Contract-aware agents with dependency slicing for minimal patches: [Veri-Sure](https://arxiv.org/abs/2601.19747).
-- Open-source flow: [LibreLane](https://github.com/librelane/librelane), [Yosys](https://github.com/YosysHQ/yosys), [SymbiYosys](https://github.com/YosysHQ/sby), [OpenROAD](https://github.com/The-OpenROAD-Project/OpenROAD).
-- Lean-based hardware verification (future work): [Rtl2lean](https://arxiv.org/abs/2607.16855).
+- `pyslang` port and lint front end
+- GPU benchmark of local models and a recommended default (needs an exclusive GPU window)
+- Local hardening for Tiny Tapeout through Docker, with timing and DRC read back into the report
+- Persistent telemetry server so the native path pays off; Cocotb gate in the pipeline
+- A release with signed installers
 
 ## Contributing
 
-Team workflow, branch naming and commit style are in [CONTRIBUTING.md](CONTRIBUTING.md). If you use a coding agent, `AGENTS.md` is the single source of truth and the other harness files point to it. Licensed under [Apache-2.0](LICENSE).
+Workflow, branch names and commit style are in [CONTRIBUTING.md](CONTRIBUTING.md). If you use a coding agent, [AGENTS.md](AGENTS.md) is the single source of truth. Licensed under [Apache-2.0](LICENSE).

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Coins, Cpu, FlaskConical, ListChecks, Moon, PlusCircle, Sun, Wrench } from "lucide-react";
+import { BookOpen, Coins, Cpu, FlaskConical, FolderTree, ListChecks, Moon, Play, Sun, Wrench } from "lucide-react";
 import { api, type RunSummary } from "./api";
 import { useHotkey, useTheme, useToasts } from "./lib";
 import NewRun from "./pages/NewRun";
@@ -10,11 +10,13 @@ import RunDetail from "./pages/RunDetail";
 import Models from "./pages/Models";
 import { CostPage, EvalsPage } from "./pages/Insights";
 import { KnowledgePage, SystemPage } from "./pages/Admin";
+import WorkspacePage from "./pages/Workspace";
 import { Empty } from "./ui";
 
 const NAV = [
-  { to: "/", label: "New run", icon: PlusCircle, end: true },
+  { to: "/", label: "New run", icon: Play, end: true },
   { to: "/runs", label: "Runs", icon: ListChecks },
+  { to: "/workspace", label: "Workspace", icon: FolderTree },
   { to: "/models", label: "Models", icon: Cpu },
   { to: "/cost", label: "Cost", icon: Coins },
   { to: "/evals", label: "Evals", icon: FlaskConical },
@@ -22,12 +24,13 @@ const NAV = [
 ];
 
 function Mark() {
-  // a die with routed traces: the app's only decorative element
+  // a wafer with its flat, and a Manhattan-routed S landing on two via pads (same drawing as assets/logo.svg)
   return (
-    <svg className="brand" viewBox="0 0 36 36" role="img" aria-label="SiliconForge">
-      <rect x="7" y="7" width="22" height="22" rx="3" fill="none" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 13h4M3 23h4M29 13h4M29 23h4M13 3v4M23 3v4M13 29v4M23 29v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M13 22l5-8 5 8" fill="none" stroke="var(--amber)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg className="brand" viewBox="0 0 64 64" role="img" aria-label="SiliconForge">
+      <path d="M14.34 55A29 29 0 1 1 49.66 55Z" fill="currentColor" />
+      <path d="M44 18H24V30H40V42H20" fill="none" stroke="var(--sunken)" strokeWidth="5" />
+      <rect x="39.5" y="13.5" width="9" height="9" fill="#f2a900" />
+      <rect x="15.5" y="37.5" width="9" height="9" fill="#f2a900" />
     </svg>
   );
 }
@@ -76,20 +79,23 @@ export default function App() {
   return (
     <div className="shell">
       <nav className="rail" aria-label="Main">
-        <Mark />
+        <div className="brandline"><Mark /><div><b>SiliconForge</b><small>spec to GDSII, verified</small></div></div>
+        <div className="index-label">Sheets</div>
         {NAV.map(({ to, label, icon: Icon, end }) => (
-          <NavLink key={to} to={to} end={end} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={19} /><span>{label}</span></NavLink>
+          <NavLink key={to} to={to} end={end} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
         ))}
         <span className="spacer" />
-        <NavLink to="/system" className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Wrench size={19} /><span>System</span></NavLink>
-        <button className="nav btn quiet" style={{ width: 48, flexDirection: "column", padding: "6px 0", gap: 2, fontSize: 10.5, color: "var(--ink-3)" }}
-          onClick={() => setTheme(dark ? "light" : "dark")} aria-label="Toggle theme">{dark ? <Sun size={18} /> : <Moon size={18} />}<span>Theme</span></button>
+        <div className="foot">
+          <NavLink to="/system" className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Wrench size={17} /><span>System</span></NavLink>
+          <button className="nav" onClick={() => setTheme(dark ? "light" : "dark")} aria-label="Toggle theme">{dark ? <Sun size={17} /> : <Moon size={17} />}<span>{dark ? "Light theme" : "Dark theme"}</span></button>
+        </div>
       </nav>
       <main className="main">
         <Routes>
           <Route path="/" element={<NewRun />} />
           <Route path="/runs" element={<Runs />} />
           <Route path="/runs/:id" element={<RunDetail />} />
+          <Route path="/workspace" element={<WorkspacePage />} />
           <Route path="/models" element={<Models />} />
           <Route path="/cost" element={<CostPage />} />
           <Route path="/evals" element={<EvalsPage />} />

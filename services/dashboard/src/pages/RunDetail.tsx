@@ -67,8 +67,6 @@ export default function RunDetail() {
       <div className="topbar">
         <Link to="/runs" className="muted small">Runs</Link><span className="muted">/</span>
         <span className="title">{mod ?? "New design"}</span>
-        <StatusBadge status={r.status} />
-        <Prov mode={mode} />
         <span className="grow" />
         {replay != null && <span className="badge info">Replaying {replay} of {allEvents.length}</span>}
         {replay != null ? <button className="btn" onClick={() => setReplay(null)}><Square size={14} /> Stop replay</button>
@@ -85,14 +83,15 @@ export default function RunDetail() {
         {r.status === "failed" && <FailureHelp error={r.error ?? view.error} />}
         {r.status === "interrupted" && <Banner kind="bad">The backend restarted while this run was in progress, so it cannot continue. Start it again to retry.</Banner>}
 
-        <div className="grid4">
-          <Stat label="Worst slack" sim={mode === "simulated"} value={best ? `${num(best.wns_ns)} ns` : "-"} tone={best ? (best.wns_ns >= 0 ? "good" : "bad") : undefined}
-            sub={best ? (best.corner_wns && Object.keys(best.corner_wns).length ? "worst of all corners" : `clock ${best.knobs?.CLOCK_PERIOD ?? "-"} ns`) : "no layout yet"} />
-          <Stat label="Cell area" sim={mode === "simulated"} value={best ? `${compact(Math.round(best.area_um2))} µm²` : "-"} sub={best ? `${best.cell_count} cells` : undefined} />
-          <Stat label="Power" sim={mode === "simulated"} value={best ? `${num(best.total_power_mw, 2)} mW` : "-"} />
-          <Stat label="DRC / LVS" sim={mode === "simulated"} value={best ? `${best.drc_violations} / ${best.lvs_clean ? "clean" : "fail"}` : "-"} tone={best ? (best.drc_violations === 0 && best.lvs_clean ? "good" : "bad") : undefined}
-            sub={`${secs(elapsed)} · ${usd(view.cost.usd || r.cost_usd)}`} />
+        <div className="titleblock" aria-label="Run identification">
+          <div><div className="cap">Design</div><div className="val name">{mod ?? "New design"}</div></div>
+          <div><div className="cap">RTL revision</div><div className="val">{view.rtl.length ? `rev ${view.rtl.length}` : "none yet"}</div></div>
+          <div><div className="cap">Evidence from</div><div className="val"><Prov mode={mode} /></div></div>
+          <div><div className="cap">Status</div><div className="val"><StatusBadge status={r.status} /></div></div>
+          <div><div className="cap">Time, cost</div><div className="val">{secs(elapsed)}, {usd(view.cost.usd || r.cost_usd)}</div></div>
         </div>
+
+        <ResultsTable best={best} contract={view.contract} sim={mode === "simulated"} />
 
         <PipelineStrip view={view} onSelect={(k) => setTab(TAB_OF_STAGE[k])} />
 
@@ -406,5 +405,47 @@ function Cost({ run, view }: { run: Run; view: RunView }) {
         <Panel title="Tokens by model">{byModel.length ? <Bars items={byModel} fmt={compact} /> : <div className="muted small">No calls recorded.</div>}</Panel>
       </div>
     </div>
+  );
+}
+
+// ---------- results against the contract ----------
+function MarginBar({ used, bad }: { used: number; bad: boolean }) {
+  const w = Math.max(0, Math.min(1, used)) * 100;
+  return <div className="track" style={{ width: 120, display: "inline-block", verticalAlign: "middle" }} role="img" aria-label={`${Math.round(used * 100)} percent of the limit`}>
+    <div className="fill" style={{ width: `${w}%`, background: bad ? "var(--fail)" : "var(--ink)" }} /></div>;
+}
+
+/** What the layout achieved against what the contract asked for: the numbers an engineer signs off on. */
+function ResultsTable({ best, contract, sim }: { best: PPA | null; contract: RunView["contract"]; sim: boolean }) {
+  if (!best) {
+    return <div className="muted small" style={{ borderBottom: "1px solid var(--rule)", paddingBottom: 10 }}>No layout result yet. Timing, area and power appear here when place and route finishes.</div>;
+  }
+  const clockRaw = contract?.target_clock_ns ?? best.knobs?.CLOCK_PERIOD;
+  const clock = clockRaw != null && Number(clockRaw) > 0 ? Number(clockRaw) : null;
+  const areaMax = contract?.max_area_um2 ?? null, powerMax = contract?.max_power_mw ?? null;
+  const rows: { name: string; value: string; target: string; used: number | null; bad: boolean; note?: string }[] = [
+    { name: "Setup slack", value: `${num(best.wns_ns)} ns`, target: clock ? `at least 0 ns, ${clock} ns clock` : "at least 0 ns",
+      used: clock ? Math.max(0, 1 - best.wns_ns / clock) : null, bad: best.wns_ns < 0,
+      note: best.corner_wns && Object.keys(best.corner_wns).length ? "worst of all corners" : undefined },
+    { name: "Cell area", value: `${compact(Math.round(best.area_um2))} µm², ${best.cell_count} cells`, target: areaMax ? `under ${compact(areaMax)} µm²` : "no limit set",
+      used: areaMax ? best.area_um2 / areaMax : null, bad: !!areaMax && best.area_um2 > areaMax },
+    { name: "Power", value: `${num(best.total_power_mw, 2)} mW`, target: powerMax ? `under ${num(powerMax, 1)} mW` : "no limit set",
+      used: powerMax ? best.total_power_mw / powerMax : null, bad: !!powerMax && best.total_power_mw > powerMax },
+    { name: "DRC and LVS", value: `${best.drc_violations} violations, LVS ${best.lvs_clean ? "clean" : "failed"}`, target: "0 violations, LVS clean",
+      used: null, bad: best.drc_violations > 0 || !best.lvs_clean },
+  ];
+  return (
+    <div style={{ overflowX: "auto" }}><table className="t" style={sim ? { backgroundImage: "var(--hatch)", minWidth: 640 } : { minWidth: 640 }}>
+      <thead><tr><th>Result</th><th>Achieved</th><th>Contract asks</th><th>Against the limit</th><th /></tr></thead>
+      <tbody>{rows.map((r) => (
+        <tr key={r.name}>
+          <td style={{ fontWeight: 700 }}>{r.name}</td>
+          <td className={r.bad ? "neg" : ""} style={{ fontWeight: 700 }}>{r.value}</td>
+          <td className="muted">{r.target}{r.note && <span className="small"> ({r.note})</span>}</td>
+          <td>{r.used != null ? <MarginBar used={r.used} bad={r.bad} /> : <span className="muted">-</span>}</td>
+          <td>{r.bad ? <span className="badge bad">Fails</span> : <span className="badge ok">Meets</span>}</td>
+        </tr>))}
+      </tbody>
+    </table></div>
   );
 }
