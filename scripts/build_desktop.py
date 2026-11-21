@@ -68,7 +68,10 @@ def package(dir_only: bool) -> None:
     if not (DESKTOP / "node_modules" / "electron" / "dist").exists():
         run("pnpm install", cwd=DESKTOP)
         run("node node_modules/electron/install.js", cwd=DESKTOP)
-    run("pnpm exec electron-builder --dir" if dir_only else "pnpm exec electron-builder", cwd=DESKTOP)
+    # `--publish never`: electron-builder otherwise detects CI and tries to publish to GitHub itself, which fails without
+    # GH_TOKEN. Uploading is the release workflow's job (a separate step), and a local build must never publish either.
+    run("pnpm exec electron-builder --dir --publish never" if dir_only else "pnpm exec electron-builder --publish never",
+        cwd=DESKTOP)
 
 
 def main() -> int:
