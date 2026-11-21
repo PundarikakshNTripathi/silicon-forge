@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+import { Mark, StackBar } from "./Mark";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -27,18 +28,6 @@ const NAV = [
   { to: "/evals", label: "Evals", icon: FlaskConical },
   { to: "/knowledge", label: "Knowledge", icon: BookOpen },
 ];
-
-function Mark() {
-  // a wafer with its flat, and a Manhattan-routed S landing on two via pads (same drawing as assets/logo.svg)
-  return (
-    <svg className="brand" viewBox="0 0 64 64" role="img" aria-label="SiliconForge">
-      <path d="M14.34 55A29 29 0 1 1 49.66 55Z" fill="currentColor" />
-      <path d="M44 18H24V30H40V42H20" fill="none" stroke="var(--sunken)" strokeWidth="5" />
-      <rect x="39.5" y="13.5" width="9" height="9" fill="#f2a900" />
-      <rect x="15.5" y="37.5" width="9" height="9" fill="#f2a900" />
-    </svg>
-  );
-}
 
 function Palette({ onClose }: { onClose: () => void }) {
   const nav = useNavigate();
@@ -85,6 +74,7 @@ export default function App() {
     <div className="shell">
       <nav className="rail" aria-label="Main">
         <div className="brandline"><Mark /><div><b>SiliconForge</b><small>spec to GDSII, verified</small></div></div>
+        <StackBar />
         <div className="index-label">Sheets</div>
         {NAV.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
