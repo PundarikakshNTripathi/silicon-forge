@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Measured (speculative decoding and correctness)
+- `evals run --spec-type` (recorded in the result file). Qwen3.5-9B on all 155 VerilogEval problems with `ngram-mod` speculation: 49.0% pass@1 against 47.7% without it, paired difference +1.3 points (95% interval -1.3 to +3.9), not separated; 4 of 155 problems changed outcome (3 up, 1 down), so output is not identical but there is no detectable harm; 3% less wall time on fresh generation. One run per arm (`docs/providers.md`).
 ### Added (agent)
 - **Project memory** (`memory: true`): a `remember` tool and `.siliconforge/memory.md` that every later session reads, plain Markdown you can edit, secret-masked and bounded; `siliconforge memory show|add|clear` and `/memory` in the TUI (`docs/workspaces.md`).
 - **`investigate` subagent**: a read-only helper with its own fresh context that returns only a short answer, so searching a large project does not fill a small model's window. It cannot edit or recurse.
