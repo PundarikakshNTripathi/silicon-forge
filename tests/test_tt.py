@@ -290,3 +290,46 @@ def test_gate_level_simulation_runs_the_projects_own_tests_on_the_netlist(ihp_ru
     net.write_text(text.replace(".RESET_B(rst_n)", ".RESET_B(1'b1)"), encoding="utf-8")  # reset no longer reaches the flops
     broken = tt.run_gls(ihp_runner, root)
     assert not broken["ok"]
+
+
+LATCH_RAM_V = """\
+`default_nettype none
+
+module tt_um_demo_latchram (
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
+    input  wire       ena,
+    input  wire       clk,
+    input  wire       rst_n
+);
+  // 8 words x 8 bits of latch storage; write data is captured while clk is low and the word-select is high
+  reg [7:0] mem [0:7];
+  wire [2:0] waddr = uio_in[2:0];
+  wire       we    = uio_in[7];
+  genvar i;
+  generate
+    for (i = 0; i < 8; i = i + 1) begin : words
+      wire gate = we & ~clk & (waddr == i);
+      always @* if (gate) mem[i] = ui_in;
+    end
+  endgenerate
+  assign uo_out  = mem[uio_in[6:4] & 3'd7];
+  assign uio_out = 8'd0;
+  assign uio_oe  = 8'd0;
+  wire _unused = &{ena, rst_n, 1'b0};
+endmodule
+"""
+
+
+@pytest.mark.real_eda
+def test_latch_memory_is_mapped_to_real_latch_cells_and_costs_less_than_flops(ihp_runner, tmp_path):
+    root = make_project(tmp_path)
+    (root / "src" / "project.v").write_text(LATCH_RAM_V.replace("tt_um_demo_latchram", TOP), encoding="utf-8")
+    rep = tt.synthesize(ihp_runner, root)
+    assert rep["latches"] == 64 and rep["flops"] == 0, rep["by_cell"]
+    assert any("_dlhq_1" in n for n in rep["by_cell"])
+    per_bit = rep["by_cell"]["sg13cmos5l_dlhq_1"]["area"] / rep["by_cell"]["sg13cmos5l_dlhq_1"]["count"]
+    assert per_bit < 48.9  # a flip-flop (dfrbpq_1) is 48.99 um2; a latch must be cheaper or the whole idea fails

@@ -40,9 +40,12 @@ assignments), reruns your test command on each, and reports the kill rate and ev
 Mutants that fail to parse are `invalid`. If Yosys can *prove* a mutant equivalent to the original it is excluded, so the
 tests are not blamed for missing a change that changes nothing; a mutant Yosys cannot decide stays in the pool, which can only lower the score. The baseline must pass first, or the run aborts.
 
-Worked example (`hardware/isa/pio16`, seed 1, WSL): **90.9 %** (40 killed, 4 survived of 44). The survivors are specific
-holes: the reset value of `wait_cnt` is unchecked (Icarus treats X leniently), and no test writes program memory while the
-engine runs. Both are things a reviewer would want to know.
+Worked example (`hardware/isa/pio16`, seed 1, WSL; `benchmarks/results/verification-pio16-*.json`): of 44 mutants, Yosys
+proved 6 equivalent and excluded them, 34 were killed and 4 survived: **89.5 %**. Without the equivalence filter the same
+run would have read 77 % (34 of 44), which is why the filter matters. The survivors are specific holes: the reset value of
+`wait_cnt` is unchecked (Icarus treats X leniently), and no test writes program memory while the engine runs. Both are things
+a reviewer would want to know. Designs that `include` headers or instantiate modules from other files need `--include` and
+`--support`, otherwise Yosys cannot parse the original and the tool reports that the syntax check was skipped.
 
 Limits: mutants are line-oriented and skip declarations, widths, indices and parameters; this is RTL-level mutation, not
 gate-level. A high score means the tests are sensitive to the bugs tried, not that no bug exists.

@@ -204,3 +204,64 @@ def test_workspace_instruction_text_cannot_break_the_prompt_template(env):
     (ws.root / "AGENTS.md").write_text("Use {braces} and {0} freely: {tools}")
     s, _, _ = make([act("ok")])
     assert "{braces}" in s._system()
+
+
+# ---------------------------------------------------------------------------------- hardware design tools
+
+PIO16 = "hardware/isa/pio16"
+
+
+def _copy_pio16(ws):
+    import shutil
+    from pathlib import Path
+
+    src = Path(__file__).resolve().parents[1] / "hardware" / "isa" / "pio16"
+    shutil.copy(src / "isa.yaml", ws.root / "isa.yaml")
+    shutil.copy(src / "uart_tx.asm", ws.root / "uart_tx.asm")
+
+
+def test_new_tools_are_listed_for_the_model(env):
+    ws, _ = env
+    names = set(ToolBox(ws).by_name())
+    assert {"isa_check", "isa_gen", "sim", "mutate", "tt_check", "tt_synth", "tt_gls"} <= names
+    assert "isa_check(" in ToolBox(ws).describe()
+
+
+def test_isa_check_tool_assembles_and_proves_timing(env):
+    ws, _ = env
+    _copy_pio16(ws)
+    r = ToolBox(ws).call("isa_check", {"spec_path": "isa.yaml", "program_path": "uart_tx.asm"})
+    assert r["assembled"] and r["timing_ok"] and len(r["words"]) == 24
+    assert sum(1 for g in r["static_gaps"] if g["min"] == g["max"] == 16) >= 10
+    (ws.root / "bad.asm").write_text("frobnicate 1\n")
+    bad = ToolBox(ws).call("isa_check", {"spec_path": "isa.yaml", "program_path": "bad.asm"})
+    assert bad["assembled"] is False and "cannot parse" in bad["errors"][0]
+    with pytest.raises(ToolError, match="isa spec error"):
+        ToolBox(ws).call("isa_check", {"spec_path": "bad.asm", "program_path": "uart_tx.asm"})
+
+
+def test_isa_gen_tool_writes_inside_the_workspace_only(env):
+    ws, _ = env
+    _copy_pio16(ws)
+    tb = ToolBox(ws)
+    r = tb.call("isa_gen", {"spec_path": "isa.yaml", "out_dir": "gen"})
+    assert "gen/rtl/pio16_decode.v" in r["written"] and (ws.root / "gen" / "tools" / "pio16_isa.py").exists()
+    with pytest.raises(ToolError, match="outside the workspace"):
+        tb.call("isa_gen", {"spec_path": "isa.yaml", "out_dir": "../elsewhere"})
+    with pytest.raises(ToolError, match="managed by SiliconForge"):
+        tb.call("isa_gen", {"spec_path": "isa.yaml", "out_dir": ".siliconforge/x"})
+
+
+def test_real_tool_commands_refuse_the_simulated_backend_and_need_approval_in_ask_mode(env):
+    ws, make = env
+    from services.orchestrator.agent.factory import _Simulated
+
+    tb = ToolBox(ws, runner_factory=_Simulated)
+    for name, args in (("sim", {"sources": ["a.v"], "top": "t", "test_module": "m"}),
+                       ("mutate", {"files": ["a.v"], "test_command": "true"}), ("tt_synth", {}), ("tt_gls", {})):
+        with pytest.raises(ToolError, match="simulated"):
+            tb.call(name, args)
+    asked = []
+    s, _, _ = make([act("", "sim", sources=["a.v"], top="t", test_module="m"), act("done")], mode="ask",
+                   approver=lambda kind, summary, details: asked.append(kind) or False)
+    assert s.send("simulate").stopped == "denied" and asked == ["command"]

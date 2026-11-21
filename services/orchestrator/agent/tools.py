@@ -75,6 +75,38 @@ class ToolBox:
             ToolSpec("run_pipeline", COMMAND,
                      "Run SiliconForge's fixed pipeline (contract, RTL, guardrails, formal, LEC, layout) on a spec file.",
                      {"spec_path": "string", "verify_only": "boolean, default true"}, self.run_pipeline),
+            ToolSpec("isa_check", READ,
+                     "Assemble a program against an isa.yaml and check its pin timing: returns machine code, errors with line "
+                     "numbers, proven/measured cycle gaps and `.expect` violations.",
+                     {"spec_path": "string", "program_path": "string", "inputs": "object name->int, optional"},
+                     self.isa_check),
+            ToolSpec("isa_gen", EDIT,
+                     "Generate everything derived from an isa.yaml into out_dir: Verilog decoder + header, formal decoder "
+                     "check, golden-model/assembler bundle (tools/<name>_isa.py), docs and bit-field SVGs.",
+                     {"spec_path": "string", "out_dir": "string"}, self.isa_gen),
+            ToolSpec("sim", COMMAND,
+                     "Run a cocotb test module with Icarus for one or more seeds. Paths relative to the workspace. Returns "
+                     "pass/fail counts and the failure text; a failing test is a result, not an error.",
+                     {"sources": "list of strings", "top": "string", "test_module": "string, no .py",
+                      "test_dir": "string, default '.'", "seeds": "list of integers, default [1]",
+                      "includes": "list of strings, optional", "env": "object string->string, optional"}, self.sim),
+            ToolSpec("mutate", COMMAND,
+                     "Mutation-test a test suite: plant bugs in the given RTL files and report the kill rate and every "
+                     "surviving mutant (file, line, change). test_command must exit 0 when the tests pass.",
+                     {"files": "list of strings", "test_command": "string", "top": "string, optional",
+                      "max_mutants": "integer, default 40", "seed": "integer, default 1",
+                      "includes": "list of include dirs, optional", "support": "list of other sources the top needs, optional"},
+                     self.mutate),
+            ToolSpec("tt_check", READ,
+                     "Tiny Tapeout preflight: info.yaml, top-module ports, reset, outputs, simulation-only constructs.",
+                     {}, self.tt_check),
+            ToolSpec("tt_synth", COMMAND,
+                     "Synthesize the Tiny Tapeout project against the real IHP sg13cmos5l liberty: cells, area, flip-flops, "
+                     "latches, and which tile sizes it fits (post-synthesis, before layout).", {}, self.tt_synth),
+            ToolSpec("tt_gls", COMMAND,
+                     "Run the project's cocotb tests on the synthesized gate-level netlist with the PDK cell models.",
+                     {"test_module": "string, default 'test'", "test_dir": "string, default 'test'",
+                      "tb": "string, default 'test/tb.v'"}, self.tt_gls),
         ]
 
     def by_name(self) -> dict[str, ToolSpec]:
@@ -233,6 +265,106 @@ class ToolBox:
         res = runner.run([tool, *args], work, timeout=float(timeout_s))
         return {"provenance": runner.name, "returncode": res.returncode, "elapsed_s": res.elapsed_sec,
                 "output": self._clip(res.log, MAX_OUTPUT_CHARS)}
+
+    # ------------------------------------------------------------------------- hardware design tools
+
+    def _real_runner(self):
+        runner = self._get_runner()
+        if getattr(runner, "name", "") == "simulated":
+            raise ToolError("This needs a real EDA backend, but the workspace backend is 'simulated'. The user must set "
+                            "backend to wsl, native or docker in siliconforge.yaml.")
+        return runner
+
+    def isa_check(self, spec_path: str, program_path: str, inputs: dict | None = None) -> dict:
+        from services.orchestrator import isa
+
+        try:
+            spec = isa.load_spec(self._path(spec_path))
+        except (isa.IsaError, OSError, KeyError) as exc:
+            raise ToolError(f"isa spec error: {exc}") from exc
+        try:
+            prog = isa.Assembler(spec).assemble(self._path(program_path).read_text(encoding="utf-8"))
+        except isa.AsmError as exc:
+            return {"assembled": False, "errors": exc.errors[:20]}
+        rep = isa.check_timing(prog, {k: int(v) for k, v in (inputs or {}).items()})
+        width = (spec.word_bits + 3) // 4
+        return {"assembled": True, "words": [f"{w:0{width}x}" for w in prog.image()], "timing_ok": rep.ok,
+                "problems": rep.problems[:10], "notes": rep.notes[:8],
+                "static_gaps": [{"from": g.src, "to": g.dst, "min": g.min_cycles, "max": g.max_cycles}
+                                for g in rep.static[:30]],
+                "trace_gaps": [{"from": s, "to": d, "cycles": c} for s, d, c in rep.trace[:30]]}
+
+    def isa_gen(self, spec_path: str, out_dir: str) -> dict:
+        from services.orchestrator import isa
+
+        out = self._path(out_dir)
+        self._check_writable(out)
+        try:
+            files = isa.generate_all(self._path(spec_path), out)
+        except (isa.IsaError, OSError, KeyError) as exc:
+            raise ToolError(f"isa spec error: {exc}") from exc
+        # generated artifacts are reproducible from the spec, so they get no undo entry
+        return {"written": sorted(str(f.relative_to(self.ws.root.resolve()).as_posix()) for f in files)[:40]}
+
+    def sim(self, sources: list[str], top: str, test_module: str, test_dir: str = ".", seeds: list[int] | None = None,
+            includes: list[str] | None = None, env: dict | None = None) -> dict:
+        from services.orchestrator import verify
+
+        runner = self._real_runner()
+        try:
+            rep = verify.run_cocotb(runner, self.ws.root, sources=list(sources), top=top, test_module=test_module,
+                                    test_dir=test_dir, seeds=tuple(int(s) for s in (seeds or [1])),
+                                    includes=tuple(includes or ()), env={str(k): str(v) for k, v in (env or {}).items()})
+        except verify.VerifyError as exc:
+            raise ToolError(str(exc)) from exc
+        return {"provenance": rep["provenance"], "ok": rep["ok"], "passed": rep["passed"], "failed": rep["failed"],
+                "seeds": rep["seeds"], "failure_excerpts": [e[:900] for e in rep["failure_excerpts"][:3]]}
+
+    def mutate(self, files: list[str], test_command: str, top: str | None = None, max_mutants: int = 40,
+               seed: int = 1, includes: list[str] | None = None, support: list[str] | None = None) -> dict:
+        from services.orchestrator import verify
+
+        runner = self._real_runner()
+        try:
+            rep = verify.mutation_test(runner, self.ws.root, list(files), test_command, top=top,
+                                       max_mutants=int(max_mutants), seed=int(seed), includes=tuple(includes or ()),
+                                       support=tuple(support or ()))
+        except verify.VerifyError as exc:
+            raise ToolError(str(exc)) from exc
+        return {k: rep[k] for k in ("provenance", "score", "killed", "survived", "equivalent", "invalid", "evaluated")} | {
+            "survivors": rep["survivors"][:20]}
+
+    def tt_check(self) -> dict:
+        from services.orchestrator import tt
+
+        return tt.preflight(self.ws.root).to_dict()
+
+    def tt_synth(self) -> dict:
+        from services.orchestrator import tt, verify
+
+        runner = self._real_runner()
+        try:
+            rep = tt.synthesize(runner, self.ws.root)
+            info = tt.load_info(self.ws.root)
+        except (verify.VerifyError, FileNotFoundError) as exc:
+            raise ToolError(str(exc)) from exc
+        b = tt.budget(rep["area_um2"] or 0.0, str((info.get("project") or {}).get("tiles", "")) or None)
+        return {"provenance": rep["provenance"], "cells": rep["cells"], "area_um2": rep["area_um2"],
+                "flops": rep["flops"], "latches": rep["latches"], "sequential_area_um2": rep["sequential_area_um2"],
+                "top_cells": sorted(((n, c["count"]) for n, c in rep["by_cell"].items()), key=lambda x: -x[1])[:8],
+                "warnings": rep["warnings"][:8], "budget": b.get("chosen"), "smallest_that_fits": b["smallest_that_fits"],
+                "note": rep["note"]}
+
+    def tt_gls(self, test_module: str = "test", test_dir: str = "test", tb: str = "test/tb.v") -> dict:
+        from services.orchestrator import tt, verify
+
+        runner = self._real_runner()
+        try:
+            rep = tt.run_gls(runner, self.ws.root, test_module=test_module, test_dir=test_dir, tb=tb)
+        except verify.VerifyError as exc:
+            raise ToolError(str(exc)) from exc
+        return {"provenance": rep["provenance"], "ok": rep["ok"], "passed": rep["passed"], "failed": rep["failed"],
+                "netlist_kind": rep["netlist_kind"], "failure_excerpts": [e[:900] for e in rep["failure_excerpts"][:3]]}
 
     def run_pipeline(self, spec_path: str, verify_only: bool = True) -> dict:
         if self.pipeline_factory is None:

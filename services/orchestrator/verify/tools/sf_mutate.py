@@ -216,11 +216,21 @@ def apply_mutant(text: str, mu: Mutant) -> str:
 
 # ------------------------------------------------------------------------------------------------ equivalence
 
+#: set from --include / --support: designs that `include` headers or instantiate modules from other files need them to parse
+INCLUDES: list[str] = []
+SUPPORT: list[str] = []
+
+
+def _read_opts() -> str:
+    return " ".join([f"-I{i}" for i in INCLUDES] + [])
+
+
 def equivalent(orig: Path, mutated: Path, top: str, yosys: str, timeout: float = 60.0) -> bool | None:
     """True = proven equivalent, False = a difference is possible/proven, None = could not be determined."""
+    ro, sup = _read_opts(), " ".join(SUPPORT)
     script = (
-        f"read_verilog -sv {orig}; prep -top {top}; rename {top} gold; design -stash gold; "
-        f"read_verilog -sv {mutated}; prep -top {top}; rename {top} gate; design -stash gate; "
+        f"read_verilog -sv {ro} {sup} {orig}; prep -top {top}; rename {top} gold; design -stash gold; "
+        f"read_verilog -sv {ro} {sup} {mutated}; prep -top {top}; rename {top} gate; design -stash gate; "
         "design -copy-from gold -as gold gold; design -copy-from gate -as gate gate; "
         "async2sync; equiv_make gold gate eq; hierarchy -top eq; equiv_simple; equiv_induct -seq 5; equiv_status -assert"
     )
@@ -239,8 +249,8 @@ def equivalent(orig: Path, mutated: Path, top: str, yosys: str, timeout: float =
 def parses(path: Path, yosys: str, timeout: float = 30.0) -> bool:
     """Does Yosys accept the file as SystemVerilog? Used to separate invalid mutants from ones the tests killed."""
     try:
-        p = subprocess.run([yosys, "-q", "-p", f"read_verilog -sv -I{path.parent} {path}"], capture_output=True,
-                           text=True, timeout=timeout)
+        p = subprocess.run([yosys, "-q", "-p", f"read_verilog -sv -I{path.parent} {_read_opts()} {path}"],
+                           capture_output=True, text=True, timeout=timeout)
     except (OSError, subprocess.TimeoutExpired):
         return True  # cannot tell; do not discard the mutant
     return p.returncode == 0
@@ -277,6 +287,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--file", action="append", required=True, help="source file(s) to mutate, relative to --root")
     ap.add_argument("--test", required=True, help="shell command, run in the project root; exit 0 = tests pass")
     ap.add_argument("--top", default=None, help="top module for the equivalence check (default: skip the check)")
+    ap.add_argument("--include", action="append", default=[], help="include directory for the parse and equivalence checks")
+    ap.add_argument("--support", action="append", default=[], help="extra source needed to elaborate the top (repeatable)")
     ap.add_argument("--yosys", default="yosys")
     ap.add_argument("--max", type=int, default=60, help="mutants to evaluate (sampled with --seed)")
     ap.add_argument("--seed", type=int, default=1)
@@ -286,6 +298,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--list", action="store_true", help="only list the mutants and exit")
     a = ap.parse_args(argv)
     root = Path(a.root).resolve()
+    INCLUDES[:] = [str((root / i).resolve()) for i in a.include]
+    SUPPORT[:] = [str((root / s).resolve()) for s in a.support]
 
     all_mutants: list[Mutant] = []
     for f in a.file:

@@ -42,7 +42,8 @@ def run_tool(runner: Any, workspace: Path, script: str, args: list[str], timeout
 
 def mutation_test(runner: Any, workspace: Path, files: list[str], test_cmd: str, top: str | None = None,
                   max_mutants: int = 60, seed: int = 1, jobs: int = 4, out: str = ".siliconforge/mutation.json",
-                  timeout: float = 7200.0) -> dict[str, Any]:
+                  timeout: float = 7200.0, includes: tuple[str, ...] = (),
+                  support: tuple[str, ...] = ()) -> dict[str, Any]:
     """Score a test suite by planting bugs. Returns the parsed report, with `provenance` set to the runner name."""
     args = ["--root", ".", "--test", test_cmd, "--max", str(max_mutants), "--seed", str(seed), "--jobs", str(jobs),
             "--out", out]
@@ -50,6 +51,10 @@ def mutation_test(runner: Any, workspace: Path, files: list[str], test_cmd: str,
         args += ["--file", f]
     if top:
         args += ["--top", top]
+    for i in includes:
+        args += ["--include", i]
+    for s in support:
+        args += ["--support", s]
     res = run_tool(runner, workspace, "sf_mutate.py", args, timeout)
     report_path = Path(workspace) / out
     if not report_path.exists():

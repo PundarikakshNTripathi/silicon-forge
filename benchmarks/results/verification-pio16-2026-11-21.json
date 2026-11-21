@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-21",
+  "backend": "wsl",
+  "design": "hardware/isa/pio16",
+  "tools": {
+    "yosys": "Yosys 0.71+59 (git sha1 d9358f38c, Release, Clang /usr/bin/clang++ 21.1.8)",
+    "iverilog": "Icarus Verilog version 14.0 (devel) (s20260301-1233-gadb65230d-dirty)",
+    "cocotb": "cocotb 2.1.0.dev0+41564633"
+  },
+  "isa": {
+    "instructions": 10,
+    "words_checked_for_unique_decode": 65536,
+    "uart_program_words": 24,
+    "uart_bit_gaps_proven_exact_16_cycles": 10,
+    "timing_ok": true
+  },
+  "lockstep": {
+    "ok": true,
+    "tests_passed": 9,
+    "tests_failed": 0,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "random_programs_per_seed": 8,
+    "seconds": 3.0,
+    "functional_coverage": 0.9167,
+    "uncovered_bins": {
+      "pins_value": [
+        "all_ones"
+      ],
+      "delay_len": [
+        "short"
+      ]
+    }
+  },
+  "mutation": {
+    "score": 0.8947,
+    "killed": 34,
+    "survived": 4,
+    "equivalent": 6,
+    "invalid": 0,
+    "evaluated": 44,
+    "enumerated": 44,
+    "equivalence_check": "yosys",
+    "syntax_check": "yosys",
+    "seed": 1,
+    "seconds": 9.3,
+    "survivors": [
+      {
+        "line": 49,
+        "op": "delete assignment",
+        "original": "      wait_cnt <= 8'd0;",
+        "replacement": ";"
+      },
+      {
+        "line": 49,
+        "op": "const 0->1",
+        "original": "8'd0",
+        "replacement": "8'd1"
+      },
+      {
+        "line": 49,
+        "op": "const 0->1",
+        "original": "1'b0",
+        "replacement": "1'b1"
+      },
+      {
+        "line": 52,
+        "op": "op &&->||",
+        "original": "&&",
+        "replacement": "||"
+      }
+    ]
+  },
+  "synthesis": {
+    "pdk": "ihp-sg13cmos5l",
+    "corner": "typ_1p20V_25C",
+    "cells": 1723,
+    "area_um2": 43543.9,
+    "flops": 559,
+    "latches": 0,
+    "sequential_share": 0.629,
+    "smallest_tile_that_fits": "2x2",
+    "margin": 1.2,
+    "note": "post-synthesis (no placement, clock tree, hold fixing or routing)"
+  }
+}

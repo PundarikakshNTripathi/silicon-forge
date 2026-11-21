@@ -328,7 +328,8 @@ def cmd_verify(args: argparse.Namespace) -> int:
             return 0 if rep["ok"] else 1
         if args.action == "mutate":
             rep = verify.mutation_test(runner, ws.root, args.file, args.test, top=args.top, max_mutants=args.max,
-                                       seed=args.seed, jobs=args.jobs)
+                                       seed=args.seed, jobs=args.jobs, includes=tuple(args.include),
+                                       support=tuple(args.support))
             pct = "n/a" if rep["score"] is None else f"{rep['score'] * 100:.1f}%"
             print(f"[{rep['provenance']}] mutation score {pct}: {rep['killed']} killed, {rep['survived']} survived, "
                   f"{rep['equivalent']} proven equivalent, {rep['invalid']} invalid (seed {rep['seed']})")
@@ -607,6 +608,7 @@ def build_parser() -> argparse.ArgumentParser:
     vf.add_argument("--dump", default=None, help="toggle: VCD or FST file")
     vf.add_argument("--scope", default=None, help="toggle: hierarchical prefix, e.g. tb.dut")
     vf.add_argument("--exclude", action="append", default=[])
+    vf.add_argument("--support", action="append", default=[], help="mutate: other sources the top module needs")
     vf.set_defaults(func=cmd_verify)
 
     ttp = sub.add_parser("tt", help="Tiny Tapeout (IHP SG13CMOS5L): scaffold, check, synth, gls, pack, doctor, harden")
