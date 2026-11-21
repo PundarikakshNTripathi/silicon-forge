@@ -23,7 +23,7 @@ class FormalVerifierAgent(BaseHardwareAgent):
     prompt_file = "system_formal_verifier.md"
 
     def synthesize_properties_ir(self, contract: DesignContract, spec_text: str) -> list[dict[str, Any]]:
-        skill_ctx = self.skills.format_context("SymbiYosys formal SVA anti-vacuity cover", top_k=1)
+        skill_ctx = self.skills.format_context("typed property IR never write SVA anti-vacuity cover reset", top_k=2)
         ports = sorted(contract.port_names())
         user_prompt = (
             f"Formal Verification Skill Context:\n{skill_ctx}\n\n"
