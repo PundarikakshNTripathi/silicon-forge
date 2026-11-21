@@ -1,0 +1,4 @@
+graft configs
+graft hardware/examples
+prune hardware/isa
+global-exclude __pycache__ *.pyc

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """SiliconForge CLI.
 
     siliconforge run    --spec hardware/examples/axi_lite_alu/spec.md --backend wsl
@@ -17,6 +18,7 @@ from pathlib import Path
 from services.orchestrator.config import load_flow_config
 from services.orchestrator.eda.bridge import MODES, EDABridge, normalize_mode
 from services.orchestrator.inference.providers import ReplayProvider
+from services.orchestrator.paths import RESOURCE_ROOT
 from services.orchestrator.pipeline import SiliconForgePipeline
 from services.orchestrator.state import FlowState
 
@@ -85,7 +87,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def cmd_eval(args: argparse.Namespace) -> int:
     """Run every bundled example through the pipeline and write a results artifact."""
-    root = Path(__file__).resolve().parents[2]
+    root = RESOURCE_ROOT
     rows = []
     for fx in sorted((root / "hardware" / "examples").glob("*/fixtures/contract.json")):
         ex = fx.parent.parent

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Replay provider: serves recorded fixtures from `hardware/examples/*/fixtures/` (offline demos, CI, tests)."""
 from __future__ import annotations
 
@@ -6,6 +7,7 @@ import re
 from pathlib import Path
 
 from services.orchestrator.inference.providers.base import BaseLLMProvider, LLMResponse
+from services.orchestrator.paths import RESOURCE_ROOT
 
 
 class ReplayMissError(RuntimeError):
@@ -24,7 +26,7 @@ class ReplayProvider(BaseLLMProvider):
     """
 
     def __init__(self, examples_dir: Path | None = None, inject_initial_bug: bool = False) -> None:
-        root = Path(__file__).resolve().parents[4]
+        root = RESOURCE_ROOT
         self.examples_dir = examples_dir or (root / "hardware" / "examples")
         self.inject_initial_bug = inject_initial_bug
         self._rtl_calls = 0

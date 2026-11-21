@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """SiliconForge HTTP API (FastAPI): runs, live event streaming, artifacts, providers, local models, skills, system."""
 from __future__ import annotations
 
@@ -26,10 +27,10 @@ from services.orchestrator.inference.estimate import estimate_profile_cost
 from services.orchestrator.inference.gpu import GpuBusyError, foreign_servers
 from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, ServerConfig, gpu_info
 from services.orchestrator.inference.secrets import delete_secret, set_secret
-from services.orchestrator.paths import data_root
+from services.orchestrator.paths import RESOURCE_ROOT, data_root
 from services.orchestrator.skills.registry import SkillRegistry
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = RESOURCE_ROOT
 DEFAULT_SETTINGS: dict[str, Any] = {
     "default_profile": "replay",
     "default_backend": "simulated",

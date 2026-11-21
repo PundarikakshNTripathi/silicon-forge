@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """MCP server: lets Claude Code, Codex, opencode and other MCP clients call SiliconForge's verification tools.
 
     siliconforge mcp                      # stdio transport
@@ -19,6 +20,7 @@ from services.orchestrator.config import load_flow_config
 from services.orchestrator.eda.bridge import EDABridge, normalize_mode
 from services.orchestrator.guardrails.hallucination import HallucinationGuardrail
 from services.orchestrator.inference.providers.replay import ReplayProvider
+from services.orchestrator.paths import RESOURCE_ROOT
 from services.orchestrator.pipeline import SiliconForgePipeline
 from services.orchestrator.schemas import PROPERTY_LIST, ContractModel
 from services.orchestrator.skills.registry import SkillRegistry
@@ -103,7 +105,7 @@ def run_example(name: str, backend: str = "simulated", inject_bug: bool = False,
     """Run a bundled example through the whole pipeline (contract, RTL, guardrails, formal, LEC, and layout unless verify_only)."""
     if name not in ReplayProvider().designs():
         raise ValueError(f"Unknown example '{name}'. Available: {ReplayProvider().designs()}")
-    root = Path(__file__).resolve().parents[2]
+    root = RESOURCE_ROOT
     cfg = load_flow_config()
     cfg.eda_mode = normalize_mode(backend)
     if verify_only:

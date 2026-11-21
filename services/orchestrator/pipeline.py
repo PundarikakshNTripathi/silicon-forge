@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """End-to-end deterministic DAG state machine for SiliconForge (Spec -> RTL -> verified -> GDSII).
 
 Tool verdicts (guardrails, SymbiYosys, Yosys LEC, OpenROAD) decide every edge; LLMs only propose artifacts.
@@ -24,6 +25,7 @@ from services.orchestrator.guardrails.hallucination import HallucinationGuardrai
 from services.orchestrator.inference.cost_tracker import BudgetExceededError, CostTracker
 from services.orchestrator.inference.providers import BaseLLMProvider, ReplayMissError
 from services.orchestrator.inference.router import ModelRouter
+from services.orchestrator.paths import RESOURCE_ROOT
 from services.orchestrator.rl.optimizer import HybridPpaOptimizer
 from services.orchestrator.rl.ppa_env import PpaOptimizationEnv
 from services.orchestrator.skills.registry import SkillRegistry
@@ -53,7 +55,7 @@ class SiliconForgePipeline:
         cost_tracker: CostTracker | None = None,
     ) -> None:
         self.config = config
-        self.repo_root = repo_root or Path(__file__).resolve().parents[2]
+        self.repo_root = repo_root or RESOURCE_ROOT
         self.prompts_dir = self.repo_root / "configs" / "prompts"
 
         self.cost_tracker = cost_tracker or CostTracker(

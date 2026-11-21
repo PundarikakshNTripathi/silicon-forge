@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """SQLite (WAL) store for runs, their event streams and app settings."""
 from __future__ import annotations
 

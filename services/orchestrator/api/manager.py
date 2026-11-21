@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Run manager: executes pipelines on a worker pool, persists events, supports cancellation."""
 from __future__ import annotations
 

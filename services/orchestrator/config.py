@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Typed configuration loader for SiliconForge."""
 from __future__ import annotations
 
@@ -6,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+from services.orchestrator.paths import RESOURCE_ROOT
 
 
 @dataclass
@@ -67,7 +70,7 @@ def load_flow_config(
     config_path: str | Path = "configs/flow_default.yaml",
     repo_root: str | Path | None = None,
 ) -> FlowConfig:
-    root = Path(repo_root) if repo_root else Path(__file__).resolve().parents[2]
+    root = Path(repo_root) if repo_root else RESOURCE_ROOT
     cfg_file = Path(config_path)
     if not cfg_file.is_absolute():
         cfg_file = root / cfg_file
