@@ -178,4 +178,5 @@ def contest() -> None:
 
 
 if __name__ == "__main__":
-    flow(); system(); verification(); contest()
+    for build in (flow, system, verification, contest):
+        build()
