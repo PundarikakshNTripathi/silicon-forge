@@ -141,10 +141,15 @@ class WslRunner(Runner):
 
     @staticmethod
     def _q(path: str) -> str:
-        """Quote a path but keep a leading $HOME expandable."""
+        """Quote one argument for the WSL shell, keeping a leading $HOME expandable.
+
+        `wsl.exe` hands the script to a shell layer that still expands `$VAR`, `$(cmd)` and backticks inside single
+        quotes, so an argument like `$(rm -rf x)` would run. A backslash before `$` or a backtick survives that layer
+        and leaves the character literal for the inner shell. (Backslashes and double quotes already pass through intact.)
+        """
         if path.startswith("$HOME/"):
-            return '"$HOME"/' + shlex.quote(path[len("$HOME/"):])
-        return shlex.quote(path)
+            return '"$HOME"/' + WslRunner._q(path[len("$HOME/"):])
+        return shlex.quote(path.replace("$", "\\$").replace("`", "\\`"))
 
     def _exec(self, cmd, cwd, timeout, env, isolate=False):
         if isinstance(cwd, PurePosixPath):
@@ -158,14 +163,14 @@ class WslRunner(Runner):
         return self._bash(script, timeout)
 
     def has_tool(self, tool: str) -> bool:
-        res = self._bash(f"{self._prelude()}; command -v {shlex.quote(tool)}", 90)
+        res = self._bash(f"{self._prelude()}; command -v {self._q(tool)}", 90)
         return res.returncode == 0 and bool(res.stdout.strip())
 
     def push(self, local_dir: Path) -> PurePosixPath:
         src = self.to_wsl_path(local_dir)
         dest = f"{self.scratch}/{local_dir.name}"
         res = self._bash(
-            f"mkdir -p {self._q(dest)} && cp -a {shlex.quote(src)}/. {self._q(dest)}/ && cd {self._q(dest)} && pwd",
+            f"mkdir -p {self._q(dest)} && cp -a {self._q(src)}/. {self._q(dest)}/ && cd {self._q(dest)} && pwd",
             300,
         )
         out = res.stdout.strip().splitlines()
@@ -174,14 +179,14 @@ class WslRunner(Runner):
     def pull(self, remote_dir: Path | PurePosixPath, local_dir: Path) -> None:
         dst = self.to_wsl_path(local_dir)
         self._bash(
-            f"mkdir -p {shlex.quote(dst)} && cp -a {shlex.quote(remote_dir.as_posix())}/. {shlex.quote(dst)}/",
+            f"mkdir -p {self._q(dst)} && cp -a {self._q(remote_dir.as_posix())}/. {self._q(dst)}/",
             600,
         )
 
 
     def cleanup(self, remote_dir: Path | PurePosixPath, local_dir: Path) -> None:
         if str(remote_dir) != str(local_dir):
-            self._bash(f"rm -rf {shlex.quote(PurePosixPath(remote_dir).as_posix())}", 120)
+            self._bash(f"rm -rf {self._q(PurePosixPath(remote_dir).as_posix())}", 120)
 
 
 class DockerRunner(Runner):
