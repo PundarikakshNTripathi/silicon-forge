@@ -65,3 +65,6 @@ build/
 
 # per-user runtime state (recent workspaces contain personal paths)
 /workspaces.json
+
+# per-workspace state created by the verification tools
+.siliconforge/
