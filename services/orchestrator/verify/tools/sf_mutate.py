@@ -258,7 +258,16 @@ def run_test(cmd: str, cwd: Path, timeout: float) -> tuple[bool, str]:
 
 
 def copy_tree(src: Path, dst: Path) -> None:
-    ignore = shutil.ignore_patterns(".git", ".siliconforge", "sim_build", "__pycache__", "*.fst", "*.vcd", "runs", "node_modules")
+    """Copy the project for a worker. Waveforms, build products and workspace state are left behind, except the vendored
+    tools in `.siliconforge/tools`, which the test command may need."""
+    patterns = shutil.ignore_patterns(".git", "sim_build", "__pycache__", "*.fst", "*.vcd", "runs", "node_modules")
+
+    def ignore(directory: str, names: list[str]) -> set[str]:
+        skipped = set(patterns(directory, names))
+        if Path(directory).name == ".siliconforge":
+            skipped |= {n for n in names if n != "tools"}
+        return skipped
+
     shutil.copytree(src, dst, ignore=ignore, dirs_exist_ok=True)
 
 
