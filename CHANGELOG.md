@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (verification)
+- `siliconforge triage sim.json ...`: buckets failing runs by a normalised signature (lockstep divergences by the fields that disagree), with seeds, tests, an example and a replay line per bucket. `docs/verification.md`.
+### Fixed (verification)
+- `sf_cocotb_run.py` recorded an empty message for every failed test: cocotb 2.x writes the text in `error_msg`, not `message`. `sim.json` now carries the message and `error_type`. Found by running triage on a real failing simulation.
 ### Added (flow)
 - `flow lock`, `flow lock --check` and `flow run --locked`: pin the installed Verilator, Yosys and LibreLane versions and the PDK name in `flow.lock`, and refuse to run when they differ. `docs/flow.md`.
 ### Added (agent)

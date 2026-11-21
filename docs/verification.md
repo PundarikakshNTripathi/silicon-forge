@@ -62,6 +62,22 @@ The decoders see only edges on wires, never any RTL, so a design cannot agree wi
 UART reports framing errors, parity errors and `max_edge_error` (how far the real edges sit from the ideal bit grid, in bit
 times), which is how bit-banged timing bugs appear. Reference encoders for each protocol let you test the decoders themselves.
 
+## Regression triage
+
+```bash
+siliconforge triage .siliconforge/sim.json other-run.json --replay "siliconforge verify sim ... --seeds {seed}"
+```
+
+Groups the failing tests of one or more `sim.json` files by a *signature*: the failure message with numbers, hex and
+binary values, quoted strings and instruction counters removed. A lockstep divergence is keyed on the set of fields that
+disagree, not their values. Each bucket lists its seeds, tests and one full example, and shows the replay line for the
+lowest seed. A simulation that crashed without producing test results is its own `crash:` bucket and counts as a failure.
+Exit status is 1 when anything failed, 2 when a report could not be read.
+
+Checked on the pio16 design with a deliberate off-by-one in the `ldx` load, three seeds: 3 failing runs, 1 bucket
+(`lockstep divergence on x`). Buckets are a reading aid: identical signatures are very likely one bug, but one bug can
+surface under two signatures and one signature can hide two bugs. Triage does not look inside waveforms.
+
 ## Worked example
 
 ```bash

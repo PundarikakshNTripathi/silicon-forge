@@ -33,7 +33,9 @@ def parse_results(xml_path: Path) -> list[dict]:
             "status": "fail" if bad is not None else "skip" if skipped else "pass",
             "sim_time_ns": float(tc.get("sim_time_ns", 0) or 0),
             "real_s": float(tc.get("time", 0) or 0),
-            "message": (bad.get("message") or (bad.text or "")).strip()[:500] if bad is not None else "",
+            # JUnit uses `message`; cocotb 2.x writes the text in `error_msg` and the exception class in `error_type`
+            "message": (bad.get("message") or bad.get("error_msg") or (bad.text or "")).strip()[:500] if bad is not None else "",
+            "error_type": (bad.get("type") or bad.get("error_type") or "") if bad is not None else "",
         })
     return out
 
