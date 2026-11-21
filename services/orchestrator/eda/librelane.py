@@ -80,10 +80,17 @@ class LibreLaneFlow:
         pdk: str,
         timeout: float = 3600.0,
     ) -> PPAMetrics:
-        t0 = time.perf_counter()
         rtl_name = f"{contract.module_name}.sv"
         (pnr_dir / rtl_name).write_text(rtl_source, encoding="utf-8")
         cfg = self.build_config(contract, rtl_name, knobs, pdk)
+        return self.run_config(pnr_dir, cfg, knobs, timeout)[0]
+
+    def run_config(
+        self, pnr_dir: Path, cfg: dict[str, Any], knobs: dict[str, Any], timeout: float = 3600.0
+    ) -> tuple[PPAMetrics, dict[str, Any]]:
+        """Run LibreLane on a prepared directory with a complete config. Returns the mapped PPA and the raw metrics, so
+        callers that need more than PPA (the project flow's signoff gates) read the same file the flow produced."""
+        t0 = time.perf_counter()
         (pnr_dir / "config.json").write_text(json.dumps(cfg, indent=2), encoding="utf-8")
 
         work = self.runner.push(pnr_dir)
@@ -110,7 +117,7 @@ class LibreLaneFlow:
         render = next((run_root / "final" / "render").glob("*.png"), None) if (run_root / "final" / "render").exists() else None
         if render:
             ppa.extra["render_png"] = str(render)
-        return ppa
+        return ppa, metrics
 
     @staticmethod
     def _prune_steps(run_root: Path) -> None:

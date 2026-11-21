@@ -1,0 +1,488 @@
+{
+  "schema": "siliconforge.flow/1",
+  "project": {
+    "name": "p16",
+    "top": "pio16",
+    "pdk": "sky130A",
+    "clock": {
+      "port": "clk",
+      "period_ns": 20.0
+    },
+    "sources": 2,
+    "defines": {},
+    "fingerprint": "346ccea5d81541bd2d0e8edd9b9bc9846b9db1ce476f98eabf91106adbb4a5fa",
+    "sdc": false
+  },
+  "runner": "wsl",
+  "tools": {
+    "verilator": "Verilator 5.055 devel rev v5.054-340-g53a72711e (mod)",
+    "yosys": "Yosys 0.71+59 (git sha1 d9358f38c, Release, Clang /usr/bin/clang++ 21.1.8)",
+    "librelane": "LibreLane v3.0.17"
+  },
+  "stages": [
+    {
+      "name": "lint",
+      "status": "pass",
+      "summary": "0 error(s), 2 warning(s); most common: UNUSEDSIGNAL",
+      "mode": "wsl",
+      "elapsed_s": 0.23,
+      "data": {
+        "errors": 0,
+        "warnings": 2,
+        "by_kind": {
+          "UNUSEDSIGNAL": 1,
+          "UNUSEDPARAM": 1
+        },
+        "files": 2
+      },
+      "log_tail": ""
+    },
+    {
+      "name": "synth",
+      "status": "pass",
+      "summary": "synthesized to 1894 generic cells; equivalence proven",
+      "mode": "wsl",
+      "elapsed_s": 7.76,
+      "data": {
+        "cells": 1894,
+        "lec": "proven"
+      },
+      "log_tail": ""
+    },
+    {
+      "name": "pnr",
+      "status": "fail",
+      "summary": "signoff failed: Max slew violations, Max capacitance violations, Max fanout violations",
+      "mode": "wsl",
+      "elapsed_s": 197.87,
+      "data": {
+        "ppa": {
+          "wns_ns": 1.9894717547597205,
+          "tns_ns": 0.0,
+          "area_um2": 34629.5,
+          "total_power_mw": 4.2898510582745075,
+          "cell_count": 3325,
+          "drc_violations": 0,
+          "lvs_clean": true,
+          "runtime_sec": 197.44,
+          "knobs": {},
+          "reward": 0.0,
+          "mode": "simulated",
+          "gds_path": "pnr/runs/sf/final/gds/pio16.gds",
+          "run_dir": "pnr",
+          "cached": false,
+          "corner_wns": {
+            "nom_tt_025C_1v80": 11.308340361970464,
+            "nom_ss_100C_1v60": 2.38476090069732,
+            "nom_ff_n40C_1v95": 13.15592472199182,
+            "min_tt_025C_1v80": 11.524562075291108,
+            "min_ss_100C_1v60": 2.7847360761097875,
+            "min_ff_n40C_1v95": 13.223863267592955,
+            "max_tt_025C_1v80": 11.097130639613935,
+            "max_ss_100C_1v60": 1.9894717547597205,
+            "max_ff_n40C_1v95": 13.081598397015544
+          },
+          "extra": {
+            "die_area_um2": 55879.9,
+            "instance_area_um2": 47845.9,
+            "hold_ws_ns": 0.11451978578468179,
+            "timing_corner": "worst",
+            "render_png": "pnr/runs/sf/final/render/pio16.png"
+          }
+        },
+        "verdict": {
+          "status": "failed",
+          "checks": [
+            {
+              "id": "setup_ws",
+              "name": "Setup slack, worst corner",
+              "status": "pass",
+              "required": true,
+              "value": 1.9895,
+              "limit": ">= 0 ns",
+              "detail": ""
+            },
+            {
+              "id": "setup_vio",
+              "name": "Setup violations",
+              "status": "pass",
+              "required": true,
+              "value": 0,
+              "limit": "0",
+              "detail": "timing__setup_vio__count=0"
+            },
+            {
+              "id": "hold_ws",
+              "name": "Hold slack, worst corner",
+              "status": "pass",
+              "required": true,
+              "value": 0.1145,
+              "limit": ">= 0 ns",
+              "detail": ""
+            },
+            {
+              "id": "hold_vio",
+              "name": "Hold violations",
+              "status": "pass",
+              "required": true,
+              "value": 0,
+              "limit": "0",
+              "detail": "timing__hold_vio__count=0"
+            },
+            {
+              "id": "drc",
+              "name": "Design rule check (Magic, KLayout, router)",
+              "status": "pass",
+              "required": true,
+              "value": 0,
+              "limit": "0",
+              "detail": "magic__drc_error__count=0, klayout__drc_error__count=0, route__drc_errors=0"
+            },
+            {
+              "id": "lvs",
+              "name": "Layout versus schematic",
+              "status": "pass",
+              "required": true,
+              "value": 0,
+              "limit": "0",
+              "detail": "design__lvs_error__count=0"
+            },
+            {
+              "id": "antenna",
+              "name": "Antenna violations",
+              "status": "pass",
+              "required": false,
+              "value": 0,
+              "limit": "0",
+              "detail": "route__antenna_violation__count=0, antenna__violating__nets=0"
+            },
+            {
+              "id": "xor",
+              "name": "Layout versus stream-out (XOR)",
+              "status": "pass",
+              "required": false,
+              "value": 0,
+              "limit": "0",
+              "detail": "design__xor_difference__count=0"
+            },
+            {
+              "id": "lint",
+              "name": "Linter errors",
+              "status": "pass",
+              "required": false,
+              "value": 0,
+              "limit": "0",
+              "detail": "design__lint_error__count=0"
+            },
+            {
+              "id": "slew",
+              "name": "Max slew violations",
+              "status": "fail",
+              "required": false,
+              "value": 1097,
+              "limit": "0",
+              "detail": "design__max_slew_violation__count=1097"
+            },
+            {
+              "id": "cap",
+              "name": "Max capacitance violations",
+              "status": "fail",
+              "required": false,
+              "value": 49,
+              "limit": "0",
+              "detail": "design__max_cap_violation__count=49"
+            },
+            {
+              "id": "fanout",
+              "name": "Max fanout violations",
+              "status": "fail",
+              "required": false,
+              "value": 22,
+              "limit": "0",
+              "detail": "design__max_fanout_violation__count=22"
+            },
+            {
+              "id": "ir",
+              "name": "IR drop, worst voltage",
+              "status": "pass",
+              "required": false,
+              "value": 1.8,
+              "limit": "informational",
+              "detail": "reported, no limit applied"
+            }
+          ]
+        },
+        "corners": [
+          {
+            "corner": "max_ss_100C_1v60",
+            "setup_ns": 1.9894717547597205,
+            "hold_ns": 0.9099981026287972
+          },
+          {
+            "corner": "nom_ss_100C_1v60",
+            "setup_ns": 2.38476090069732,
+            "hold_ns": 0.9017223889468857
+          },
+          {
+            "corner": "min_ss_100C_1v60",
+            "setup_ns": 2.7847360761097875,
+            "hold_ns": 0.8946859062401086
+          },
+          {
+            "corner": "max_tt_025C_1v80",
+            "setup_ns": 11.097130639613935,
+            "hold_ns": 0.3335182224795966
+          },
+          {
+            "corner": "nom_tt_025C_1v80",
+            "setup_ns": 11.308340361970464,
+            "hold_ns": 0.3288423515456914
+          },
+          {
+            "corner": "min_tt_025C_1v80",
+            "setup_ns": 11.524562075291108,
+            "hold_ns": 0.3249761662865448
+          },
+          {
+            "corner": "max_ff_n40C_1v95",
+            "setup_ns": 13.081598397015544,
+            "hold_ns": 0.12057560846607253
+          },
+          {
+            "corner": "nom_ff_n40C_1v95",
+            "setup_ns": 13.15592472199182,
+            "hold_ns": 0.11728468528340498
+          },
+          {
+            "corner": "min_ff_n40C_1v95",
+            "setup_ns": 13.223863267592955,
+            "hold_ns": 0.11451978578468179
+          }
+        ],
+        "gds": "pnr/runs/sf/final/gds/pio16.gds"
+      },
+      "log_tail": ""
+    }
+  ],
+  "overall": "failed",
+  "ppa": {
+    "wns_ns": 1.9894717547597205,
+    "tns_ns": 0.0,
+    "area_um2": 34629.5,
+    "total_power_mw": 4.2898510582745075,
+    "cell_count": 3325,
+    "drc_violations": 0,
+    "lvs_clean": true,
+    "runtime_sec": 197.44,
+    "knobs": {},
+    "reward": 0.0,
+    "mode": "simulated",
+    "gds_path": "pnr/runs/sf/final/gds/pio16.gds",
+    "run_dir": "pnr",
+    "cached": false,
+    "corner_wns": {
+      "nom_tt_025C_1v80": 11.308340361970464,
+      "nom_ss_100C_1v60": 2.38476090069732,
+      "nom_ff_n40C_1v95": 13.15592472199182,
+      "min_tt_025C_1v80": 11.524562075291108,
+      "min_ss_100C_1v60": 2.7847360761097875,
+      "min_ff_n40C_1v95": 13.223863267592955,
+      "max_tt_025C_1v80": 11.097130639613935,
+      "max_ss_100C_1v60": 1.9894717547597205,
+      "max_ff_n40C_1v95": 13.081598397015544
+    },
+    "extra": {
+      "die_area_um2": 55879.9,
+      "instance_area_um2": 47845.9,
+      "hold_ws_ns": 0.11451978578468179,
+      "timing_corner": "worst",
+      "render_png": "pnr/runs/sf/final/render/pio16.png"
+    }
+  },
+  "verdict": {
+    "status": "failed",
+    "checks": [
+      {
+        "id": "setup_ws",
+        "name": "Setup slack, worst corner",
+        "status": "pass",
+        "required": true,
+        "value": 1.9895,
+        "limit": ">= 0 ns",
+        "detail": ""
+      },
+      {
+        "id": "setup_vio",
+        "name": "Setup violations",
+        "status": "pass",
+        "required": true,
+        "value": 0,
+        "limit": "0",
+        "detail": "timing__setup_vio__count=0"
+      },
+      {
+        "id": "hold_ws",
+        "name": "Hold slack, worst corner",
+        "status": "pass",
+        "required": true,
+        "value": 0.1145,
+        "limit": ">= 0 ns",
+        "detail": ""
+      },
+      {
+        "id": "hold_vio",
+        "name": "Hold violations",
+        "status": "pass",
+        "required": true,
+        "value": 0,
+        "limit": "0",
+        "detail": "timing__hold_vio__count=0"
+      },
+      {
+        "id": "drc",
+        "name": "Design rule check (Magic, KLayout, router)",
+        "status": "pass",
+        "required": true,
+        "value": 0,
+        "limit": "0",
+        "detail": "magic__drc_error__count=0, klayout__drc_error__count=0, route__drc_errors=0"
+      },
+      {
+        "id": "lvs",
+        "name": "Layout versus schematic",
+        "status": "pass",
+        "required": true,
+        "value": 0,
+        "limit": "0",
+        "detail": "design__lvs_error__count=0"
+      },
+      {
+        "id": "antenna",
+        "name": "Antenna violations",
+        "status": "pass",
+        "required": false,
+        "value": 0,
+        "limit": "0",
+        "detail": "route__antenna_violation__count=0, antenna__violating__nets=0"
+      },
+      {
+        "id": "xor",
+        "name": "Layout versus stream-out (XOR)",
+        "status": "pass",
+        "required": false,
+        "value": 0,
+        "limit": "0",
+        "detail": "design__xor_difference__count=0"
+      },
+      {
+        "id": "lint",
+        "name": "Linter errors",
+        "status": "pass",
+        "required": false,
+        "value": 0,
+        "limit": "0",
+        "detail": "design__lint_error__count=0"
+      },
+      {
+        "id": "slew",
+        "name": "Max slew violations",
+        "status": "fail",
+        "required": false,
+        "value": 1097,
+        "limit": "0",
+        "detail": "design__max_slew_violation__count=1097"
+      },
+      {
+        "id": "cap",
+        "name": "Max capacitance violations",
+        "status": "fail",
+        "required": false,
+        "value": 49,
+        "limit": "0",
+        "detail": "design__max_cap_violation__count=49"
+      },
+      {
+        "id": "fanout",
+        "name": "Max fanout violations",
+        "status": "fail",
+        "required": false,
+        "value": 22,
+        "limit": "0",
+        "detail": "design__max_fanout_violation__count=22"
+      },
+      {
+        "id": "ir",
+        "name": "IR drop, worst voltage",
+        "status": "pass",
+        "required": false,
+        "value": 1.8,
+        "limit": "informational",
+        "detail": "reported, no limit applied"
+      }
+    ]
+  },
+  "corners": [
+    {
+      "corner": "max_ss_100C_1v60",
+      "setup_ns": 1.9894717547597205,
+      "hold_ns": 0.9099981026287972
+    },
+    {
+      "corner": "nom_ss_100C_1v60",
+      "setup_ns": 2.38476090069732,
+      "hold_ns": 0.9017223889468857
+    },
+    {
+      "corner": "min_ss_100C_1v60",
+      "setup_ns": 2.7847360761097875,
+      "hold_ns": 0.8946859062401086
+    },
+    {
+      "corner": "max_tt_025C_1v80",
+      "setup_ns": 11.097130639613935,
+      "hold_ns": 0.3335182224795966
+    },
+    {
+      "corner": "nom_tt_025C_1v80",
+      "setup_ns": 11.308340361970464,
+      "hold_ns": 0.3288423515456914
+    },
+    {
+      "corner": "min_tt_025C_1v80",
+      "setup_ns": 11.524562075291108,
+      "hold_ns": 0.3249761662865448
+    },
+    {
+      "corner": "max_ff_n40C_1v95",
+      "setup_ns": 13.081598397015544,
+      "hold_ns": 0.12057560846607253
+    },
+    {
+      "corner": "nom_ff_n40C_1v95",
+      "setup_ns": 13.15592472199182,
+      "hold_ns": 0.11728468528340498
+    },
+    {
+      "corner": "min_ff_n40C_1v95",
+      "setup_ns": 13.223863267592955,
+      "hold_ns": 0.11451978578468179
+    }
+  ],
+  "librelane_config": {
+    "DESIGN_NAME": "pio16",
+    "VERILOG_FILES": [
+      "dir::src/rtl/pio16.v",
+      "dir::src/gen/rtl/pio16_decode.v"
+    ],
+    "CLOCK_PORT": "clk",
+    "CLOCK_PERIOD": 20.0,
+    "PDK": "sky130A",
+    "VERILOG_INCLUDE_DIRS": [
+      "dir::src/gen/rtl",
+      "dir::src/rtl"
+    ]
+  },
+  "config_sha256": "94c0bf0c4cc31a61228cd237a25164622cd08460cb2577ab81d2fb3ddd2a9458",
+  "elapsed_s": 205.9,
+  "created": "2026-11-21T13:42:53+0530"
+}
