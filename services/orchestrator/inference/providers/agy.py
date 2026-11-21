@@ -30,6 +30,7 @@ from services.orchestrator.inference.providers.base import (
     ProviderError,
     RefusalError,
     TransientProviderError,
+    retry_call,
 )
 from services.orchestrator.inference.providers.cli_bridge import (
     ENABLE_ENV,
@@ -68,7 +69,7 @@ class AgyProvider(BaseLLMProvider):
     _slots: threading.BoundedSemaphore | None = None
     _slots_lock = threading.Lock()
 
-    def __init__(self, timeout_s: float = 600.0, enabled: bool = False, default_effort: str = "medium",
+    def __init__(self, timeout_s: float = 420.0, enabled: bool = False, default_effort: str = "medium",
                  max_concurrency: int = 2, executable: str | None = None, sandbox: bool = True) -> None:
         self.name = "cli:agy"
         self.timeout_s = timeout_s
@@ -119,6 +120,11 @@ class AgyProvider(BaseLLMProvider):
         return result
 
     def generate(self, model, system_prompt, user_prompt, temperature=0.1, json_schema=None) -> LLMResponse:
+        """One retry on a transient failure (a hung call, a rate limit): a single stuck `agy` process should not end a session."""
+        return retry_call(lambda: self._generate_once(model, system_prompt, user_prompt, json_schema),
+                          attempts=2, base_delay=3.0)
+
+    def _generate_once(self, model, system_prompt, user_prompt, json_schema=None) -> LLMResponse:
         if not self.enabled:
             raise ProviderError(f"CLI bridge is disabled. {TOS_WARNING} Enable it in the UI or set {ENABLE_ENV}=1.")
         exe = self._exe()

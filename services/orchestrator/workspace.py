@@ -43,6 +43,7 @@ class Workspace:
     pdk: str | None = None
     allowed_models: list[str] = field(default_factory=list)
     max_budget_usd: float | None = None
+    max_total_tokens: int | None = None
     has_manifest: bool = False
 
     # ------------------------------------------------------------------ paths
@@ -91,6 +92,8 @@ class Workspace:
             cfg.inference.allowed_models = list(self.allowed_models)
         if self.max_budget_usd is not None:
             cfg.inference.max_budget_usd = self.max_budget_usd
+        if self.max_total_tokens is not None:
+            cfg.inference.max_total_tokens = self.max_total_tokens
         if cfg.inference.cache_path:
             cfg.inference.cache_path = str(self.state_dir / "llm-cache.sqlite")
         cfg.inference.ledger_path = str(self.ledger_path)
@@ -101,7 +104,7 @@ class Workspace:
         return {
             "root": str(self.root), "name": self.name or self.root.name, "profile": self.profile,
             "backend": self.backend, "pdk": self.pdk, "allowed_models": self.allowed_models,
-            "max_budget_usd": self.max_budget_usd, "has_manifest": self.has_manifest,
+            "max_budget_usd": self.max_budget_usd, "max_total_tokens": self.max_total_tokens, "has_manifest": self.has_manifest,
             "instructions_file": src, "instructions_chars": len(text),
         }
 
@@ -132,6 +135,7 @@ def load_workspace(path: str | Path) -> Workspace:
         pdk=str(raw["pdk"]) if raw.get("pdk") else None,
         allowed_models=[str(a) for a in allowed],
         max_budget_usd=float(budget) if budget is not None else None,
+        max_total_tokens=int(policy["max_total_tokens"]) if policy.get("max_total_tokens") is not None else None,
         has_manifest=True,
     )
 
