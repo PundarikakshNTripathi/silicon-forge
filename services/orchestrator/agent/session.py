@@ -23,6 +23,7 @@ from typing import Any, Literal
 
 from services.orchestrator.agent import compaction
 from services.orchestrator.agent.hooks import HookSet
+from services.orchestrator.agent.memory import Memory
 from services.orchestrator.agent.safety import LoopGuard, Rules, redact
 from services.orchestrator.agent.store import SessionStore
 from services.orchestrator.agent.tools import COMMAND, EDIT, READ, ToolBox, ToolError
@@ -192,6 +193,7 @@ class AgentSession:
     def _system(self) -> str:
         text, src = self.ws.instructions()
         instr = f"\nProject instructions from {src} (follow them):\n{text}\n" if text else ""
+        instr += Memory(self.ws.state_dir).prompt_block()  # empty unless the project has saved notes
         return SYSTEM.format(tools=self.tools.describe(), instructions=instr)
 
     def _transcript(self) -> str:

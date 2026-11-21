@@ -27,12 +27,12 @@ from services.orchestrator.agent.session import MODES, AgentEvent, AgentSession
 from services.tui import art, diffview
 from services.tui.theme import DEFAULT, build_themes, palette
 
-SLASH = ["/help", "/mode", "/undo", "/sessions", "/resume", "/cost", "/clear", "/theme", "/exit"]
+SLASH = ["/help", "/mode", "/undo", "/sessions", "/resume", "/memory", "/cost", "/clear", "/theme", "/exit"]
 SPINNER = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
 MODE_BLURB = {"ask": "confirms edits and commands", "accept-edits": "edits go through, commands are confirmed",
               "auto": "no confirmations", "plan": "read-only: describes changes instead of making them"}
 HELP = """**Keys**  `Shift+Tab` cycle mode · `Esc` interrupt · `Ctrl+B` files · `Ctrl+L` clear · `F1` this help · `Ctrl+Q` quit
-**Slash commands**  `/mode [ask|accept-edits|auto|plan]` · `/undo` · `/sessions` · `/resume [id]` · `/cost` · `/clear` · `/theme` · `/exit`
+**Slash commands**  `/mode [ask|accept-edits|auto|plan]` · `/undo` · `/sessions` · `/resume [id]` · `/memory` · `/cost` · `/clear` · `/theme` · `/exit`
 Click a tool card to expand its output. Approvals: `y` allow once, `a` always allow this tool in this session, `n` decline."""
 
 SessionFactory = Callable[[Callable[[AgentEvent], None], Callable[[str, str, dict], bool]], AgentSession]
@@ -389,6 +389,11 @@ class ChatApp(App):
             self._status()
         elif cmd == "/undo":
             self._notice(s.tools.undo())
+        elif cmd == "/memory":
+            from services.orchestrator.agent.memory import Memory
+
+            notes = Memory(s.ws.state_dir).notes()
+            self._notice("\n".join(f"- {n}" for n in notes) if notes else "No project memory yet. Set `memory: true` in siliconforge.yaml and the agent can save notes.")
         elif cmd == "/cost":
             tk = s.router.cost_tracker
             self._notice(f"**{tk.total_tokens:,}** tokens, **${tk.total_cost_usd:.4f}**, cache hit rate {tk.cache_hit_rate:.0%}, "

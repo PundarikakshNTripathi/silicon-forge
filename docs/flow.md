@@ -94,6 +94,32 @@ WSL, tools Verilator 5.055, Yosys 0.71 and LibreLane 3.0.17. Result in `benchmar
 A second run on identical inputs gave identical area, cell count, power, slack and gate outcomes (`flow diff` lists no
 change), so on this design and machine the flow was repeatable. That is two runs, not a guarantee.
 
+## In CI: the GitHub Action
+
+`.github/actions/flow` runs the flow on every push and uploads the report, failing the job when a signoff gate fails. It runs
+`siliconforge flow check`, then `flow run --locked`, so a runner whose tools differ from `flow.lock` stops instead of producing a
+number that is not comparable. The report (`report.html`, `report.json`) is uploaded even when the flow fails.
+
+```yaml
+# .github/workflows/flow.yml in your project
+on: [push, pull_request]
+jobs:
+  flow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: YosysHQ/setup-oss-cad-suite@v3      # Yosys, SymbiYosys, Verilator on PATH
+      - uses: PundarikakshNTripathi/silicon-forge/.github/actions/flow@main
+        with:
+          path: .
+          backend: native
+          version: main        # a tag or branch of SiliconForge; there is no PyPI release yet
+```
+
+Place and route needs LibreLane and the PDK as well; for the full flow use `backend: docker` on a runner with the image, or run only
+`--stages lint,synth` in CI with `extra-args`. Inputs reach the shell only through environment variables (no `${{ }}` inside `run:`),
+which a test checks (`tests/test_github_action.py`).
+
 ## Limits
 
 - The front end is Yosys' `read_verilog -sv`. It handles the synthesizable Verilog-2001 and common SystemVerilog subset; designs
