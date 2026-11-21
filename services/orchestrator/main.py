@@ -296,6 +296,54 @@ def cmd_chat(args: argparse.Namespace) -> int:
         session.send(line)
 
 
+def cmd_isa(args: argparse.Namespace) -> int:
+    """ISA toolchain: generate / asm / disasm / check / run, all from one isa.yaml."""
+    from services.orchestrator import isa as isa_pkg
+
+    try:
+        spec = isa_pkg.load_spec(args.spec)
+    except (isa_pkg.IsaError, OSError, KeyError) as exc:
+        print(f"isa spec error: {exc}")
+        return 1
+    if args.action == "gen":
+        for f in isa_pkg.generate_all(args.spec, args.out or "."):
+            print(f"wrote {f}")
+        return 0
+    if args.action == "disasm":
+        words = [int(x, 16) for x in Path(args.program).read_text().split() if x.strip()]
+        print(isa_pkg.disassemble(spec, words), end="")
+        return 0
+    try:
+        prog = isa_pkg.Assembler(spec).assemble(Path(args.program).read_text(encoding="utf-8"))
+    except isa_pkg.AsmError as exc:
+        print("assembly failed:")
+        for e in exc.errors:
+            print(f"  {e}")
+        return 1
+    if args.action == "asm":
+        if args.hex:
+            Path(args.hex).write_text(prog.hex(args.depth), encoding="utf-8")
+            print(f"wrote {args.hex} ({len(prog.words)} words)")
+        print(prog.listing())
+        return 0
+    inputs = {k: int(v, 0) for k, v in (kv.split("=", 1) for kv in args.input)}
+    if args.action == "check":
+        rep = isa_pkg.check_timing(prog, inputs)
+        print(rep.text())
+        print("timing: OK" if rep.ok else "timing: FAILED")
+        return 0 if rep.ok else 1
+    if args.action == "run":
+        mach = isa_pkg.Machine(spec, prog, illegal="halt")
+        mach.inputs = inputs
+        for _ in range(args.steps):
+            if mach.halted:
+                break
+            r = mach.step()
+            print(f"cycle {mach.cycles - r.cycles:>6}  @{r.addr:<3} {isa_pkg.disassemble_word(spec, r.word):<20} {mach.s.snapshot()}")
+        return 0
+    return 2
+
+
 def cmd_tui(args: argparse.Namespace) -> int:
     try:
         from services.tui.app import main as tui_main
@@ -396,6 +444,17 @@ def build_parser() -> argparse.ArgumentParser:
     ch = sub.add_parser("chat", help="Interactive agent session in this folder")
     agent_opts(ch)
     ch.set_defaults(func=cmd_chat)
+
+    isa = sub.add_parser("isa", help="ISA toolchain from an isa.yaml: gen, asm, disasm, check, run")
+    isa.add_argument("action", choices=["gen", "asm", "disasm", "check", "run"])
+    isa.add_argument("spec", help="Path to isa.yaml")
+    isa.add_argument("program", nargs="?", default=None, help="Assembly file (hex file for disasm)")
+    isa.add_argument("--out", default=None, help="gen: output directory")
+    isa.add_argument("--hex", default=None, help="asm: write a $readmemh image")
+    isa.add_argument("--depth", type=int, default=None, help="asm: pad the image to this many words")
+    isa.add_argument("--input", action="append", default=[], metavar="NAME=VALUE", help="check/run: external input, e.g. pins=0x01")
+    isa.add_argument("--steps", type=int, default=64, help="run: instruction budget")
+    isa.set_defaults(func=cmd_isa)
 
     rp = sub.add_parser("report", help="Generate reports from a workspace")
     rp.add_argument("kind", choices=["ai-usage"])

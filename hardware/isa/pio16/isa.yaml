@@ -1,0 +1,96 @@
+name: pio16
+title: PIO16
+description: >
+  A deliberately small 16-bit pin engine used to demonstrate the ISA toolchain: it drives and reads eight pins with
+  cycle-exact timing, has two 8-bit counters and a 5-bit program counter (32 instructions). It is a teaching spec, not a
+  product; copy it as the starting point for your own.
+
+word_bits: 16
+
+state:
+  pc: 5
+  x: 8
+  y: 8
+  pins: 8      # output pin values
+  oe: 8        # output enables
+  halted: 1
+
+instructions:
+  - name: nop
+    encoding: "0000 0000 0000 0000"
+    doc: Do nothing for one cycle.
+    cycles: 1
+
+  - name: ldx
+    encoding: "0001 vvvvvvvv ----"
+    asm: "ldx {v}"
+    operands: {v: {name: v}}
+    doc: Load the X counter with an 8-bit constant.
+    exec: "s.x = v"
+
+  - name: ldy
+    encoding: "0010 vvvvvvvv ----"
+    asm: "ldy {v}"
+    operands: {v: {name: v}}
+    doc: Load the Y counter with an 8-bit constant.
+    exec: "s.y = v"
+
+  - name: pins
+    encoding: "0011 vvvvvvvv ----"
+    asm: "pins {v}"
+    operands: {v: {name: v}}
+    pin_event: true
+    doc: Drive the eight output pins. This is a pin event for the timing checker.
+    exec: "s.pins = v"
+
+  - name: oe
+    encoding: "0100 vvvvvvvv ----"
+    asm: "oe {v}"
+    operands: {v: {name: v}}
+    pin_event: true
+    doc: Set the output-enable mask (1 = drive).
+    exec: "s.oe = v"
+
+  - name: delay
+    encoding: "0101 nnnnnnnn ----"
+    asm: "delay {n}"
+    operands: {n: {name: n}}
+    cycles: "1 + n"
+    doc: Wait n extra cycles, so the instruction takes 1 + n cycles in total.
+
+  - name: jmp
+    encoding: "0110 ---- --- ttttt"
+    asm: "jmp {t}"
+    operands: {t: {name: t, kind: label}}
+    flow: {kind: jump, target: t}
+    doc: Jump to an address.
+    exec: "s.pc = t"
+
+  - name: djnz
+    encoding: "0111 ---- --- ttttt"
+    asm: "djnz {t}"
+    operands: {t: {name: t, kind: label}}
+    flow: {kind: cond, target: t}
+    doc: Decrement X, then jump if X is not zero. A loop that uses it needs `.bound` for the timing checker.
+    exec: |
+      s.x = s.x - 1
+      if s.x != 0:
+          s.pc = t
+
+  - name: jpin
+    encoding: "1000 -ppp --- ttttt"
+    asm: "jpin {p}, {t}"
+    operands:
+      p: {name: p}
+      t: {name: t, kind: label}
+    flow: {kind: cond, target: t}
+    doc: Jump if input pin p is high.
+    exec: |
+      if (inp.get("pins") >> p) & 1:
+          s.pc = t
+
+  - name: halt
+    encoding: "1111 0000 0000 0000"
+    flow: {kind: halt}
+    doc: Stop the engine.
+    exec: "s.halted = 1"
