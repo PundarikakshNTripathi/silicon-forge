@@ -1,0 +1,1726 @@
+{
+  "schema": "siliconforge.ppa/1",
+  "design": "up_down_counter",
+  "backend": "wsl",
+  "pdk": "sky130A",
+  "budget": 8,
+  "seeds": 3,
+  "objective": {
+    "targets": {
+      "clock_period_ns": 9.5,
+      "max_area_um2": 1154.86,
+      "max_power_mw": 0.11325728701194748,
+      "min_wns_ns": 0.0
+    },
+    "probe": {
+      "critical_path_ns": 8.667,
+      "default_area_um2": 1154.86,
+      "default_power_mw": 0.11325728701194748
+    },
+    "note": "reward = signoff-aware quality score without the runtime term; area and power are relative to the default run"
+  },
+  "space": [
+    {
+      "name": "FP_CORE_UTIL",
+      "kind": "float",
+      "low": 25.0,
+      "high": 65.0,
+      "choices": []
+    },
+    {
+      "name": "PL_TARGET_DENSITY_PCT",
+      "kind": "float",
+      "low": 40.0,
+      "high": 85.0,
+      "choices": []
+    },
+    {
+      "name": "GRT_ADJUSTMENT",
+      "kind": "float",
+      "low": 0.1,
+      "high": 0.4,
+      "choices": []
+    },
+    {
+      "name": "SYNTH_STRATEGY",
+      "kind": "choice",
+      "low": 0.0,
+      "high": 1.0,
+      "choices": [
+        "AREA 0",
+        "AREA 1",
+        "AREA 2",
+        "AREA 3",
+        "DELAY 0",
+        "DELAY 1",
+        "DELAY 2",
+        "DELAY 3",
+        "DELAY 4"
+      ]
+    }
+  ],
+  "tools_present": {
+    "yosys": true,
+    "sby": true,
+    "verilator": true,
+    "bitwuzla": true,
+    "z3": true,
+    "librelane": true
+  },
+  "summary": {
+    "default": {
+      "runs": 1,
+      "best_mean": 4.2085,
+      "best_min": 4.2085,
+      "best_max": 4.2085,
+      "failed_flows_per_run": 0.0
+    },
+    "random": {
+      "runs": 3,
+      "best_mean": 4.5344,
+      "best_min": 4.3179,
+      "best_max": 4.6441,
+      "failed_flows_per_run": 1.0
+    },
+    "lhs": {
+      "runs": 3,
+      "best_mean": 4.5183,
+      "best_min": 4.3232,
+      "best_max": 4.6229,
+      "failed_flows_per_run": 2.0
+    },
+    "bandit": {
+      "runs": 1,
+      "best_mean": 4.6531,
+      "best_min": 4.6531,
+      "best_max": 4.6531,
+      "failed_flows_per_run": 1.0
+    },
+    "gpbo": {
+      "runs": 3,
+      "best_mean": 4.3816,
+      "best_min": 4.2338,
+      "best_max": 4.649,
+      "failed_flows_per_run": 0.33
+    }
+  },
+  "arms": {
+    "default": {
+      "runs": [
+        {
+          "seed": 0,
+          "rewards": [
+            4.2085
+          ],
+          "best_curve": [
+            4.2085
+          ],
+          "points": [
+            {
+              "knobs": {},
+              "reward": 4.2085,
+              "wns_ns": 2.9331866654661454,
+              "area_um2": 1154.86,
+              "power_mw": 0.23843474627938122,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": true,
+              "flow_failed": false
+            }
+          ]
+        }
+      ]
+    },
+    "random": {
+      "runs": [
+        {
+          "seed": 0,
+          "rewards": [
+            4.2002,
+            3.1979,
+            4.363,
+            -50.0,
+            4.1989,
+            4.2902,
+            4.6441,
+            4.2182
+          ],
+          "best_curve": [
+            4.2002,
+            4.2002,
+            4.363,
+            4.363,
+            4.363,
+            4.363,
+            4.6441,
+            4.6441
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 50.0,
+                "PL_TARGET_DENSITY_PCT": 52.0,
+                "GRT_ADJUSTMENT": 0.11,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.2002,
+              "wns_ns": 2.931254433259441,
+              "area_um2": 1154.86,
+              "power_mw": 0.23876993509475142,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": true,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 58.0,
+                "PL_TARGET_DENSITY_PCT": 81.0,
+                "GRT_ADJUSTMENT": 0.28,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 3.1979,
+              "wns_ns": 2.473263885920584,
+              "area_um2": 1192.39,
+              "power_mw": 0.24160959583241493,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": true,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 47.0,
+                "PL_TARGET_DENSITY_PCT": 82.0,
+                "GRT_ADJUSTMENT": 0.34,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.363,
+              "wns_ns": 3.295996457944362,
+              "area_um2": 1166.12,
+              "power_mw": 0.23575314844492823,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": true,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 59.0,
+                "PL_TARGET_DENSITY_PCT": 42.0,
+                "GRT_ADJUSTMENT": 0.32,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 60.0,
+                "PL_TARGET_DENSITY_PCT": 64.0,
+                "GRT_ADJUSTMENT": 0.19,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.1989,
+              "wns_ns": 4.968337881732157,
+              "area_um2": 1207.41,
+              "power_mw": 0.24409785692114383,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 26.0,
+                "PL_TARGET_DENSITY_PCT": 46.0,
+                "GRT_ADJUSTMENT": 0.3,
+                "SYNTH_STRATEGY": "DELAY 1"
+              },
+              "reward": 4.2902,
+              "wns_ns": 3.4747428140535144,
+              "area_um2": 1238.69,
+              "power_mw": 0.23413379676640034,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 50.0,
+                "PL_TARGET_DENSITY_PCT": 57.0,
+                "GRT_ADJUSTMENT": 0.4,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6441,
+              "wns_ns": 3.5835100345845583,
+              "area_um2": 1069.78,
+              "power_mw": 0.2239800087409094,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 52.0,
+                "PL_TARGET_DENSITY_PCT": 69.0,
+                "GRT_ADJUSTMENT": 0.31,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.2182,
+              "wns_ns": 4.992864929485848,
+              "area_um2": 1219.92,
+              "power_mw": 0.24141461472027004,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        },
+        {
+          "seed": 1,
+          "rewards": [
+            4.6277,
+            4.202,
+            4.1363,
+            4.105,
+            3.4711,
+            4.6412,
+            -50.0,
+            4.248
+          ],
+          "best_curve": [
+            4.6277,
+            4.6277,
+            4.6277,
+            4.6277,
+            4.6277,
+            4.6412,
+            4.6412,
+            4.6412
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 45.0,
+                "PL_TARGET_DENSITY_PCT": 83.0,
+                "GRT_ADJUSTMENT": 0.14,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6277,
+              "wns_ns": 3.534084236398019,
+              "area_um2": 1082.29,
+              "power_mw": 0.22399229055736214,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 37.0,
+                "PL_TARGET_DENSITY_PCT": 59.0,
+                "GRT_ADJUSTMENT": 0.35,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.202,
+              "wns_ns": 4.964076401553912,
+              "area_um2": 1224.92,
+              "power_mw": 0.24214725999627262,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 47.0,
+                "PL_TARGET_DENSITY_PCT": 41.0,
+                "GRT_ADJUSTMENT": 0.33,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 4.1363,
+              "wns_ns": 3.042894911059476,
+              "area_um2": 1273.72,
+              "power_mw": 0.2423187397653237,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 38.0,
+                "PL_TARGET_DENSITY_PCT": 75.0,
+                "GRT_ADJUSTMENT": 0.19,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 4.105,
+              "wns_ns": 3.046060823126035,
+              "area_um2": 1274.97,
+              "power_mw": 0.24455934180878103,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 30.0,
+                "PL_TARGET_DENSITY_PCT": 58.0,
+                "GRT_ADJUSTMENT": 0.16,
+                "SYNTH_STRATEGY": "AREA 2"
+              },
+              "reward": 3.4711,
+              "wns_ns": 2.6121736624226912,
+              "area_um2": 1193.64,
+              "power_mw": 0.2418354997644201,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 55.0,
+                "PL_TARGET_DENSITY_PCT": 53.0,
+                "GRT_ADJUSTMENT": 0.25,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6412,
+              "wns_ns": 3.5870059049433682,
+              "area_um2": 1068.52,
+              "power_mw": 0.22431943216361105,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 63.0,
+                "PL_TARGET_DENSITY_PCT": 73.0,
+                "GRT_ADJUSTMENT": 0.26,
+                "SYNTH_STRATEGY": "AREA 2"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 31.0,
+                "PL_TARGET_DENSITY_PCT": 84.0,
+                "GRT_ADJUSTMENT": 0.25,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 4.248,
+              "wns_ns": 3.1930161640705395,
+              "area_um2": 1141.09,
+              "power_mw": 0.24689483689144254,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        },
+        {
+          "seed": 2,
+          "rewards": [
+            4.1385,
+            4.2689,
+            4.2771,
+            4.3179,
+            -50.0,
+            3.7352,
+            3.2362,
+            2.8368
+          ],
+          "best_curve": [
+            4.1385,
+            4.2689,
+            4.2771,
+            4.3179,
+            4.3179,
+            4.3179,
+            4.3179,
+            4.3179
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 35.0,
+                "PL_TARGET_DENSITY_PCT": 53.0,
+                "GRT_ADJUSTMENT": 0.34,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.1385,
+              "wns_ns": 2.8918148694172294,
+              "area_um2": 1168.62,
+              "power_mw": 0.2361252118134871,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 49.0,
+                "PL_TARGET_DENSITY_PCT": 73.0,
+                "GRT_ADJUSTMENT": 0.16,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.2689,
+              "wns_ns": 2.9636955950456962,
+              "area_um2": 1154.86,
+              "power_mw": 0.23848189448472112,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 36.0,
+                "PL_TARGET_DENSITY_PCT": 70.0,
+                "GRT_ADJUSTMENT": 0.27,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 4.2771,
+              "wns_ns": 3.20770397101252,
+              "area_um2": 1138.59,
+              "power_mw": 0.24494316312484443,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 42.0,
+                "PL_TARGET_DENSITY_PCT": 70.0,
+                "GRT_ADJUSTMENT": 0.23,
+                "SYNTH_STRATEGY": "DELAY 1"
+              },
+              "reward": 4.3179,
+              "wns_ns": 3.559733941705962,
+              "area_um2": 1216.17,
+              "power_mw": 0.23425229301210493,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 64.0,
+                "PL_TARGET_DENSITY_PCT": 71.0,
+                "GRT_ADJUSTMENT": 0.22,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 39.0,
+                "PL_TARGET_DENSITY_PCT": 63.0,
+                "GRT_ADJUSTMENT": 0.37,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 3.7352,
+              "wns_ns": 2.7154790296073172,
+              "area_um2": 1216.17,
+              "power_mw": 0.23528368910774589,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 38.0,
+                "PL_TARGET_DENSITY_PCT": 82.0,
+                "GRT_ADJUSTMENT": 0.24,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 3.2362,
+              "wns_ns": 2.4796885247011864,
+              "area_um2": 1217.42,
+              "power_mw": 0.23722976038698107,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 29.0,
+                "PL_TARGET_DENSITY_PCT": 45.0,
+                "GRT_ADJUSTMENT": 0.16,
+                "SYNTH_STRATEGY": "DELAY 3"
+              },
+              "reward": 2.8368,
+              "wns_ns": 2.368538321402691,
+              "area_um2": 1294.99,
+              "power_mw": 0.24299354117829353,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        }
+      ]
+    },
+    "lhs": {
+      "runs": [
+        {
+          "seed": 0,
+          "rewards": [
+            3.7915,
+            4.6088,
+            3.8968,
+            -50.0,
+            3.4605,
+            2.6159,
+            4.1486,
+            -50.0
+          ],
+          "best_curve": [
+            3.7915,
+            4.6088,
+            4.6088,
+            4.6088,
+            4.6088,
+            4.6088,
+            4.6088,
+            4.6088
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 39.0,
+                "PL_TARGET_DENSITY_PCT": 64.0,
+                "GRT_ADJUSTMENT": 0.38,
+                "SYNTH_STRATEGY": "AREA 2"
+              },
+              "reward": 3.7915,
+              "wns_ns": 2.757917972057684,
+              "area_um2": 1189.89,
+              "power_mw": 0.2400157682131976,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 50.0,
+                "PL_TARGET_DENSITY_PCT": 82.0,
+                "GRT_ADJUSTMENT": 0.11,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6088,
+              "wns_ns": 3.587245269034247,
+              "area_um2": 1069.78,
+              "power_mw": 0.2266439114464447,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 43.0,
+                "PL_TARGET_DENSITY_PCT": 74.0,
+                "GRT_ADJUSTMENT": 0.28,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 3.8968,
+              "wns_ns": 2.791160270801167,
+              "area_um2": 1216.17,
+              "power_mw": 0.2345099055673927,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 59.0,
+                "PL_TARGET_DENSITY_PCT": 52.0,
+                "GRT_ADJUSTMENT": 0.34,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 53.0,
+                "PL_TARGET_DENSITY_PCT": 72.0,
+                "GRT_ADJUSTMENT": 0.22,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 3.4605,
+              "wns_ns": 2.590212562196083,
+              "area_um2": 1123.58,
+              "power_mw": 0.24618720635771751,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 30.0,
+                "PL_TARGET_DENSITY_PCT": 49.0,
+                "GRT_ADJUSTMENT": 0.31,
+                "SYNTH_STRATEGY": "DELAY 3"
+              },
+              "reward": 2.6159,
+              "wns_ns": 2.2708293665988726,
+              "area_um2": 1292.49,
+              "power_mw": 0.24516493431292474,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 34.0,
+                "PL_TARGET_DENSITY_PCT": 60.0,
+                "GRT_ADJUSTMENT": 0.21,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 4.1486,
+              "wns_ns": 3.1103214217871726,
+              "area_um2": 1277.48,
+              "power_mw": 0.2410250890534371,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 60.0,
+                "PL_TARGET_DENSITY_PCT": 42.0,
+                "GRT_ADJUSTMENT": 0.17,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            }
+          ]
+        },
+        {
+          "seed": 1,
+          "rewards": [
+            4.3232,
+            4.2432,
+            3.6571,
+            4.19,
+            4.2331,
+            -50.0,
+            2.5232,
+            -50.0
+          ],
+          "best_curve": [
+            4.3232,
+            4.3232,
+            4.3232,
+            4.3232,
+            4.3232,
+            4.3232,
+            4.3232,
+            4.3232
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 52.0,
+                "PL_TARGET_DENSITY_PCT": 59.0,
+                "GRT_ADJUSTMENT": 0.22,
+                "SYNTH_STRATEGY": "DELAY 1"
+              },
+              "reward": 4.3232,
+              "wns_ns": 3.59163553508699,
+              "area_um2": 1201.15,
+              "power_mw": 0.23532517661806196,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 29.0,
+                "PL_TARGET_DENSITY_PCT": 47.0,
+                "GRT_ADJUSTMENT": 0.32,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.2432,
+              "wns_ns": 2.939399473687658,
+              "area_um2": 1173.63,
+              "power_mw": 0.23491411411669105,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 32.0,
+                "PL_TARGET_DENSITY_PCT": 75.0,
+                "GRT_ADJUSTMENT": 0.38,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 3.6571,
+              "wns_ns": 2.707496525834502,
+              "area_um2": 1141.09,
+              "power_mw": 0.2473407075740397,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 48.0,
+                "PL_TARGET_DENSITY_PCT": 84.0,
+                "GRT_ADJUSTMENT": 0.1,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.19,
+              "wns_ns": 4.969044871774233,
+              "area_um2": 1219.92,
+              "power_mw": 0.2435394999338314,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 35.0,
+                "PL_TARGET_DENSITY_PCT": 64.0,
+                "GRT_ADJUSTMENT": 0.2,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.2331,
+              "wns_ns": 4.978767761209673,
+              "area_um2": 1224.92,
+              "power_mw": 0.23979524848982692,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 59.0,
+                "PL_TARGET_DENSITY_PCT": 71.0,
+                "GRT_ADJUSTMENT": 0.28,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 43.0,
+                "PL_TARGET_DENSITY_PCT": 46.0,
+                "GRT_ADJUSTMENT": 0.35,
+                "SYNTH_STRATEGY": "DELAY 3"
+              },
+              "reward": 2.5232,
+              "wns_ns": 2.2438758153339347,
+              "area_um2": 1283.73,
+              "power_mw": 0.2489559119567275,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 62.0,
+                "PL_TARGET_DENSITY_PCT": 57.0,
+                "GRT_ADJUSTMENT": 0.17,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            }
+          ]
+        },
+        {
+          "seed": 2,
+          "rewards": [
+            -50.0,
+            4.2961,
+            -50.0,
+            4.3649,
+            4.0699,
+            3.3594,
+            4.6229,
+            3.3427
+          ],
+          "best_curve": [
+            -50.0,
+            4.2961,
+            4.2961,
+            4.3649,
+            4.3649,
+            4.3649,
+            4.6229,
+            4.6229
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 58.0,
+                "PL_TARGET_DENSITY_PCT": 57.0,
+                "GRT_ADJUSTMENT": 0.18,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 54.0,
+                "PL_TARGET_DENSITY_PCT": 61.0,
+                "GRT_ADJUSTMENT": 0.22,
+                "SYNTH_STRATEGY": "DELAY 1"
+              },
+              "reward": 4.2961,
+              "wns_ns": 3.5424659763817807,
+              "area_um2": 1202.4,
+              "power_mw": 0.23724495258647949,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 61.0,
+                "PL_TARGET_DENSITY_PCT": 70.0,
+                "GRT_ADJUSTMENT": 0.15,
+                "SYNTH_STRATEGY": "DELAY 3"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 35.0,
+                "PL_TARGET_DENSITY_PCT": 80.0,
+                "GRT_ADJUSTMENT": 0.13,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.3649,
+              "wns_ns": 3.09502876532427,
+              "area_um2": 1169.87,
+              "power_mw": 0.2352420415263623,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 41.0,
+                "PL_TARGET_DENSITY_PCT": 42.0,
+                "GRT_ADJUSTMENT": 0.31,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 4.0699,
+              "wns_ns": 2.8707592671151154,
+              "area_um2": 1214.92,
+              "power_mw": 0.2335799508728087,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 48.0,
+                "PL_TARGET_DENSITY_PCT": 65.0,
+                "GRT_ADJUSTMENT": 0.36,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 3.3594,
+              "wns_ns": 2.5537621629099125,
+              "area_um2": 1143.6,
+              "power_mw": 0.2463572018314153,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 28.0,
+                "PL_TARGET_DENSITY_PCT": 51.0,
+                "GRT_ADJUSTMENT": 0.27,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6229,
+              "wns_ns": 3.5713979451325546,
+              "area_um2": 1088.54,
+              "power_mw": 0.2237389562651515,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 31.0,
+                "PL_TARGET_DENSITY_PCT": 78.0,
+                "GRT_ADJUSTMENT": 0.38,
+                "SYNTH_STRATEGY": "AREA 2"
+              },
+              "reward": 3.3427,
+              "wns_ns": 2.55239436810489,
+              "area_um2": 1193.64,
+              "power_mw": 0.24249954731203616,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        }
+      ]
+    },
+    "bandit": {
+      "runs": [
+        {
+          "seed": 0,
+          "rewards": [
+            4.2193,
+            3.6763,
+            4.1081,
+            4.6335,
+            4.643,
+            3.9589,
+            -50.0,
+            4.6531
+          ],
+          "best_curve": [
+            4.2193,
+            4.2193,
+            4.2193,
+            4.6335,
+            4.643,
+            4.643,
+            4.643,
+            4.6531
+          ],
+          "points": [
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "AREA 0",
+                "FP_CORE_UTIL": 45,
+                "PL_TARGET_DENSITY_PCT": 60,
+                "GRT_ADJUSTMENT": 0.3,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 4.2193,
+              "wns_ns": 2.948412708545687,
+              "area_um2": 1166.12,
+              "power_mw": 0.23881734523456544,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "AREA 2",
+                "FP_CORE_UTIL": 52,
+                "PL_TARGET_DENSITY_PCT": 65,
+                "GRT_ADJUSTMENT": 0.3,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 3.6763,
+              "wns_ns": 2.707725231784043,
+              "area_um2": 1174.88,
+              "power_mw": 0.24261097132693976,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "DELAY 0",
+                "FP_CORE_UTIL": 45,
+                "PL_TARGET_DENSITY_PCT": 58,
+                "GRT_ADJUSTMENT": 0.3,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 4.1081,
+              "wns_ns": 3.1127394876031937,
+              "area_um2": 1273.72,
+              "power_mw": 0.24445023154839873,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "DELAY 4",
+                "FP_CORE_UTIL": 42,
+                "PL_TARGET_DENSITY_PCT": 55,
+                "GRT_ADJUSTMENT": 0.35,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 4.6335,
+              "wns_ns": 3.761823403701861,
+              "area_um2": 1079.79,
+              "power_mw": 0.22379901201929897,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "DELAY 4",
+                "FP_CORE_UTIL": 50,
+                "PL_TARGET_DENSITY_PCT": 62,
+                "GRT_ADJUSTMENT": 0.3,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 4.643,
+              "wns_ns": 3.5848862670848063,
+              "area_um2": 1069.78,
+              "power_mw": 0.22406021889764816,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "DELAY 2",
+                "FP_CORE_UTIL": 38,
+                "PL_TARGET_DENSITY_PCT": 52,
+                "GRT_ADJUSTMENT": 0.35,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 3.9589,
+              "wns_ns": 2.827619551871786,
+              "area_um2": 1216.17,
+              "power_mw": 0.23532449267804623,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "AREA 3",
+                "FP_CORE_UTIL": 65,
+                "PL_TARGET_DENSITY_PCT": 75,
+                "GRT_ADJUSTMENT": 0.2,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "SYNTH_STRATEGY": "DELAY 4",
+                "FP_CORE_UTIL": 48,
+                "PL_TARGET_DENSITY_PCT": 56,
+                "GRT_ADJUSTMENT": 0.32,
+                "CLOCK_PERIOD": 9.5
+              },
+              "reward": 4.6531,
+              "wns_ns": 3.577169772756214,
+              "area_um2": 1069.78,
+              "power_mw": 0.22329499188344926,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        }
+      ]
+    },
+    "gpbo": {
+      "runs": [
+        {
+          "seed": 0,
+          "rewards": [
+            4.3463,
+            4.6067,
+            4.0765,
+            4.6102,
+            4.6281,
+            4.611,
+            2.7075,
+            4.649
+          ],
+          "best_curve": [
+            4.3463,
+            4.6067,
+            4.6067,
+            4.6102,
+            4.6281,
+            4.6281,
+            4.6281,
+            4.649
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 52.0,
+                "PL_TARGET_DENSITY_PCT": 49.0,
+                "GRT_ADJUSTMENT": 0.18,
+                "SYNTH_STRATEGY": "AREA 0"
+              },
+              "reward": 4.3463,
+              "wns_ns": 2.9998959720996505,
+              "area_um2": 1153.61,
+              "power_mw": 0.23822876391932368,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": true,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 25.0,
+                "PL_TARGET_DENSITY_PCT": 66.0,
+                "GRT_ADJUSTMENT": 0.3,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6067,
+              "wns_ns": 3.7412820567192977,
+              "area_um2": 1103.56,
+              "power_mw": 0.22348860511556268,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": true,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 49.0,
+                "PL_TARGET_DENSITY_PCT": 78.0,
+                "GRT_ADJUSTMENT": 0.29,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 4.0765,
+              "wns_ns": 3.0411007906009404,
+              "area_um2": 1271.22,
+              "power_mw": 0.24707955890335143,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 25.0,
+                "PL_TARGET_DENSITY_PCT": 64.0,
+                "GRT_ADJUSTMENT": 0.28,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6102,
+              "wns_ns": 3.7130957137729497,
+              "area_um2": 1103.56,
+              "power_mw": 0.22322451695799828,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 27.0,
+                "PL_TARGET_DENSITY_PCT": 57.0,
+                "GRT_ADJUSTMENT": 0.32,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.6281,
+              "wns_ns": 3.747243954530149,
+              "area_um2": 1089.8,
+              "power_mw": 0.22322098084259778,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 27.0,
+                "PL_TARGET_DENSITY_PCT": 41.0,
+                "GRT_ADJUSTMENT": 0.17,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.611,
+              "wns_ns": 3.7116955004546917,
+              "area_um2": 1087.29,
+              "power_mw": 0.22475786681752652,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 30.0,
+                "PL_TARGET_DENSITY_PCT": 41.0,
+                "GRT_ADJUSTMENT": 0.39,
+                "SYNTH_STRATEGY": "DELAY 3"
+              },
+              "reward": 2.7075,
+              "wns_ns": 2.3148834615511436,
+              "area_um2": 1292.49,
+              "power_mw": 0.24490331998094916,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 33.0,
+                "PL_TARGET_DENSITY_PCT": 60.0,
+                "GRT_ADJUSTMENT": 0.29,
+                "SYNTH_STRATEGY": "DELAY 4"
+              },
+              "reward": 4.649,
+              "wns_ns": 3.7061958995243693,
+              "area_um2": 1083.54,
+              "power_mw": 0.22225776046980172,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        },
+        {
+          "seed": 1,
+          "rewards": [
+            4.124,
+            3.47,
+            3.4729,
+            4.1206,
+            4.1879,
+            3.789,
+            4.2183,
+            4.2338
+          ],
+          "best_curve": [
+            4.124,
+            4.124,
+            4.124,
+            4.124,
+            4.1879,
+            4.1879,
+            4.2183,
+            4.2338
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 27.0,
+                "PL_TARGET_DENSITY_PCT": 82.0,
+                "GRT_ADJUSTMENT": 0.28,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.124,
+              "wns_ns": 4.937235648951466,
+              "area_um2": 1246.2,
+              "power_mw": 0.2459439856465906,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 51.0,
+                "PL_TARGET_DENSITY_PCT": 61.0,
+                "GRT_ADJUSTMENT": 0.15,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 3.47,
+              "wns_ns": 2.6062086559872832,
+              "area_um2": 1123.58,
+              "power_mw": 0.24788957671262324,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 56.0,
+                "PL_TARGET_DENSITY_PCT": 48.0,
+                "GRT_ADJUSTMENT": 0.33,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 3.4729,
+              "wns_ns": 2.595010946244221,
+              "area_um2": 1191.14,
+              "power_mw": 0.23935362696647644,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 26.0,
+                "PL_TARGET_DENSITY_PCT": 85.0,
+                "GRT_ADJUSTMENT": 0.28,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.1206,
+              "wns_ns": 4.941428739389459,
+              "area_um2": 1247.45,
+              "power_mw": 0.24608435342088342,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 25.0,
+                "PL_TARGET_DENSITY_PCT": 79.0,
+                "GRT_ADJUSTMENT": 0.38,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.1879,
+              "wns_ns": 4.948723348956762,
+              "area_um2": 1247.45,
+              "power_mw": 0.2409959415672347,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 25.0,
+                "PL_TARGET_DENSITY_PCT": 80.0,
+                "GRT_ADJUSTMENT": 0.38,
+                "SYNTH_STRATEGY": "DELAY 2"
+              },
+              "reward": 3.789,
+              "wns_ns": 2.7579161957007945,
+              "area_um2": 1229.93,
+              "power_mw": 0.23627630434930325,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 25.0,
+                "PL_TARGET_DENSITY_PCT": 80.0,
+                "GRT_ADJUSTMENT": 0.39,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 4.2183,
+              "wns_ns": 3.158466910745505,
+              "area_um2": 1158.61,
+              "power_mw": 0.2474174543749541,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 25.0,
+                "PL_TARGET_DENSITY_PCT": 74.0,
+                "GRT_ADJUSTMENT": 0.35,
+                "SYNTH_STRATEGY": "AREA 1"
+              },
+              "reward": 4.2338,
+              "wns_ns": 3.1404510991707855,
+              "area_um2": 1158.61,
+              "power_mw": 0.24624256184324622,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        },
+        {
+          "seed": 2,
+          "rewards": [
+            -50.0,
+            4.1069,
+            0.5689,
+            3.9612,
+            4.2219,
+            3.3183,
+            4.262,
+            4.1142
+          ],
+          "best_curve": [
+            -50.0,
+            4.1069,
+            4.1069,
+            4.1069,
+            4.2219,
+            4.2219,
+            4.262,
+            4.262
+          ],
+          "points": [
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 56.0,
+                "PL_TARGET_DENSITY_PCT": 51.0,
+                "GRT_ADJUSTMENT": 0.37,
+                "SYNTH_STRATEGY": "AREA 2"
+              },
+              "reward": -50.0,
+              "wns_ns": -99.0,
+              "area_um2": 0.0,
+              "power_mw": 0.0,
+              "drc": 0,
+              "lvs_clean": false,
+              "cached": false,
+              "flow_failed": true
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 36.0,
+                "PL_TARGET_DENSITY_PCT": 73.0,
+                "GRT_ADJUSTMENT": 0.16,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 4.1069,
+              "wns_ns": 3.0738243931326488,
+              "area_um2": 1277.48,
+              "power_mw": 0.24416964151896536,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 40.0,
+                "PL_TARGET_DENSITY_PCT": 56.0,
+                "GRT_ADJUSTMENT": 0.22,
+                "SYNTH_STRATEGY": "DELAY 3"
+              },
+              "reward": 0.5689,
+              "wns_ns": 1.2514887258513996,
+              "area_um2": 1282.48,
+              "power_mw": 0.24677193141542375,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 34.0,
+                "PL_TARGET_DENSITY_PCT": 75.0,
+                "GRT_ADJUSTMENT": 0.15,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 3.9612,
+              "wns_ns": 2.9498657684814114,
+              "area_um2": 1277.48,
+              "power_mw": 0.2475987421348691,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 45.0,
+                "PL_TARGET_DENSITY_PCT": 77.0,
+                "GRT_ADJUSTMENT": 0.12,
+                "SYNTH_STRATEGY": "AREA 3"
+              },
+              "reward": 4.2219,
+              "wns_ns": 4.953376515829172,
+              "area_um2": 1224.92,
+              "power_mw": 0.2406423882348463,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 40.0,
+                "PL_TARGET_DENSITY_PCT": 75.0,
+                "GRT_ADJUSTMENT": 0.16,
+                "SYNTH_STRATEGY": "AREA 2"
+              },
+              "reward": 3.3183,
+              "wns_ns": 2.5379232767034456,
+              "area_um2": 1188.64,
+              "power_mw": 0.24264930107165128,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 44.0,
+                "PL_TARGET_DENSITY_PCT": 81.0,
+                "GRT_ADJUSTMENT": 0.14,
+                "SYNTH_STRATEGY": "DELAY 1"
+              },
+              "reward": 4.262,
+              "wns_ns": 3.4154280370623544,
+              "area_um2": 1216.17,
+              "power_mw": 0.23847047123126686,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            },
+            {
+              "knobs": {
+                "FP_CORE_UTIL": 43.0,
+                "PL_TARGET_DENSITY_PCT": 71.0,
+                "GRT_ADJUSTMENT": 0.1,
+                "SYNTH_STRATEGY": "DELAY 0"
+              },
+              "reward": 4.1142,
+              "wns_ns": 3.1283505560385643,
+              "area_um2": 1273.72,
+              "power_mw": 0.24398598179686815,
+              "drc": 0,
+              "lvs_clean": true,
+              "cached": false,
+              "flow_failed": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "created": "2026-11-21T16:03:30+0530",
+  "default_metrics": {
+    "wns_ns": 2.9331866654661454,
+    "tns_ns": 0.0,
+    "area_um2": 1154.86,
+    "total_power_mw": 0.23843474627938122,
+    "cell_count": 114,
+    "drc_violations": 0,
+    "lvs_clean": true,
+    "runtime_sec": 61.27,
+    "knobs": {
+      "CLOCK_PERIOD": 9.5
+    },
+    "reward": 4.2085,
+    "mode": "wsl",
+    "gds_path": null,
+    "run_dir": null,
+    "cached": true,
+    "corner_wns": {
+      "nom_tt_025C_1v80": 5.097450161809459,
+      "nom_ss_100C_1v60": 2.988170240271143,
+      "nom_ff_n40C_1v95": 5.907884570997044,
+      "min_tt_025C_1v80": 5.12278989284016,
+      "min_ss_100C_1v60": 3.036027515324131,
+      "min_ff_n40C_1v95": 5.924057856387985,
+      "max_tt_025C_1v80": 5.0673533470283045,
+      "max_ss_100C_1v60": 2.9331866654661454,
+      "max_ff_n40C_1v95": 5.888781629005865
+    },
+    "extra": {
+      "die_area_um2": 3129.71,
+      "instance_area_um2": 1506.44,
+      "hold_ws_ns": 0.11137113768664376,
+      "timing_corner": "worst",
+      "render_png": "C:\\Users\\pndnt\\AppData\\Local\\Temp\\sf_ppa_ffl6vean\\default\\pnr_ep_01\\runs\\sf\\final\\render\\up_down_counter.png"
+    }
+  }
+}

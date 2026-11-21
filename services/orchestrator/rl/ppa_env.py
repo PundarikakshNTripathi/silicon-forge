@@ -10,8 +10,20 @@ from pathlib import Path
 from typing import Any
 
 from services.orchestrator.eda.bridge import EDABridge
+from services.orchestrator.eda.errors import ToolRunError
 from services.orchestrator.rl.reward import compute_ppa_reward
 from services.orchestrator.state import DesignContract, PPAMetrics
+
+#: Reward of a flow that did not complete. The reward is unbounded below (a flow that misses timing by 3 ns already scores
+#: about -37), so this sits below any result a completed flow is likely to get.
+FAILED_FLOW_REWARD = -50.0
+
+
+def failed_flow_metrics(knobs: dict[str, Any], message: str, mode: str) -> PPAMetrics:
+    """The record of a flow that failed: no area, power or layout, worst-case slack, not clean. `extra["flow_failed"]` holds the
+    tool's last lines so the failure can be read later."""
+    return PPAMetrics(wns_ns=-99.0, tns_ns=-99.0, area_um2=0.0, total_power_mw=0.0, cell_count=0, drc_violations=0,
+                      lvs_clean=False, knobs=dict(knobs), mode=mode, extra={"flow_failed": message[-400:]})
 
 # Discrete-combinatorial OpenROAD/LibreLane knob action space (every key is a real LibreLane variable)
 BASE_ACTIONS: list[dict[str, Any]] = [
@@ -56,6 +68,7 @@ class PpaOptimizationEnv:
         rtl_source: str = "",
         allow_clock_relax: bool = False,
         cache_dir: Path | None = None,
+        quality_only: bool = False,
     ) -> None:
         self.eda_bridge = eda_bridge
         self.run_dir = run_dir
@@ -65,6 +78,8 @@ class PpaOptimizationEnv:
         self.rtl_source = rtl_source
         self.actions = build_action_space(allow_clock_relax)
         self.cache_dir = cache_dir
+        #: drop the runtime term: it depends on machine load, which would make equal results score differently
+        self.quality_only = quality_only
         self._lock = threading.Lock()
         self.episode = 0
         self.cache_hits = 0
@@ -89,23 +104,39 @@ class PpaOptimizationEnv:
 
     def evaluate(self, action_idx: int, episode_idx: int) -> tuple[PPAMetrics, float]:
         """Run (or fetch from cache) one P&R episode. Safe to call from worker threads."""
-        knobs = self.knobs_for(action_idx)
+        return self.evaluate_knobs(self.knobs_for(action_idx), episode_idx)
+
+    def evaluate_knobs(self, knobs: dict[str, Any], episode_idx: int) -> tuple[PPAMetrics, float]:
+        """As `evaluate`, for an arbitrary knob dict (the Bayesian optimizer and the baselines propose knobs, not recipe
+        indices). `CLOCK_PERIOD` defaults to the target clock."""
+        knobs = dict(knobs)
+        knobs.setdefault("CLOCK_PERIOD", round(float(self.targets.get("clock_period_ns", self.contract.target_clock_ns)), 3))
         key = cache_key(self.rtl_source, knobs, self.eda_bridge.config.pdk, self.eda_bridge.mode)
         metrics = self._cache_get(key)
         if metrics is None:
-            metrics = self.eda_bridge.run_physical_implementation(
-                run_dir=self.run_dir,
-                contract=self.contract,
-                rtl_source=self.rtl_source,
-                knobs=knobs,
-                episode_idx=episode_idx,
-            )
+            try:
+                metrics = self.eda_bridge.run_physical_implementation(
+                    run_dir=self.run_dir,
+                    contract=self.contract,
+                    rtl_source=self.rtl_source,
+                    knobs=knobs,
+                    episode_idx=episode_idx,
+                )
+            except ToolRunError as exc:
+                # Aggressive knobs make the flow fail (for example detailed placement at too high a utilization). That is
+                # information for a search, not a reason to abort it: record the failure, score it far below any real
+                # result, and cache it so the same point is not paid for twice.
+                metrics = failed_flow_metrics(knobs, str(exc), self.eda_bridge.mode)
             self._cache_put(key, metrics)
         else:
             with self._lock:
                 self.cache_hits += 1
             self._materialize(metrics, episode_idx)
-        reward = compute_ppa_reward(metrics, self.targets, self.reward_weights)
+        if metrics.extra.get("flow_failed"):
+            metrics.reward = FAILED_FLOW_REWARD
+            return metrics, FAILED_FLOW_REWARD
+        weights = {**self.reward_weights, "runtime_penalty": 0.0} if self.quality_only else self.reward_weights
+        reward = compute_ppa_reward(metrics, self.targets, weights)
         metrics.reward = reward
         return metrics, reward
 
