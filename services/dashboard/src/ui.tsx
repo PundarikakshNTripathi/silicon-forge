@@ -35,11 +35,11 @@ export function Prov({ mode }: { mode: string }) {
 }
 
 // ---------- layout atoms ----------
-export function Panel({ title, actions, children, flush, className = "" }: {
-  title?: ReactNode; actions?: ReactNode; children: ReactNode; flush?: boolean; className?: string;
+export function Panel({ title, actions, children, flush, className = "", layer }: {
+  title?: ReactNode; actions?: ReactNode; children: ReactNode; flush?: boolean; className?: string; layer?: string;
 }) {
   return (
-    <section className={`panel ${className}`}>
+    <section className={`panel ${className}`} data-layer={layer}>
       {(title || actions) && <div className="head"><h3>{title}</h3>{actions}</div>}
       <div className={`body ${flush ? "flush" : ""}`}>{children}</div>
     </section>

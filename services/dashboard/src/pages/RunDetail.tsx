@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Download, GitCompare, Play, Repeat, Square } from "lucide-react";
 import { api, artifactUrl, post, type PPA, type RunDetail as Run } from "../api";
-import { deriveView, type FormalIter, type LlmCall, type RunView, type StageKey } from "../derive";
+import { deriveView, STAGE_OF, type FormalIter, type LlmCall, type RunView, type StageKey } from "../derive";
 import { Bars, ParetoChart, RewardChart, Waveform } from "../charts";
 import { PipelineStrip } from "../PipelineStrip";
 import { Banner, Badge, Check, CodeView, DiffView, Empty, Panel, Prov, Skeleton, Stat, StatusBadge, Tabs } from "../ui";
@@ -137,7 +137,7 @@ function Overview({ run, view, events, live }: { run: Run; view: RunView; events
   useEffect(() => { if (live && logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [log.length, live]);
   return (
     <div className="grid2 split-b" style={{ alignItems: "start" }}>
-      <Panel title="Signoff checklist">
+      <Panel layer="signoff" title="Signoff checklist">
         {view.signoff ? (
           view.signoff.checks.map((c) => <Check key={c.name} ok={c.passed} title={c.name} detail={c.detail} />)
         ) : (
@@ -154,7 +154,7 @@ function Overview({ run, view, events, live }: { run: Run; view: RunView; events
         <div className="log" ref={logRef} style={{ maxHeight: 420, overflowY: "auto" }}>
           {log.length === 0 && <div className="empty small">Waiting for the first step…</div>}
           {log.map((e) => (
-            <div className="evt" key={e.seq}><span className="muted">#{e.seq}</span><span>{e.stage.toLowerCase().replaceAll("_", " ")}</span><span className={`st ${e.status}`}>{e.status.toLowerCase()}</span><span>{e.detail}</span></div>
+            <div className="evt" key={e.seq}><span className="muted">#{e.seq}</span><span className="stg" style={STAGE_OF[e.stage] ? ({ "--c": `var(--layer-${STAGE_OF[e.stage]})` } as React.CSSProperties) : undefined}>{e.stage.toLowerCase().replaceAll("_", " ")}</span><span className={`st ${e.status}`}>{e.status.toLowerCase()}</span><span>{e.detail}</span></div>
           ))}
         </div>
       </Panel>
@@ -172,7 +172,7 @@ function Design({ run, view }: { run: Run; view: RunView }) {
   return (
     <div className="stack">
       <div className="grid2 split-c" style={{ alignItems: "start" }}>
-        <Panel title="Design contract" flush>
+        <Panel layer="contract" title="Design contract" flush>
           {!c ? <Empty title="Waiting for the contract">The architect agent is reading the spec.</Empty> : (
             <>
               <div className="body small ink2">Clock <code>{c.clock_port}</code>, reset <code>{c.reset_port}</code> ({c.reset_active_low ? "active low" : "active high"}, {c.reset_sync ? "synchronous" : "asynchronous"}). Targets: {c.target_clock_ns} ns, {c.max_area_um2} µm², {c.max_power_mw} mW.</div>
@@ -181,7 +181,7 @@ function Design({ run, view }: { run: Run; view: RunView }) {
             </>
           )}
         </Panel>
-        <Panel title="Guardrail audits">
+        <Panel layer="guardrails" title="Guardrail audits">
           {view.guardrails.length === 0 && <div className="muted small">No audits yet.</div>}
           {view.guardrails.map((g, i) => (
             <div key={i} style={{ marginBottom: 10 }}>
@@ -194,7 +194,7 @@ function Design({ run, view }: { run: Run; view: RunView }) {
           {view.sim && <Check ok={view.sim.ok} title="Verilator lint" detail={view.sim.summary} />}
         </Panel>
       </div>
-      <Panel title="RTL" flush actions={
+      <Panel layer="rtl" title="RTL" flush actions={
         <div className="row">
           {rtl.length > 1 && (
             <>
@@ -217,7 +217,7 @@ const taskKind = (s: string) => (s === "PASS" ? "ok" : s === "FAIL" ? "bad" : "w
 
 function FormalCard({ f, mode }: { f: FormalIter; mode: string }) {
   return (
-    <Panel title={<span>Formal run {f.iteration}</span>} actions={<span className="row"><Prov mode={mode} /><Badge kind={f.passed ? "ok" : "bad"}>{f.passed ? "Proven" : "Counterexample"}</Badge></span>}>
+    <Panel layer="formal" title={<span>Formal run {f.iteration}</span>} actions={<span className="row"><Prov mode={mode} /><Badge kind={f.passed ? "ok" : "bad"}>{f.passed ? "Proven" : "Counterexample"}</Badge></span>}>
       <div className="row wrap" style={{ marginBottom: 8 }}>
         {Object.entries(f.task_status).map(([t, s]) => <Badge key={t} kind={taskKind(s)}>{t === "prove" ? "unbounded proof" : t === "bmc" ? "bounded check" : "cover"}: {s.toLowerCase()}</Badge>)}
         <span className="muted small">{secs(f.elapsed_sec)}</span>
@@ -243,19 +243,19 @@ function Verify({ run, view }: { run: Run; view: RunView }) {
       <div className="grid2" style={{ alignItems: "start" }}>{view.formal.map((f) => <FormalCard key={f.iteration} f={f} mode={f.mode} />)}</div>
       <div className="grid2" style={{ alignItems: "start" }}>
         {view.lec && (
-          <Panel title="Synthesis and equivalence" actions={<Prov mode={view.lec.mode} />}>
+          <Panel layer="lec" title="Synthesis and equivalence" actions={<Prov mode={view.lec.mode} />}>
             <Check ok={view.lec.ok} title={view.lec.ok ? "Netlist is equivalent to the RTL" : "Netlist is not equivalent"} detail={`${view.lec.cells} cells synthesized in ${secs(view.lec.elapsed)}`} />
             {view.lec.logTail && <pre className="code mono" style={{ borderRadius: 6 }}>{view.lec.logTail}</pre>}
           </Panel>
         )}
         {props.length > 0 && (
-          <Panel title="Properties being proven" flush>
+          <Panel layer="formal" title="Properties being proven" flush>
             <table className="t"><thead><tr><th>Name</th><th>Kind</th><th>Meaning</th></tr></thead>
               <tbody>{props.map((p) => <tr key={p.id}><td className="mono">{p.id}</td><td>{String(p.kind).toLowerCase().replaceAll("_", " ")}</td><td className="muted">{p.description}</td></tr>)}</tbody></table>
           </Panel>
         )}
       </div>
-      {sva && <Panel title="Generated assertions (SystemVerilog)" flush><CodeView source={sva} maxHeight={320} /></Panel>}
+      {sva && <Panel layer="formal" title="Generated assertions (SystemVerilog)" flush><CodeView source={sva} maxHeight={320} /></Panel>}
     </div>
   );
 }
@@ -269,13 +269,13 @@ function Ppa({ run, view, best, mode }: { run: Run; view: RunView; best: PPA | n
   return (
     <div className="stack">
       <div className="grid2 split-a" style={{ alignItems: "start" }}>
-        <Panel title="Area and timing across layout episodes" actions={<Prov mode={mode} />}>
+        <Panel layer="pnr" title="Area and timing across layout episodes" actions={<Prov mode={mode} />}>
           <ParetoChart episodes={eps} front={front} bestIndex={bi} />
           <div className="hint">Large rings are on the Pareto front, the blue ring is the chosen result.{mode === "simulated" ? " Hatched marks are simulated." : ""}</div>
         </Panel>
-        <Panel title="Optimizer reward"><RewardChart episodes={eps} /></Panel>
+        <Panel layer="pnr" title="Optimizer reward"><RewardChart episodes={eps} /></Panel>
       </div>
-      <Panel title="Episodes" flush>
+      <Panel layer="pnr" title="Episodes" flush>
         <div style={{ overflowX: "auto" }}>
           <table className="t">
             <thead><tr><th>#</th><th>Synthesis</th><th className="num">Util %</th><th className="num">Clock</th><th className="num">Slack ns</th><th className="num">Area µm²</th><th className="num">Power mW</th><th className="num">DRC</th><th className="num">Reward</th><th /></tr></thead>
@@ -290,7 +290,7 @@ function Ppa({ run, view, best, mode }: { run: Run; view: RunView; best: PPA | n
         </div>
       </Panel>
       {best && Object.keys(best.corner_wns ?? {}).length > 0 && (
-        <Panel title="Setup slack by timing corner (chosen result)" flush>
+        <Panel layer="pnr" title="Setup slack by timing corner (chosen result)" flush>
           <table className="t"><thead><tr><th>Corner</th><th className="num">Slack ns</th></tr></thead>
             <tbody>{Object.entries(best.corner_wns).sort((a, b) => a[1] - b[1]).map(([c, v]) => <tr key={c}><td className="mono">{c}</td><td className={`num ${v >= 0 ? "pos" : "neg"}`}>{num(v)}</td></tr>)}</tbody></table>
         </Panel>
@@ -321,7 +321,7 @@ function LayoutFiles({ run, best }: { run: Run; best: PPA | null }) {
   return (
     <div className="stack">
       {render ? (
-        <Panel title="Layout" actions={gds ? <a className="btn sm" href={artifactUrl(run.id, gds.path)} download><Download size={13} /> GDSII</a> : undefined}>
+        <Panel layer="pnr" title="Layout" actions={gds ? <a className="btn sm" href={artifactUrl(run.id, gds.path)} download><Download size={13} /> GDSII</a> : undefined}>
           <ZoomImage src={artifactUrl(run.id, render.path)} />
           <div className="hint">Scroll to zoom, drag to pan, double-click to reset. Rendered from the real GDSII.</div>
         </Panel>
@@ -413,7 +413,7 @@ function Cost({ run, view }: { run: Run; view: RunView }) {
 function MarginBar({ used, bad }: { used: number; bad: boolean }) {
   const w = Math.max(0, Math.min(1, used)) * 100;
   return <div className="track" style={{ width: 120, display: "inline-block", verticalAlign: "middle" }} role="img" aria-label={`${Math.round(used * 100)} percent of the limit`}>
-    <div className="fill" style={{ width: `${w}%`, background: bad ? "var(--fail)" : "var(--ink)" }} /></div>;
+    <div className="fill" style={{ width: `${w}%`, background: bad ? "var(--fail)" : "var(--pass)" }} /></div>;
 }
 
 /** What the layout achieved against what the contract asked for: the numbers an engineer signs off on. */
