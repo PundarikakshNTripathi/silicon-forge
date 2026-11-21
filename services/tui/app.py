@@ -14,6 +14,8 @@ from textual.widgets import Button, DataTable, Footer, Header, Label, Select, St
 from services.orchestrator.api.manager import RunManager, RunRequest
 from services.orchestrator.api.store import TERMINAL, Store
 from services.orchestrator.paths import RESOURCE_ROOT
+from services.tui import art
+from services.tui.theme import DEFAULT, build_themes
 
 REPO = RESOURCE_ROOT
 STAGES = [("ARCHITECT", "Contract"), ("RTL", "RTL"), ("GUARDRAIL_AUDIT", "Guardrails"), ("FORMAL_VERIFY", "Formal"),
@@ -46,15 +48,9 @@ def stage_states(events: list[dict[str, Any]]) -> dict[str, str]:
     return st
 
 
-def render_strip(states: dict[str, str], simulated: bool) -> str:
-    glyph = {"pending": "○", "active": "◉", "done": "░" if simulated else "●", "fail": "✘"}
-    color = {"pending": "dim", "active": "bold dodger_blue1", "done": "dark_orange" if simulated else "green", "fail": "red"}
-    parts = []
-    for key, label in STAGES:
-        s = states[key]
-        text = f"[bold]{label}[/]" if s == "active" else label
-        parts.append(f"[{color[s]}]{glyph[s]}[/] {text}")
-    return "  [dim]━━[/]  ".join(parts)
+def render_strip(states: dict[str, str], simulated: bool, retries: frozenset[str] | set[str] = frozenset(), tick: int = 0):
+    """The flow as layer-coloured stages (see `art.stage_strip`): solid for real tools, hatched for a surrogate, a diamond for repair."""
+    return art.stage_strip(states, set(retries), simulated, tick)
 
 
 class StripPanel(Static):
@@ -63,8 +59,8 @@ class StripPanel(Static):
 
 class SiliconForgeTUI(App):
     CSS = """
-    Screen { background: $surface; }
-    #side { width: 38; padding: 1 2; border-right: tall $primary-darken-2; }
+    Screen { background: $background; }
+    #side { width: 38; padding: 1 2; border-right: tall $rule; background: $panel; }
     #main { padding: 1 2; }
     #strip { height: 3; content-align: left middle; }
     #banner { height: 1; margin-bottom: 1; }
@@ -79,6 +75,10 @@ class SiliconForgeTUI(App):
 
     def __init__(self, db_path: Path | None = None, runs_root: Path | None = None, **kw: Any) -> None:
         super().__init__(**kw)
+        for th in build_themes():
+            self.register_theme(th)
+        self.theme = DEFAULT
+        self._tick = 0
         self.store = Store(db_path or REPO / "runs" / "siliconforge.db")
         self.manager = RunManager(self.store, REPO, runs_root=runs_root)
         self.examples = {p.parent.parent.name: (p.parent.parent / "spec.md").read_text(encoding="utf-8")
@@ -146,10 +146,12 @@ class SiliconForgeTUI(App):
         if not run:
             return
         simulated = run["backend"] == "simulated"
-        self.query_one("#strip", StripPanel).update(render_strip(stage_states(self.events), simulated))
+        self._tick += 1
+        retries = {ALIAS.get(e["stage"], e["stage"]) for e in self.events if e["status"] == "RETRY"}
+        self.query_one("#strip", StripPanel).update(render_strip(stage_states(self.events), simulated, retries, self._tick // 3))
         self.query_one("#banner", Static).update(
-            "[black on dark_orange] SIMULATED [/] results come from surrogate models" if simulated
-            else f"[black on green] REAL · {run['backend'].upper()} [/] results from real EDA tools")
+            "[reverse] ░ simulated [/] results come from surrogate models" if simulated
+            else f"[reverse] ● real · {run['backend'].upper()} [/] results from real EDA tools")
         calls = [e["payload"] for e in self.events if e["stage"] == "LLM"]
         cost = sum(c.get("cost_usd", 0.0) for c in calls)
         toks = sum(c.get("prompt_tokens", 0) + c.get("completion_tokens", 0) for c in calls)

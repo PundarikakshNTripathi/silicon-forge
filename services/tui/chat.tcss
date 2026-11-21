@@ -1,0 +1,40 @@
+/* SiliconForge chat TUI. Colours come from the shared palette through the theme's variables (see theme.py). */
+Screen { background: $background; color: $foreground; }
+
+#splash { width: 100%; height: 100%; content-align: left middle; background: $chrome; }
+
+#status { height: 1; background: $chrome; color: $chrome-ink; padding: 0 1; }
+
+#body { height: 1fr; }
+#side { width: 30; background: $panel; border-right: tall $rule; padding: 0 1; }
+#side.hidden { display: none; }
+#ws-name { height: 1; margin-top: 1; color: $foreground; }
+#tree { height: 1fr; background: $panel; padding: 0; }
+#stats { height: 3; color: $ink-3; margin-bottom: 1; }
+
+#main { width: 1fr; padding: 0 2; }
+#chat { height: 1fr; scrollbar-size-vertical: 1; scrollbar-color: $rule-strong; scrollbar-background: $background; }
+#composer { height: 3; margin: 0 0 0 0; border: tall $rule-strong; background: $surface; }
+#composer:focus { border: tall $accent; }
+
+.user { margin: 1 0 0 0; text-style: bold; }
+.assistant { margin: 0 0 0 2; background: $background; padding: 0; }
+.notice { margin: 1 0 0 2; color: $ink-3; background: $background; }
+
+.tool { margin: 0 0 0 2; padding: 0 1; border-left: outer $rule-strong; height: auto; background: $background; }
+.tool.st-running { border-left: outer $accent; }
+.tool.st-ok { border-left: outer $success; }
+.tool.st-error { border-left: outer $error; }
+.tool.st-denied { border-left: outer $rule-strong; color: $ink-3; }
+
+ApprovalModal { align: center middle; background: $background 70%; }
+#approval { width: 86; max-width: 95%; height: auto; max-height: 80%; background: $surface; border: tall $accent; padding: 0 1; }
+#a-head { height: 1; margin-top: 1; }
+#a-body { height: auto; max-height: 24; margin: 1 0; background: $panel; padding: 0 1; }
+#a-keys { height: 1; margin-bottom: 1; }
+
+Footer { background: $chrome; color: $chrome-ink-2; }
+Footer .footer-key--key { background: $chrome-2; color: $chrome-ink; }
+
+/* inline code and emphasis use the accent, never the theme's warning colour (amber means "sent back for repair") */
+Markdown .code_inline { color: $accent; background: $accent-wash; }

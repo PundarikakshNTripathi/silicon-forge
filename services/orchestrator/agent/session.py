@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -78,7 +79,7 @@ class AgentEvent:
 class TurnResult:
     reply: str
     steps: int
-    stopped: str  # done | step_limit | denied | loop | error | budget
+    stopped: str  # done | step_limit | denied | loop | error | budget | interrupted
 
 
 Approver = Callable[[str, str, dict], bool]  # (permission class, summary, details) -> allowed
@@ -136,6 +137,7 @@ class AgentSession:
         self.bridge: Any = None  # McpBridge when the workspace configures MCP servers (set by the factory)
         self._mcp_announced = False
         self.loop_guard = LoopGuard()
+        self.interrupt = threading.Event()  # set from another thread (a UI's Esc key); honoured before each model call
         self.compaction_stage = "full"  # which stage the last prompt needed; exposed for the UI and tests
         #: transcript entries: {"role": user|assistant|tool, ...}
         self.history: list[dict[str, Any]] = []
@@ -221,9 +223,15 @@ class AgentSession:
 
     def _turn(self, message: str) -> TurnResult:
         self._announce_mcp()
+        self.interrupt.clear()  # an Esc pressed between turns must not cancel the next one
         self._log({"role": "user", "text": message})
         corrected = False
         for step in range(1, self.max_steps + 1):
+            if self.interrupt.is_set():
+                self.interrupt.clear()
+                self._log({"role": "tool", "name": "protocol", "summary": "interrupted", "text": "The user interrupted this turn."})
+                self._emit("error", "interrupted")
+                return TurnResult("Interrupted.", step - 1, "interrupted")
             with self.tracer.span(f"step {step}", "step"):
                 result, corrected = self._step(step, corrected)
             if result is not None:
