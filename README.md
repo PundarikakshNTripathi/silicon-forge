@@ -47,7 +47,7 @@ outline means a surrogate did. In the command line and in result files the field
 | `siliconforge flow` on your own multi-file RTL | Real. One design measured so far ([results](#results)). |
 | Verification toolkit and ISA toolchain | Real tools; the worked example is `hardware/isa/pio16`. |
 | Evaluation harness (VerilogEval) | Real. One suite; Gemini and three local models measured. |
-| Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. |
+| Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. Speculative decoding is implemented and off by default; see [docs/providers.md](docs/providers.md#speculative-decoding) for what was measured. |
 | Tiny Tapeout IHP: hardening, timing, DRC | **Not run locally.** Needs the official flow (Docker or the GitHub action). |
 | Fine-tuning a local model on verified samples | One round measured on a 1.5B model ([results](#fine-tuning-on-verified-answers)); no larger model, no second round. |
 | Docker backend, subscription CLI bridges | Wiring is unit-tested; not run end to end on the reference machine. |
@@ -122,7 +122,12 @@ one-hot proof), assembler, disassembler, golden model, documentation and a stati
 
 **Agent and workspaces** ([docs/workspaces.md](docs/workspaces.md)). Open any folder; the agent reads and edits files, runs EDA
 tools and the verification toolkit, with permission modes (ask, accept-edits, auto, plan), path confinement and undo. A
-workspace can restrict which models may be called; the router enforces it.
+workspace can restrict which models may be called; the router enforces it. The manifest also takes allow and deny rules per
+tool and path, hooks that run your commands before or after a tool call, and external MCP servers whose tools join the agent's
+own. Inside the loop: a context budget (older turns become a digest built by code, no extra model call), a repeated-call
+guard, tool output fenced as untrusted data, and redaction of keys and tokens in tool output and saved sessions. Conversations
+can be saved and resumed (opt-in). These guards are tested with scripted models; they lower risk and do not replace the
+permission modes, and the MCP client has been run against a test server, not yet against third-party EDA servers.
 
 **Evaluations** ([docs/evals.md](docs/evals.md)). VerilogEval with unbiased pass@k, bootstrap intervals, paired comparison,
 four ablation arms, a fixed train/test split and a Gymnasium-style environment. The grader is validated: every reference
