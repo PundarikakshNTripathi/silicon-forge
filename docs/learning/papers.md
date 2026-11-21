@@ -41,6 +41,34 @@ Open flows at scale:
 - [David vs. Goliath: small models with agentic AI in hardware design](https://arxiv.org/abs/2512.05073) (Shankar et al., 2025-12): the case for running small local models behind an agent loop.
 - [The Dawn of Agentic EDA](https://arxiv.org/abs/2512.23189) (Zang et al., 2025-12): the survey to read first.
 
+## What the 2026 work says about harnesses and evaluation
+
+Each of these was checked against its abstract page (title, first author, first-version date). They matter because several of
+them contradict the easy assumption that wrapping a model in an agent loop makes it better.
+
+- [Exploring the Agentic Frontier of Verilog Code Generation](https://arxiv.org/abs/2603.19347) (Yubeaton et al., 2026-03): an
+  open, model-agnostic agent framework evaluated on CVDP. Its headline result is a warning: a naive agent wrapper can score *below*
+  a single well-prompted call, while a structured harness (file discovery, planning, editing, verification) matches or beats it.
+  Read this before building a loop. It is the reason `siliconforge evals` has a `single` arm to compare against.
+- [Agentic Hardware Design as Repository-Level Code Evolution](https://arxiv.org/abs/2606.28279) (Yu et al., 2026-06): treats
+  hardware design as repository-level evolution and, more usefully here, argues for withholding the scoring tests from the agent
+  (diagnostics during repair, hidden tests for the score). That is the two-level protocol the evals follow.
+- [RTL-BenchLS](https://arxiv.org/abs/2606.08976) (Wang et al., 2026-06): over 10,000 formally verified designs and three
+  reasoning tasks on which the best of eight models scored between 12% and 28%. A reminder that the saturated benchmarks
+  measure little.
+- [ChipBench](https://arxiv.org/abs/2601.21448) (Yu et al., 2026-01): 44 CPU-submodule generation tasks, 89 debugging cases and
+  132 reference-model tasks, built because VerilogEval-style problems are too small.
+- [Understanding Inference-Time Token Allocation and Coverage Limits in Agentic Hardware Verification](https://arxiv.org/abs/2604.15657)
+  (Patel et al., 2026-04): where the tokens go when an agent tries to close coverage, and where it stops improving.
+- [EARL: Entropy-Aware RL Alignment of LLMs for Reliable RTL Code Generation](https://arxiv.org/abs/2511.12033) (Shi et al.,
+  2025-11, accepted to DAC 2026): policy-gradient updates restricted to high-entropy tokens, evaluated on VerilogEval and RTLLM.
+- [QiMeng-CodeV-R1](https://arxiv.org/abs/2505.24183) (Zhu et al., 2025-05, revised 2026-02): reinforcement learning with
+  verifiable rewards for Verilog; a testbench-based equivalence check is the reward. The reference for training with a verifier.
+- [Automated QoR improvement in OpenROAD with coding agents](https://arxiv.org/abs/2601.06268) (Ghose, 2026-01): a coding agent
+  proposes diffs to OpenROAD itself to improve results, as opposed to tuning its parameters.
+- [PPAPlace: Differentiable Cross-Stage Objectives for Chip Placement Optimization](https://arxiv.org/abs/2608.13790) (Chen et al.,
+  2026-08, ICCAD 2026): a differentiable timing surrogate inside the placer; the learning-based alternative to black-box tuning.
+
 ## LLMs and assertions
 
 - [AssertLLM](https://arxiv.org/abs/2402.00386) (Fang et al., 2024-02): assertions from design specifications.

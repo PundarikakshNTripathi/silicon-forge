@@ -27,6 +27,8 @@ foundation, 3 to 5 are where this project lives.
 - [Project F](https://projectf.io/): FPGA and Verilog tutorials that build real graphics and timing circuits.
 - [ChipVerify](https://www.chipverify.com/): Verilog and SystemVerilog reference and examples.
 - [EDA Playground](https://www.edaplayground.com/): run a simulation in the browser with nothing installed.
+- [ZipCPU's beginner Verilog, formal verification and Verilator tutorial](https://zipcpu.com/tutorial/): ten lessons that
+  introduce simulation and formal checking together from the start, which is the habit worth building.
 
 **Do:** solve the HDLBits "Circuits" and "Verification: Reading simulations" sets, then write a UART transmitter and check its waveform.
 
@@ -54,7 +56,17 @@ foundation, 3 to 5 are where this project lives.
 - [SymbiYosys documentation](https://symbiyosys.readthedocs.io/) and its
   [quickstart](https://yosyshq.readthedocs.io/projects/sby/en/latest/quickstart.html).
 - [YosysHQ riscv-formal](https://github.com/YosysHQ/riscv-formal): how a real ISA gets a formal specification.
-- [mcy mutation coverage](https://mcy.readthedocs.io/): measuring testbench quality by planting bugs.
+- [mcy mutation coverage](https://github.com/YosysHQ/mcy): measuring testbench quality by planting bugs (ISC license).
+- [pyuvm](https://github.com/pyuvm/pyuvm): the UVM methodology (agents, sequences, scoreboards) written in Python on top of
+  cocotb, so you can learn the structure without a commercial simulator (Apache-2.0).
+- [Verible](https://github.com/chipsalliance/verible): an open SystemVerilog parser, style linter, formatter and language server
+  (Apache-2.0). [sv-tests](https://github.com/chipsalliance/sv-tests) shows which SystemVerilog features each open tool
+  supports, which is worth checking before you rely on a construct; both sit under the
+  [CHIPS Alliance SV Tools Project](https://chipsalliance.org/news/sv-tools-project-launch/) (announced March 2026).
+- [The 2026 Functional Verification Study](https://blogs.sw.siemens.com/verificationhorizons/2026/09/08/the-2026-functional-verification-study/)
+  (Foster, Siemens EDA and Wilson Research Group, 2026-09): the industry survey. It reports 5% of IC/ASIC respondents achieving
+  first-silicon success, against 14.4% in 2024. It is a vendor-sponsored survey of self-selected respondents, so read the
+  method before the headline, but it is the best public picture of why verification takes most of the effort.
 - [Verification Academy](https://verificationacademy.com/): vendor-neutral UVM and verification methodology articles (registration may be needed).
 - *(book)* Spear and Tumbush, *SystemVerilog for Verification*; Seligman, Schubert and Kumar, *Formal Verification: An Essential Toolkit for Modern VLSI Design*.
 
@@ -100,7 +112,18 @@ Start with the survey [The Dawn of Agentic EDA](https://arxiv.org/abs/2512.23189
 ([VerilogEval](https://arxiv.org/abs/2309.07544), [CVDP](https://arxiv.org/abs/2506.14074)) to learn how these tools are
 measured, and the annotated list in [papers.md](papers.md). Read [the landscape](../landscape.md) for where SiliconForge sits.
 
-**Do:** run an LLM on a spec of your own and let the formal tool, not your opinion, decide whether the result is right.
+After that, read [Exploring the Agentic Frontier of Verilog Code Generation](https://arxiv.org/abs/2603.19347) and
+[Agentic Hardware Design as Repository-Level Code Evolution](https://arxiv.org/abs/2606.28279): between them they explain why
+an agent loop can make a model worse and why the scoring tests must stay out of the agent's reach.
+
+**Do:** run an LLM on a spec of your own and let the formal tool, not your opinion, decide whether the result is right. Then
+measure instead of guessing: `siliconforge evals run verilogeval` with the `single` arm and with the `feedback` arm on the same
+model and problems, and `siliconforge evals compare` the two result files. If the interval contains zero, the loop did not
+demonstrably help ([evals guide](../evals.md)).
+
+**Do, for your own RTL:** put a design you wrote through `siliconforge flow` and read the signoff checklist line by line,
+especially the gates reported as *not reported*. Knowing what a clean report does and does not cover is the skill
+([flow guide](../flow.md)).
 
 ## Practice platforms, in one place
 
