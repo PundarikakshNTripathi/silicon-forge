@@ -3,6 +3,13 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.4.0] - 2026-11-21
+First release under **AGPL-3.0-or-later** (a commercial license is available; see `COMMERCIAL.md`). The headline changes: an
+evaluation harness with confidence intervals, a project flow for your own RTL, a debug-context loop for repair, an agent with
+permission rules, hooks, an MCP client and context management, and a first measured fine-tuning result. The measured results,
+including the null ones, are in the README. The Windows installer attached to the release is **unsigned**.
+
 ### Added (inference resilience)
 - `Retry-After` (seconds or HTTP date) is parsed from OpenAI-compatible and Anthropic rate-limit responses and honoured by the retry helper instead of a random delay; a request to wait over 60 s is not waited out, so the router can fall back.
 - Per-provider `rate_limit: {rpm, tpm, max_wait_s}` in the catalog: a sliding-window pacer in the router. Too long a wait falls through without tripping the circuit breaker; wait time is reported as `rate_wait_s`. Nothing is limited by default. `docs/providers.md`.
