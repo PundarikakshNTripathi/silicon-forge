@@ -188,6 +188,7 @@ def test_old_tool_results_are_compacted_but_recent_ones_stay_full(env):
     ws, make = env
     replies = [act("", "read_file", path="rtl/cnt.sv")] * 5 + [act("done")]
     s, prov, _ = make(replies, max_steps=10)
+    s.loop_guard.warn_at = s.loop_guard.stop_at = 99  # this test is about compaction; the loop guard has its own tests
     s.send("read it many times")
     last = prov.prompts[-1]
     assert last.count("[earlier result:") == 2 and last.count("module cnt") >= 3  # 5 results: 2 compacted, 3 full

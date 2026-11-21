@@ -46,6 +46,9 @@ class Workspace:
     max_budget_usd: float | None = None
     max_total_tokens: int | None = None
     has_manifest: bool = False
+    #: agent permission rules from the manifest's `permissions:` section; see agent/safety.py `Rules`
+    allow: list[str] = field(default_factory=list)
+    deny: list[str] = field(default_factory=list)
 
     # ------------------------------------------------------------------ paths
     @property
@@ -128,8 +131,18 @@ def load_workspace(path: str | Path) -> Workspace:
     if isinstance(allowed, str):
         allowed = [allowed]
     budget = policy.get("max_budget_usd")
+    perms = raw.get("permissions") or {}
+    if not isinstance(perms, dict):
+        raise WorkspaceError(f"{manifest}: `permissions` must be a mapping with `allow` and/or `deny` lists")
+
+    def rule_list(key: str) -> list[str]:
+        val = perms.get(key) or []
+        return [str(val)] if isinstance(val, str) else [str(v) for v in val]
+
     return Workspace(
         root=root,
+        allow=rule_list("allow"),
+        deny=rule_list("deny"),
         name=str(raw.get("name") or root.name),
         profile=str(raw.get("profile", "replay")),
         backend=str(raw.get("backend", "simulated")),

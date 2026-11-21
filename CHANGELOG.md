@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent safety and context)
+- Workspace `permissions: allow/deny` rules (`tool` or `tool(glob)`; deny wins and applies in `auto`; paths normalised so `..` and backslashes cannot dodge a pattern).
+- Staged context compaction: the transcript stays inside `context_chars`; earlier turns become a deterministic digest, no model call.
+- Loop guard (note at 3 identical calls, stop at 5), `<tool_output>` fencing of tool results, and redaction of keys and tokens in tool output and saved sessions.
 ### Added (verification)
 - `siliconforge triage sim.json ...`: buckets failing runs by a normalised signature (lockstep divergences by the fields that disagree), with seeds, tests, an example and a replay line per bucket. `docs/verification.md`.
 ### Fixed (verification)
