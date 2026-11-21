@@ -317,3 +317,14 @@ details.adv > summary { cursor: pointer; color: var(--ink-2); font-weight: 700; 
 .end.ok { background: var(--ink); color: var(--paper); }
 .end.no { background: transparent; color: var(--ink-2); border-color: var(--rule-strong); }
 table.t th:last-child, table.t td:last-child { padding-left: 16px; }
+
+/* time split: three shades of one ink, ordered by darkness, with a printed key (never colour alone) */
+.splitbar { display: flex; height: 14px; border-radius: 3px; overflow: hidden; gap: 2px; background: var(--sunken); }
+.splitbar .seg.s0, i.key.s0 { background: var(--ink); } .splitbar .seg.s1, i.key.s1 { background: var(--accent); } .splitbar .seg.s2, i.key.s2 { background: var(--rule-strong); }
+i.key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+
+/* agent conversation: tool steps read as quiet monospace rows, the user's words and anything that needs a decision stand out */
+.msg.tool { background: var(--sunken); padding-left: 10px; border-radius: 4px; margin: 2px 0; border-bottom: 0; }
+.msg.tool .who { color: var(--ink-3); font-weight: 500; }
+.msg.user .who { color: var(--accent); }
+.msg.ask .who { color: var(--accent); }
