@@ -1720,7 +1720,7 @@
       "instance_area_um2": 1506.44,
       "hold_ws_ns": 0.11137113768664376,
       "timing_corner": "worst",
-      "render_png": "C:\\Users\\pndnt\\AppData\\Local\\Temp\\sf_ppa_ffl6vean\\default\\pnr_ep_01\\runs\\sf\\final\\render\\up_down_counter.png"
+      "render_png": "<local path>/up_down_counter.png"
     }
   }
 }

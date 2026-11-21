@@ -1,0 +1,257 @@
+{
+  "model": "Qwen3-8B-Q4_K_M.gguf",
+  "ctx": 16384,
+  "kv_cache": "q8_0",
+  "backend": "wsl",
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "vram_used_mib_loaded": 6416,
+  "load_s": 5.8,
+  "verified": 1,
+  "designs": 4,
+  "llama_cpp": "b12600",
+  "pipeline_overrides": {},
+  "max_repair": 3,
+  "results": [
+    {
+      "design": "axi_lite_alu",
+      "verified": true,
+      "stage": "SYNTHESIS_LEC",
+      "error": null,
+      "formal_iterations": 1,
+      "rtl_versions": 1,
+      "llm_calls": 4,
+      "tokens": 7277,
+      "elapsed_sec": 40.5,
+      "tokens_per_s_p50": 57.5,
+      "ttft_p50_s": 0.676,
+      "prefix_cache_ratio": 0.215,
+      "trace": []
+    },
+    {
+      "design": "sync_fifo",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "Formal verification did not converge within the iteration budget.",
+      "formal_iterations": 3,
+      "rtl_versions": 3,
+      "llm_calls": 6,
+      "tokens": 11853,
+      "elapsed_sec": 70.1,
+      "tokens_per_s_p50": 56.8,
+      "ttft_p50_s": 0.608,
+      "prefix_cache_ratio": 0.319,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_sync_fifo started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'sync_fifo' (9 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (73 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "PASS",
+          "detail": "Verilator lint: 0 error(s), 7 warning(s)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Formal check failed on iteration 1 (vacuity); applying COI-sliced repair."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'formal-repair-1' (59 lines)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Formal check failed on iteration 2 (assert_full_o_equals_level_o_4); applying COI-sliced repair."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'formal-repair-2' (69 lines)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Formal check failed on iteration 3 (assert_full_o_equals_level_o_4); applying COI-sliced repair."
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "Formal verification did not converge within the iteration budget."
+        }
+      ]
+    },
+    {
+      "design": "uart_tx",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "RTL failed guardrails / lint after the maximum number of repair iterations.",
+      "formal_iterations": 0,
+      "rtl_versions": 4,
+      "llm_calls": 6,
+      "tokens": 56770,
+      "elapsed_sec": 471.4,
+      "tokens_per_s_p50": 46.5,
+      "ttft_p50_s": 2.656,
+      "prefix_cache_ratio": 0.0749,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_uart_tx started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'uart_tx' (6 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (117 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 3 error(s), 1 warning(s); repairing RTL.",
+          "log_tail": "_prev_prev_prev_prev_prev_prev_prev_prev_prev_prev_prev_prev\n      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Cannot continue\n        ... This fatal error may be caused by the earlier error(s); resolve those first."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-1' (90 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 2."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 3 error(s), 1 warning(s); repairing RTL.",
+          "log_tail": "_prev_prev_prev_prev_prev_prev_prev_prev_prev\n      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Cannot continue\n        ... This fatal error may be caused by the earlier error(s); resolve those first."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-2' (117 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 3."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 3 error(s), 1 warning(s); repairing RTL.",
+          "log_tail": "_prev_prev_prev_prev_prev_prev_prev_prev_prev_prev_prev_prev\n      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n%Error: Cannot continue\n        ... This fatal error may be caused by the earlier error(s); resolve those first."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-3' (82 lines)"
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "RTL failed guardrails / lint after the maximum number of repair iterations."
+        }
+      ]
+    },
+    {
+      "design": "up_down_counter",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "Formal verification did not converge within the iteration budget.",
+      "formal_iterations": 3,
+      "rtl_versions": 3,
+      "llm_calls": 5,
+      "tokens": 9756,
+      "elapsed_sec": 53.6,
+      "tokens_per_s_p50": 57.5,
+      "ttft_p50_s": 0.649,
+      "prefix_cache_ratio": 0.2201,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_up_down_counter started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'up_down_counter' (8 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (55 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "PASS",
+          "detail": "Verilator lint: 0 error(s), 1 warning(s)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Formal check failed on iteration 1 (assert_load_count_equal); applying COI-sliced repair."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'formal-repair-1' (55 lines)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Formal check failed on iteration 2 (assert_load_count_equal); applying COI-sliced repair."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'formal-repair-2' (55 lines)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Formal check failed on iteration 3 (assert_load_count_equal); applying COI-sliced repair."
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "Formal verification did not converge within the iteration budget."
+        }
+      ]
+    }
+  ]
+}

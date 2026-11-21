@@ -1,0 +1,3157 @@
+{
+  "schema": "siliconforge.eval/1",
+  "suite": "verilogeval-spec2rtl",
+  "dataset": {
+    "source": "https://github.com/NVlabs/verilog-eval",
+    "commit": "c498220d0a52248f8e3fdffe279075215bde2da6",
+    "license": "MIT",
+    "problems_total": 155,
+    "excluded": {
+      "Prob099_m2014_q6c": "the prompt and testbench use outputs Y2 and Y4, the reference module declares Y1 and Y3, so no candidate (the reference included) can compile with the testbench"
+    },
+    "testbench_patch": "removed the waveform-dump block ($dumpfile/$dumpvars): it refers to `tb_mismatch` before its declaration, which Icarus Verilog 14 rejects ('Unable to bind wire/reg/memory'); it writes a VCD and has no effect on the mismatch count"
+  },
+  "model": "qwen2.5-coder-7b-instruct-q4_k_m",
+  "arm": {
+    "arm": "single"
+  },
+  "n": 1,
+  "k": 1,
+  "temperature": 0.0,
+  "selection": {
+    "count": 155,
+    "seed": 0,
+    "all": true,
+    "split": "all",
+    "pool": 155,
+    "trajectories": null
+  },
+  "runner": "wsl",
+  "tools": {
+    "iverilog": "Icarus Verilog version 14.0 (devel) (s20260301-1233-gadb65230d-dirty)"
+  },
+  "pass_at_1": {
+    "k": 1,
+    "mean": 0.22580645161290322,
+    "ci95": [
+      0.16129032258064516,
+      0.2903225806451613
+    ],
+    "problems": 155,
+    "skipped": 0
+  },
+  "compile_rate": 0.4645,
+  "errors": 0,
+  "tokens": {
+    "prompt": 49462,
+    "completion": 29314,
+    "calls": 155
+  },
+  "wall_s": 534.5,
+  "created": "2026-11-21T14:30:05+0530",
+  "profile": "local",
+  "routed": "llamacpp:local",
+  "reasoning": "auto",
+  "per_problem": [
+    {
+      "id": "Prob001_zero",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 20,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 141,
+          "completion_tokens": 27,
+          "latency_s": 0.65,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob002_m2014_q4i",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 145,
+          "completion_tokens": 25,
+          "latency_s": 0.43,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob003_step_one",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 20,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 145,
+          "completion_tokens": 25,
+          "latency_s": 0.43,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob004_vector2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 162,
+          "completion_tokens": 74,
+          "latency_s": 1.31,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob005_notgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 239,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 146,
+          "completion_tokens": 30,
+          "latency_s": 0.5,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob006_vectorr",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 166,
+          "completion_tokens": 75,
+          "latency_s": 1.23,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob007_wire",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 120,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 146,
+          "completion_tokens": 29,
+          "latency_s": 0.46,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob008_m2014_q4h",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 157,
+          "completion_tokens": 29,
+          "latency_s": 0.46,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob009_popcount3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 169,
+          "completion_tokens": 58,
+          "latency_s": 0.92,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob010_mt2015_q4a",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 202,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 160,
+          "completion_tokens": 38,
+          "latency_s": 0.62,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob011_norgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 151,
+          "completion_tokens": 35,
+          "latency_s": 0.55,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob012_xnorgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 153,
+          "completion_tokens": 35,
+          "latency_s": 0.55,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob013_m2014_q4e",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 156,
+          "completion_tokens": 41,
+          "latency_s": 0.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob014_andgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 154,
+          "completion_tokens": 34,
+          "latency_s": 0.53,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob015_vector1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 218,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 201,
+          "completion_tokens": 71,
+          "latency_s": 1.26,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob016_m2014_q4j",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 176,
+          "completion_tokens": 265,
+          "latency_s": 4.11,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob017_mux2to1v",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 194,
+          "completion_tokens": 87,
+          "latency_s": 1.4,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob018_mux256to1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 225,
+          "completion_tokens": 46,
+          "latency_s": 0.79,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob019_m2014_q4f",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 197,
+          "completion_tokens": 41,
+          "latency_s": 0.68,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob020_mt2015_eq2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 201,
+          "completion_tokens": 53,
+          "latency_s": 0.91,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob021_mux256to1v",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 243,
+          "completion_tokens": 201,
+          "latency_s": 3.3,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:10: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:13: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:14: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:15: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:16: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:17: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n9 error(s) du"
+        }
+      ]
+    },
+    {
+      "id": "Prob022_mux2to1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 182,
+          "completion_tokens": 62,
+          "latency_s": 1.02,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob023_vector100r",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 166,
+          "completion_tokens": 81,
+          "latency_s": 1.3,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'out[i]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out[i]' is declared here as a wire.\ndut.sv:6: warning: always_comb process has no sensitivities.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob024_hadd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 177,
+          "completion_tokens": 46,
+          "latency_s": 0.73,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob025_reduction",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 218,
+          "completion_tokens": 76,
+          "latency_s": 1.34,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'parity' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'parity' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob026_alwaysblock1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 171,
+          "completion_tokens": 58,
+          "latency_s": 1.0,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:11: error: 'out_alwaysblock' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out_alwaysblock' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob027_fadd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 214,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 183,
+          "completion_tokens": 48,
+          "latency_s": 0.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob028_m2014_q4a",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 157,
+          "completion_tokens": 47,
+          "latency_s": 0.77,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'q' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob029_m2014_q4g",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 215,
+          "completion_tokens": 80,
+          "latency_s": 1.31,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:14: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob030_popcount255",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 186,
+          "completion_tokens": 100,
+          "latency_s": 1.6,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:13: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob031_dff",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 118,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 167,
+          "completion_tokens": 57,
+          "latency_s": 0.9,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob032_vector0",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 21,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 213,
+          "completion_tokens": 83,
+          "latency_s": 1.39,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob033_ece241_2014_q1c",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 210,
+          "completion_tokens": 85,
+          "latency_s": 1.37,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 's' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 's' is declared here as a wire.\ndut.sv:10: error: 'overflow' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'overflow' is declared here as a wire.\ndut.sv:8: warning: always_comb process has no sensitivities.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob034_dff8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 41,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 177,
+          "completion_tokens": 74,
+          "latency_s": 1.25,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob035_count1to10",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 185,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 197,
+          "completion_tokens": 128,
+          "latency_s": 2.07,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob036_ringer",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 247,
+          "completion_tokens": 84,
+          "latency_s": 1.39,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'ringer' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'ringer' is declared here as a wire.\ndut.sv:11: error: 'motor' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'motor' is declared here as a wire.\ndut.sv:13: error: 'ringer' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'ringer' is declared here as a wire.\ndut.sv:14: error: 'motor' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'motor' is declared here as a wire.\n4 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob037_review2015_count1k",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 3131,
+          "testbench_samples": 8027,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 211,
+          "completion_tokens": 97,
+          "latency_s": 1.53,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob038_count15",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 185,
+          "testbench_samples": 421,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 210,
+          "completion_tokens": 99,
+          "latency_s": 1.59,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob039_always_if",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 220,
+          "completion_tokens": 101,
+          "latency_s": 1.63,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:14: error: 'out_always' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'out_always' is declared here as a wire.\ndut.sv:16: error: 'out_always' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'out_always' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob040_count10",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 344,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 206,
+          "completion_tokens": 99,
+          "latency_s": 1.56,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob041_dff8r",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 41,
+          "testbench_samples": 432,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 191,
+          "completion_tokens": 111,
+          "latency_s": 1.76,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob042_vector4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 331,
+          "completion_tokens": 48,
+          "latency_s": 0.84,
+          "error": null,
+          "detail": "dut.sv:5: syntax error\ndut.sv:5: error: Syntax error between internal '}' and closing '}' of repeat concatenation.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob043_vector5",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 275,
+          "completion_tokens": 352,
+          "latency_s": 5.5,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:11: error: 'out['sd24]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd24]' is declared here as a wire.\ndut.sv:12: error: 'out['sd23]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd23]' is declared here as a wire.\ndut.sv:13: error: 'out['sd22]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd22]' is declared here as a wire.\ndut.sv:14: error: 'out['sd21]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd21]' is declared here as a wire.\ndut.sv:15: error: 'out['sd20]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd20]' is declared here as a wire.\ndut.sv:16: error: 'out['sd19]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd19]' is declared here as a wire.\ndut.sv:17: error: 'out['sd18]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd18]' is declared here as a wire.\ndut.sv:18: error: 'out['sd17]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out['sd17]' is declared here as a wire.\ndut.sv:19: error: 'out['sd1"
+        }
+      ]
+    },
+    {
+      "id": "Prob044_vectorgates",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 261,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 244,
+          "completion_tokens": 109,
+          "latency_s": 1.74,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob045_edgedetect2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 212,
+          "testbench_samples": 228,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 233,
+          "completion_tokens": 132,
+          "latency_s": 2.14,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob046_dff8p",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 407,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 204,
+          "completion_tokens": 399,
+          "latency_s": 6.22,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob047_dff8ar",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 198,
+          "completion_tokens": 107,
+          "latency_s": 1.73,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob048_m2014_q4c",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 171,
+          "completion_tokens": 76,
+          "latency_s": 1.18,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'q' is declared here as a wire.\ndut.sv:12: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'q' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob049_m2014_q4b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 169,
+          "completion_tokens": 71,
+          "latency_s": 1.13,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'q' is declared here as a wire.\ndut.sv:12: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'q' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob050_kmap1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 220,
+          "completion_tokens": 45,
+          "latency_s": 0.74,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob051_gates4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 234,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 225,
+          "completion_tokens": 108,
+          "latency_s": 2.33,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob052_gates100",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 433,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 237,
+          "completion_tokens": 60,
+          "latency_s": 1.11,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob053_m2014_q4d",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 208,
+          "completion_tokens": 68,
+          "latency_s": 1.27,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob054_edgedetect",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 206,
+          "testbench_samples": 227,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 209,
+          "completion_tokens": 171,
+          "latency_s": 2.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob055_conditional",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 199,
+          "completion_tokens": 107,
+          "latency_s": 1.77,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'min' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'min' is declared here as a wire.\ndut.sv:11: error: 'min' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'min' is declared here as a wire.\ndut.sv:12: error: 'min' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'min' is declared here as a wire.\ndut.sv:13: error: 'min' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'min' is declared here as a wire.\ntest.sv:97: warning: output port min is coerced to inout.\n4 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob056_ece241_2013_q7",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 230,
+          "completion_tokens": 98,
+          "latency_s": 1.7,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:12: error: 'Q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'Q' is declared here as a wire.\ndut.sv:14: error: 'Q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'Q' is declared here as a wire.\ndut.sv:16: error: 'Q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'Q' is declared here as a wire.\ntest.sv:96: warning: output port Q is coerced to inout.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob057_kmap2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 259,
+          "completion_tokens": 131,
+          "latency_s": 2.16,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob058_alwaysblock2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 254,
+          "completion_tokens": 164,
+          "latency_s": 2.68,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob059_wire4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 218,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 190,
+          "completion_tokens": 69,
+          "latency_s": 1.13,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob060_m2014_q4k",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 14,
+          "testbench_samples": 299,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 185,
+          "completion_tokens": 113,
+          "latency_s": 1.81,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob061_2014_q4a",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 226,
+          "completion_tokens": 99,
+          "latency_s": 1.6,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob062_bugs_mux2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 110,
+          "testbench_samples": 114,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 192,
+          "completion_tokens": 54,
+          "latency_s": 0.93,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob063_review2015_shiftcount",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1886,
+          "testbench_samples": 2071,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 280,
+          "completion_tokens": 124,
+          "latency_s": 2.05,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob064_vector3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 315,
+          "completion_tokens": 191,
+          "latency_s": 3.11,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:18: error: 'w' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'w' is declared here as a wire.\ndut.sv:19: error: 'x' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'x' is declared here as a wire.\ndut.sv:20: error: 'y' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'y' is declared here as a wire.\ndut.sv:21: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'z' is declared here as a wire.\n4 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob065_7420",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 239,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 253,
+          "completion_tokens": 120,
+          "latency_s": 1.96,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob066_edgecapture",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 227,
+          "testbench_samples": 266,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 234,
+          "completion_tokens": 156,
+          "latency_s": 2.51,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob067_countslow",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 207,
+          "testbench_samples": 499,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 249,
+          "completion_tokens": 110,
+          "latency_s": 1.8,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob068_countbcd",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 39676,
+          "testbench_samples": 39805,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 256,
+          "completion_tokens": 394,
+          "latency_s": 6.29,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob069_truthtable1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 305,
+          "completion_tokens": 51,
+          "latency_s": 0.94,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'f' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob070_ece241_2013_q2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 30,
+          "testbench_samples": 107,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 323,
+          "completion_tokens": 230,
+          "latency_s": 3.76,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob071_always_casez",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 235,
+          "completion_tokens": 184,
+          "latency_s": 2.97,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:8: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:9: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:10: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:11: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:12: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:13: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:14: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:15: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:8: sorry"
+        }
+      ]
+    },
+    {
+      "id": "Prob072_thermostat",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 360,
+          "completion_tokens": 100,
+          "latency_s": 1.68,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:12: error: 'heater' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'heater' is declared here as a wire.\ndut.sv:13: error: 'aircon' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'aircon' is declared here as a wire.\ndut.sv:14: error: 'fan' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'fan' is declared here as a wire.\ndut.sv:11: warning: always_comb process has no sensitivities.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob073_dff16e",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 279,
+          "completion_tokens": 155,
+          "latency_s": 2.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob074_ece241_2014_q4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 45,
+          "testbench_samples": 118,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 306,
+          "completion_tokens": 156,
+          "latency_s": 2.58,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob075_counter_2bc",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1051,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 297,
+          "completion_tokens": 172,
+          "latency_s": 2.9,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob076_always_case",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 250,
+          "completion_tokens": 207,
+          "latency_s": 3.37,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:14: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:15: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:16: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:17: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:18: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:19: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:20: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\n7 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob077_wire_decl",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 122,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 318,
+          "completion_tokens": 105,
+          "latency_s": 1.79,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob078_dualedge",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 224,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 217,
+          "completion_tokens": 78,
+          "latency_s": 1.3,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob079_fsm3onehot",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 327,
+          "completion_tokens": 272,
+          "latency_s": 4.46,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob080_timer",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 372,
+          "completion_tokens": 134,
+          "latency_s": 2.33,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:14: error: 'tc' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'tc' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob081_7458",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 410,
+          "completion_tokens": 226,
+          "latency_s": 3.73,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob082_lfsr32",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 199953,
+          "testbench_samples": 200000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 301,
+          "completion_tokens": 180,
+          "latency_s": 2.98,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob083_mt2015_q4b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 445,
+          "completion_tokens": 104,
+          "latency_s": 1.94,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'z' is declared here as a wire.\ndut.sv:11: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'z' is declared here as a wire.\ndut.sv:13: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'z' is declared here as a wire.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob084_ece241_2013_q12",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 388,
+          "completion_tokens": 246,
+          "latency_s": 4.04,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:23: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:24: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:25: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:26: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:27: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:28: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:29: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:30: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\ndut.sv:31: error: 'Z' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'Z' is declared here as a wire.\n9 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob085_shift4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 61,
+          "testbench_samples": 427,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 313,
+          "completion_tokens": 160,
+          "latency_s": 2.61,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob086_lfsr5",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 4442,
+          "testbench_samples": 4443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 340,
+          "completion_tokens": 161,
+          "latency_s": 2.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob087_gates",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 210,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 294,
+          "completion_tokens": 127,
+          "latency_s": 2.11,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob088_ece241_2014_q5b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 209,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 265,
+          "completion_tokens": 266,
+          "latency_s": 4.34,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob089_ece241_2014_q5a",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 209,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 267,
+          "completion_tokens": 327,
+          "latency_s": 5.28,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob090_circuit1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 460,
+          "completion_tokens": 41,
+          "latency_s": 0.9,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'q' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob091_2012_q2b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 418,
+          "completion_tokens": 347,
+          "latency_s": 5.68,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:23: error: 'y' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'y' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob092_gatesv100",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 477,
+          "completion_tokens": 182,
+          "latency_s": 3.08,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'out_both['sd99]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_both['sd99]' is declared here as a wire.\ndut.sv:10: error: 'out_both['sd98:'sd0]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_both['sd98:'sd0]' is declared here as a wire.\ndut.sv:12: error: 'out_any['sd0]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_any['sd0]' is declared here as a wire.\ndut.sv:13: error: 'out_any['sd1:'sd99]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_any['sd1:'sd99]' is declared here as a wire.\ndut.sv:15: error: 'out_different['sd99]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_different['sd99]' is declared here as a wire.\ndut.sv:16: error: 'out_different['sd98:'sd0]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_different['sd98:'sd0]' is declared here as a wire.\ndut.sv:8: warning: always_comb process has no sensitivities.\n6 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob093_ece241_2014_q3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 60,
+          "testbench_samples": 60,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 447,
+          "completion_tokens": 154,
+          "latency_s": 2.62,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob094_gatesv",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 459,
+          "completion_tokens": 250,
+          "latency_s": 4.13,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:9: error: 'out_both['sd0]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_both['sd0]' is declared here as a wire.\ndut.sv:10: error: 'out_both['sd1]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_both['sd1]' is declared here as a wire.\ndut.sv:11: error: 'out_both['sd2]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_both['sd2]' is declared here as a wire.\ndut.sv:12: error: 'out_both['sd3]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_both['sd3]' is declared here as a wire.\ndut.sv:14: error: 'out_any['sd0]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_any['sd0]' is declared here as a wire.\ndut.sv:15: error: 'out_any['sd1]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_any['sd1]' is declared here as a wire.\ndut.sv:16: error: 'out_any['sd2]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_any['sd2]' is declared here as a wire.\ndut.sv:17: error: 'out_any['sd3]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_any['sd3]' "
+        }
+      ]
+    },
+    {
+      "id": "Prob095_review2015_fsmshift",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 232,
+          "completion_tokens": 307,
+          "latency_s": 4.92,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:28: error: 'shift_ena' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'shift_ena' is declared here as a wire.\ndut.sv:38: error: 'shift_ena' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'shift_ena' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob096_review2015_fsmseq",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 219,
+          "completion_tokens": 406,
+          "latency_s": 6.55,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:28: error: 'start_shifting' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'start_shifting' is declared here as a wire.\ndut.sv:53: error: 'start_shifting' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'start_shifting' is declared here as a wire.\ndut.sv:29: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'shift_reg[1:0]').\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob097_mux9to1v",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 293,
+          "completion_tokens": 284,
+          "latency_s": 4.71,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:17: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:18: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:19: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:20: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:21: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:22: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:23: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:24: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:25: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:26: e"
+        }
+      ]
+    },
+    {
+      "id": "Prob098_circuit7",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 120,
+          "testbench_samples": 123,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 469,
+          "completion_tokens": 59,
+          "latency_s": 1.09,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob100_fsm3comb",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 328,
+          "completion_tokens": 256,
+          "latency_s": 4.21,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:11: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\ndut.sv:15: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:16: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\ndut.sv:19: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:20: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\ndut.sv:23: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:24: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\ndut.sv:27: error: 'next_state' is not a valid l-value for a procedural assignment.\n"
+        }
+      ]
+    },
+    {
+      "id": "Prob101_circuit4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 588,
+          "completion_tokens": 55,
+          "latency_s": 1.1,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'q' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob102_circuit3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 588,
+          "completion_tokens": 55,
+          "latency_s": 1.02,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'q' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob103_circuit2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 588,
+          "completion_tokens": 55,
+          "latency_s": 1.05,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'q' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob104_mt2015_muxdff",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 199,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 346,
+          "completion_tokens": 94,
+          "latency_s": 1.63,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob105_rotate100",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 3590,
+          "testbench_samples": 4005,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 367,
+          "completion_tokens": 146,
+          "latency_s": 2.49,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob106_always_nolatches",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 337,
+          "completion_tokens": 119,
+          "latency_s": 2.01,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'left' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'left' is declared here as a wire.\ndut.sv:11: error: 'down' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'down' is declared here as a wire.\ndut.sv:12: error: 'right' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'right' is declared here as a wire.\ndut.sv:13: error: 'up' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'up' is declared here as a wire.\ndut.sv:9: warning: always_comb process has no sensitivities.\n4 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob107_fsm1s",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 234,
+          "completion_tokens": 180,
+          "latency_s": 2.95,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:20: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob108_rule90",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 6022,
+          "testbench_samples": 7121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 451,
+          "completion_tokens": 169,
+          "latency_s": 2.89,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob109_fsm1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 215,
+          "completion_tokens": 202,
+          "latency_s": 3.46,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:21: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob110_fsm2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 248,
+          "completion_tokens": 192,
+          "latency_s": 3.11,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:21: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:32: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob111_fsm2s",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 247,
+          "completion_tokens": 189,
+          "latency_s": 3.09,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:21: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:32: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob112_always_case2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 275,
+          "completion_tokens": 107,
+          "latency_s": 1.79,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:7: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:8: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:9: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:10: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:11: error: 'pos' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'pos' is declared here as a wire.\ndut.sv:7: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[3:0]').\ndut.sv:8: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[3:0]').\ndut.sv:9: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[3:0]').\ndut.sv:10: sorry: constant selects in always_* processes are not fully supported (the process will be sensiti"
+        }
+      ]
+    },
+    {
+      "id": "Prob113_2012_q1g",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 264,
+          "completion_tokens": 194,
+          "latency_s": 3.26,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:9: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:10: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:11: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:12: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:13: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:14: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:15: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:16: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:7: sorry: constant selects in always_* proc"
+        }
+      ]
+    },
+    {
+      "id": "Prob114_bugs_case",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 335,
+          "completion_tokens": 364,
+          "latency_s": 5.92,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:9: error: 'valid' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'valid' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'valid' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'valid' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'valid' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'valid' is declared here as a wire.\ndut.sv:13: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire.\ndut.sv:13: error: 'valid' is not a valid l-value for a procedural assignment.\ndut.sv:4:      : 'valid' is declared here as a wire.\ndut.sv:14: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out' is declared here as a wire"
+        }
+      ]
+    },
+    {
+      "id": "Prob115_shift18",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 2930,
+          "testbench_samples": 4041,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 370,
+          "completion_tokens": 237,
+          "latency_s": 3.93,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob116_m2014_q3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 273,
+          "completion_tokens": 138,
+          "latency_s": 2.31,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:8: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:8: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:8: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:9: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:9: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:9: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:10: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:3:      : 'f' is declared here as a wire.\ndut.sv:7: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'x[3:0]').\ndut.sv:7: sorry: constant selects in alwa"
+        }
+      ]
+    },
+    {
+      "id": "Prob117_circuit9",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 212,
+          "testbench_samples": 245,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 459,
+          "completion_tokens": 90,
+          "latency_s": 1.6,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob118_history_shift",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2055,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 416,
+          "completion_tokens": 183,
+          "latency_s": 3.1,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob119_fsm3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 276,
+          "completion_tokens": 327,
+          "latency_s": 5.35,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:21: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\ndut.sv:58: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob120_fsm3s",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 268,
+          "completion_tokens": 305,
+          "latency_s": 4.96,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:21: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob121_2014_q3bfsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 328,
+          "completion_tokens": 337,
+          "latency_s": 5.48,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:27: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\ndut.sv:28: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\ndut.sv:29: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\ndut.sv:30: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\ndut.sv:31: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\ndut.sv:32: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\n6 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob122_kmap4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 254,
+          "completion_tokens": 87,
+          "latency_s": 1.47,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\n1 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob123_bugs_addsubz",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 118,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 247,
+          "completion_tokens": 106,
+          "latency_s": 1.77,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob124_rule110",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 6220,
+          "testbench_samples": 6283,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 489,
+          "completion_tokens": 227,
+          "latency_s": 3.79,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob125_kmap3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 269,
+          "completion_tokens": 166,
+          "latency_s": 2.89,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:11: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:12: error: 'out' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out' is declared here as a wire.\ndut.sv:12: e"
+        }
+      ]
+    },
+    {
+      "id": "Prob126_circuit6",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 435,
+          "completion_tokens": 213,
+          "latency_s": 3.49,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:8: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:9: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:10: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:11: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:12: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:13: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:14: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:15: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:16: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\n9 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob127_lemmings1",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 41,
+          "testbench_samples": 229,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 390,
+          "completion_tokens": 206,
+          "latency_s": 3.43,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob128_fsm_ps2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 347,
+          "completion_tokens": 405,
+          "latency_s": 6.49,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:16: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'done' is declared here as a wire.\ndut.sv:20: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'done' is declared here as a wire.\ndut.sv:22: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'done' is declared here as a wire.\ndut.sv:31: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[7:0]').\ndut.sv:40: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[7:0]').\ndut.sv:50: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[7:0]').\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob129_ece241_2013_q8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 256,
+          "completion_tokens": 373,
+          "latency_s": 7.4,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:24: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\ndut.sv:45: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'z' is declared here as a wire.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob130_circuit5",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 566,
+          "completion_tokens": 178,
+          "latency_s": 3.05,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:12: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:13: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:14: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:15: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:16: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\ndut.sv:17: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'q' is declared here as a wire.\n6 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob131_mt2015_q4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 557,
+          "completion_tokens": 268,
+          "latency_s": 4.5,
+          "error": null,
+          "detail": "dut.sv:38: syntax error\ndut.sv:40: syntax error\ndut.sv:40: error: Malformed conditional expression.\ndut.sv:38: error: Malformed conditional expression.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob132_always_if2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 56,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 231,
+          "completion_tokens": 125,
+          "latency_s": 2.02,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob133_2014_q3fsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 342,
+          "completion_tokens": 268,
+          "latency_s": 4.32,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:17: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:22: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:24: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob134_2014_q3c",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 330,
+          "completion_tokens": 358,
+          "latency_s": 5.74,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:20: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:25: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:30: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:35: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:40: error: 'z' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'z' is declared here as a wire.\ndut.sv:44: error: 'Y0' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'Y0' is declared here as a wire.\n6 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob135_m2014_q6b",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 340,
+          "completion_tokens": 348,
+          "latency_s": 5.71,
+          "error": null,
+          "detail": "dut.sv:17: warning: Extra digits given for sized binary constant.\ndut.sv:17: warning: Extra digits given for sized binary constant.\ndut.sv:18: warning: Extra digits given for sized binary constant.\ndut.sv:19: warning: Extra digits given for sized binary constant.\ndut.sv:19: warning: Extra digits given for sized binary constant.\ndut.sv:20: warning: Extra digits given for sized binary constant.\ndut.sv:21: warning: Extra digits given for sized binary constant.\ndut.sv:21: warning: Extra digits given for sized binary constant.\ndut.sv:22: warning: Extra digits given for sized binary constant.\ndut.sv:22: warning: Numeric constant truncated to 2 bits.\ndut.sv:23: warning: Extra digits given for sized binary constant.\ndut.sv:23: warning: Extra digits given for sized binary constant.\ndut.sv:23: warning: Numeric constant truncated to 2 bits.\ndut.sv:24: warning: Extra digits given for sized binary constant.\ndut.sv:24: warning: Numeric constant truncated to 2 bits.\ndut.sv:25: warning: Extra digits given for sized binary constant.\ndut.sv:25: warning: Numeric constant truncated to 2 bits.\ndut.sv:25: warning: Extra digits given for sized binary constant.\ndut.sv:25: warning: Numeric constant truncated to 2 bits.\ndut.sv:26: warning: Extra digits given for sized binary constant.\ndut.sv:27: warning: Extra digits given for sized binary constant.\ndut.sv:27: warning: Numeric constant truncated to 2 bits.\ndut.sv:27: warning: Extra digits given for sized binary constant.\ndut.sv:28: warning: Extra digi"
+        }
+      ]
+    },
+    {
+      "id": "Prob136_m2014_q6",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 294,
+          "completion_tokens": 364,
+          "latency_s": 5.91,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ndut.sv:8: error: Enumeration name E has an inferred value that overflowed.\ndut.sv:8: error: Enumeration name E and A have the same value: 2'd0\ndut.sv:8: error: Enumeration name F has an inferred value that overflowed.\ndut.sv:8: error: Enumeration name F and B have the same value: 2'd1\n5 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob137_fsm_serial",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 346,
+          "completion_tokens": 373,
+          "latency_s": 6.19,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:22: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'done' is declared here as a wire.\ndut.sv:26: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'done' is declared here as a wire.\ndut.sv:28: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'done' is declared here as a wire.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob138_2012_q2fsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 358,
+          "completion_tokens": 299,
+          "latency_s": 4.86,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ndut.sv:8: error: Enumeration name E has an inferred value that overflowed.\ndut.sv:8: error: Enumeration name E and A have the same value: 2'd0\ndut.sv:8: error: Enumeration name F has an inferred value that overflowed.\ndut.sv:8: error: Enumeration name F and B have the same value: 2'd1\n5 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob139_2013_q2bfsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 437,
+          "completion_tokens": 407,
+          "latency_s": 6.65,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:24: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'f' is declared here as a wire.\ndut.sv:25: error: 'g' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'g' is declared here as a wire.\ndut.sv:30: error: 'f' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'f' is declared here as a wire.\ndut.sv:31: error: 'g' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'g' is declared here as a wire.\n4 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob140_fsm_hdlc",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 435,
+          "completion_tokens": 576,
+          "latency_s": 9.47,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\ndut.sv:10: error: Enumeration name EIGHT has an inferred value that overflowed.\ndut.sv:10: error: Enumeration name EIGHT and IDLE have the same value: 3'd0\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob141_count_clock",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 199999,
+          "testbench_samples": 200000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 352,
+          "completion_tokens": 355,
+          "latency_s": 5.73,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob142_lemmings2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 480,
+          "completion_tokens": 368,
+          "latency_s": 5.95,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:29: error: 'walk_left' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'walk_left' is declared here as a wire.\ndut.sv:30: error: 'walk_right' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'walk_right' is declared here as a wire.\ndut.sv:31: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'aaah' is declared here as a wire.\ndut.sv:41: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'aaah' is declared here as a wire.\ndut.sv:51: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'aaah' is declared here as a wire.\ndut.sv:57: error: 'walk_left' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'walk_left' is declared here as a wire.\ndut.sv:59: error: 'walk_right' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'walk_right' is declared here as a wire.\n7 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob143_fsm_onehot",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 734,
+          "completion_tokens": 880,
+          "latency_s": 14.35,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:10: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:11: error: 'out1' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'out1' is declared here as a wire.\ndut.sv:12: error: 'out2' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'out2' is declared here as a wire.\ndut.sv:17: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:22: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:24: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:29: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:31: error: 'next_state' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'next_state' is declared here as a wire.\ndut.sv:36: error: 'next_state' is not a valid l-val"
+        }
+      ]
+    },
+    {
+      "id": "Prob144_conwaylife",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 533,
+          "completion_tokens": 330,
+          "latency_s": 5.51,
+          "error": null,
+          "detail": "dut.sv:22: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:23: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:24: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:28: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:28: error: Declarations must precede statements.\ndut.sv:29: warning: Static variable initialization requires explicit lifetime in this context.\ndut.sv:29: error: Declarations must precede statements.\nref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here."
+        }
+      ]
+    },
+    {
+      "id": "Prob145_circuit8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 170,
+          "testbench_samples": 240,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 885,
+          "completion_tokens": 99,
+          "latency_s": 1.91,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob146_fsm_serialdata",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 403,
+          "completion_tokens": 477,
+          "latency_s": 7.65,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:25: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'done' is declared here as a wire.\ndut.sv:32: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'done' is declared here as a wire.\ndut.sv:34: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'done' is declared here as a wire.\ndut.sv:50: warning: A non-blocking assignment should not be used in an always_comb process.\ndut.sv:53: warning: A non-blocking assignment should not be used in an always_comb process.\ndut.sv:59: warning: A non-blocking assignment should not be used in an always_comb process.\ndut.sv:62: warning: A non-blocking assignment should not be used in an always_comb process.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob147_circuit10",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 1071,
+          "completion_tokens": 84,
+          "latency_s": 1.8,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:16: error: 'q' is not a valid l-value for a procedural assignment.\ndut.sv:5:      : 'q' is declared here as a wire.\ndut.sv:17: error: 'state' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'state' is declared here as a wire.\ndut.sv:15: warning: always_comb process has no sensitivities.\n2 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob148_2013_q2afsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 671,
+          "completion_tokens": 553,
+          "latency_s": 9.09,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:22: error: Unable to bind wire/reg/memory `next_state' in `tb.top_module1'\ndut.sv:27:      : A symbol with that name was declared here. Check for declaration after use.\ndut.sv:33: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'r[2:0]').\ndut.sv:34: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'r[2:0]').\ndut.sv:38: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'r[2:0]').\ndut.sv:42: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'r[2:0]').\ndut.sv:54: error: 'g' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'g' is declared here as a wire.\ndut.sv:57: error: 'g['sd0]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'g['sd0]' is declared here as a wire.\ndut.sv:58: error: 'g['sd1]' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'g['sd1]' is declared here as a wire.\ndut.sv:59: error: 'g['sd2]' is not"
+        }
+      ]
+    },
+    {
+      "id": "Prob149_ece241_2013_q4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 501,
+          "completion_tokens": 897,
+          "latency_s": 14.6,
+          "error": null,
+          "detail": "dut.sv:88: syntax error\ndut.sv:92: error: Incomprehensible case expression.\ndut.sv:94: syntax error\ndut.sv:96: error: Incomprehensible case expression.\ndut.sv:98: syntax error\ndut.sv:101: error: Incomprehensible case expression.\ndut.sv:103: syntax error\ndut.sv:107: error: Incomprehensible case expression.\ndut.sv:109: syntax error\ntest.sv:13: error: Malformed statement\ntest.sv:9: error: Incomprehensible case expression.\ntest.sv:19: syntax error\ntest.sv:19: error: Malformed statement\ntest.sv:19: error: Incomprehensible case expression.\ntest.sv:20: syntax error\ntest.sv:43: error: Malformed statement\ntest.sv:43: error: Incomprehensible case expression.\ntest.sv:47: syntax error\ntest.sv:50: Syntax in assignment statement l-value.\ntest.sv:50: error: Incomprehensible case expression.\ntest.sv:51: syntax error\ntest.sv:77: error: Malformed statement\ntest.sv:77: error: Incomprehensible case expression.\ntest.sv:78: syntax error\ntest.sv:80: error: Malformed statement\ntest.sv:80: error: Incomprehensible case expression.\ntest.sv:81: syntax error\ntest.sv:109: error: Malformed statement\ntest.sv:109: error: Incomprehensible case expression.\ntest.sv:110: syntax error\ntest.sv:118: error: Malformed statement\ntest.sv:118: error: Incomprehensible case expression.\ntest.sv:119: syntax error\nref.sv:10: error: Malformed statement\nref.sv:5: error: Incomprehensible case expression.\nref.sv:12: syntax error\nref.sv:13: error: Malformed statement\nref.sv:13: error: Incomprehensible case expression.\nref.sv:15: "
+        }
+      ]
+    },
+    {
+      "id": "Prob150_review2015_fsmonehot",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 803,
+          "completion_tokens": 956,
+          "latency_s": 15.8,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:63: error: Array state needs an array index here.\ndut.sv:63: error: Unable to elaborate r-value: (state)==(10'd513)\ndut.sv:64: error: Array state needs an array index here.\ndut.sv:64: error: Unable to elaborate r-value: (state)==(10'd512)\ndut.sv:65: error: Array state needs an array index here.\ndut.sv:65: error: Array state needs an array index here.\ndut.sv:65: error: Array state needs an array index here.\ndut.sv:65: error: Array state needs an array index here.\ndut.sv:65: error: Unable to elaborate r-value: ((((state)==(10'd32))o((state)==(10'd64)))o((state)==(10'd128)))o((state)==(10'd256))\ndut.sv:20: error: Array state needs an array index here.\ndut.sv:22: error: Array state needs an array index here.\ndut.sv:22: error: Unable to elaborate condition expression.\ntest.sv:115: error: Can not assign non-array identifier `state` to array.\ntest.sv:115:      : Port 4 (state) of TopModule is connected to state\ndut.sv:19: warning: always_comb process has no sensitivities.\n13 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob151_review2015_fsm",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 448,
+          "completion_tokens": 360,
+          "latency_s": 5.83,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:32: error: 'shift_ena' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'shift_ena' is declared here as a wire.\ndut.sv:33: error: 'counting' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'counting' is declared here as a wire.\ndut.sv:34: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'done' is declared here as a wire.\ndut.sv:43: error: 'shift_ena' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'shift_ena' is declared here as a wire.\ndut.sv:47: error: 'shift_ena' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'shift_ena' is declared here as a wire.\ndut.sv:56: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'done' is declared here as a wire.\n6 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob152_lemmings3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 666,
+          "completion_tokens": 457,
+          "latency_s": 7.53,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:33: error: 'walk_left' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'walk_left' is declared here as a wire.\ndut.sv:34: error: 'walk_right' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'walk_right' is declared here as a wire.\ndut.sv:35: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:10:      : 'aaah' is declared here as a wire.\ndut.sv:36: error: 'digging' is not a valid l-value for a procedural assignment.\ndut.sv:11:      : 'digging' is declared here as a wire.\ndut.sv:48: error: 'walk_left' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'walk_left' is declared here as a wire.\ndut.sv:59: error: 'walk_right' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'walk_right' is declared here as a wire.\ndut.sv:63: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:10:      : 'aaah' is declared here as a wire.\ndut.sv:73: error: 'digging' is not a valid l-value for a procedural assignment.\ndut.sv:11:      : 'digging' is declared here as a wire.\n8 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob153_gshare",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 735,
+          "completion_tokens": 376,
+          "latency_s": 6.26,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:35: error: 'predict_taken' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'predict_taken' is declared here as a wire.\ndut.sv:36: error: 'predict_history' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'predict_history' is declared here as a wire.\ndut.sv:40: error: 'predict_taken' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'predict_taken' is declared here as a wire.\n3 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob154_fsm_ps2data",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 1235,
+          "completion_tokens": 455,
+          "latency_s": 7.93,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:19: error: 'out_bytes' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_bytes' is declared here as a wire.\ndut.sv:20: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'done' is declared here as a wire.\ndut.sv:24: error: 'out_bytes' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'out_bytes' is declared here as a wire.\ndut.sv:33: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'done' is declared here as a wire.\ndut.sv:58: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'done' is declared here as a wire.\ndut.sv:37: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[7:0]').\ndut.sv:44: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'in[7:0]').\ndut.sv:47: sorry: constant selects in always_* processes are not fully supported (the process will be sensitive to all bits in 'message_buffer[23:0]').\ndut.sv:51: sorry: constant selects in always_* processes are"
+        }
+      ]
+    },
+    {
+      "id": "Prob155_lemmings4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 800,
+          "completion_tokens": 581,
+          "latency_s": 9.5,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:41: error: 'walk_left' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'walk_left' is declared here as a wire.\ndut.sv:42: error: 'walk_right' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'walk_right' is declared here as a wire.\ndut.sv:43: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:10:      : 'aaah' is declared here as a wire.\ndut.sv:44: error: 'digging' is not a valid l-value for a procedural assignment.\ndut.sv:11:      : 'digging' is declared here as a wire.\ndut.sv:49: error: 'walk_left' is not a valid l-value for a procedural assignment.\ndut.sv:8:      : 'walk_left' is declared here as a wire.\ndut.sv:62: error: 'walk_right' is not a valid l-value for a procedural assignment.\ndut.sv:9:      : 'walk_right' is declared here as a wire.\ndut.sv:75: error: 'aaah' is not a valid l-value for a procedural assignment.\ndut.sv:10:      : 'aaah' is declared here as a wire.\ndut.sv:82: error: 'digging' is not a valid l-value for a procedural assignment.\ndut.sv:11:      : 'digging' is declared here as a wire.\ndut.sv:89: error: 'walk_left' is not a valid l-value for a proc"
+        }
+      ]
+    },
+    {
+      "id": "Prob156_review2015_fancytimer",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 597,
+          "completion_tokens": 463,
+          "latency_s": 7.52,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:24: error: 'counting' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'counting' is declared here as a wire.\ndut.sv:25: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'done' is declared here as a wire.\ndut.sv:37: error: 'count' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'count' is declared here as a wire.\ndut.sv:38: error: 'counting' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'counting' is declared here as a wire.\ndut.sv:39: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'done' is declared here as a wire.\ndut.sv:50: error: 'counting' is not a valid l-value for a procedural assignment.\ndut.sv:6:      : 'counting' is declared here as a wire.\ndut.sv:65: error: 'count' is not a valid l-value for a procedural assignment.\ndut.sv:1:      : 'count' is declared here as a wire.\ndut.sv:69: error: 'done' is not a valid l-value for a procedural assignment.\ndut.sv:7:      : 'done' is declared here as a wire.\n8 error(s) during elaboration."
+        }
+      ]
+    }
+  ]
+}

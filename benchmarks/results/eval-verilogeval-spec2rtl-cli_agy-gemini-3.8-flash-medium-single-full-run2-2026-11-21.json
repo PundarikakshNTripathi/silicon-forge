@@ -1,0 +1,3157 @@
+{
+  "schema": "siliconforge.eval/1",
+  "suite": "verilogeval-spec2rtl",
+  "dataset": {
+    "source": "https://github.com/NVlabs/verilog-eval",
+    "commit": "c498220d0a52248f8e3fdffe279075215bde2da6",
+    "license": "MIT",
+    "problems_total": 155,
+    "excluded": {
+      "Prob099_m2014_q6c": "the prompt and testbench use outputs Y2 and Y4, the reference module declares Y1 and Y3, so no candidate (the reference included) can compile with the testbench"
+    },
+    "testbench_patch": "removed the waveform-dump block ($dumpfile/$dumpvars): it refers to `tb_mismatch` before its declaration, which Icarus Verilog 14 rejects ('Unable to bind wire/reg/memory'); it writes a VCD and has no effect on the mismatch count"
+  },
+  "model": "cli_agy:gemini-3.8-flash-medium",
+  "arm": {
+    "arm": "single"
+  },
+  "n": 1,
+  "k": 1,
+  "temperature": 0.0,
+  "selection": {
+    "count": 155,
+    "seed": 0,
+    "all": true,
+    "split": "all",
+    "pool": 155,
+    "trajectories": null
+  },
+  "runner": "wsl",
+  "tools": {
+    "iverilog": "Icarus Verilog version 14.0 (devel) (s20260301-1233-gadb65230d-dirty)"
+  },
+  "pass_at_1": {
+    "k": 1,
+    "mean": 0.9483870967741935,
+    "ci95": [
+      0.9096774193548387,
+      0.9806451612903225
+    ],
+    "problems": 155,
+    "skipped": 0
+  },
+  "compile_rate": 0.9935,
+  "errors": 0,
+  "tokens": {
+    "prompt": 1725971,
+    "completion": 630811,
+    "calls": 155
+  },
+  "wall_s": 4228.2,
+  "created": "2026-11-21T15:17:20+0530",
+  "profile": "gemini-agy",
+  "routed": "cli_agy:gemini-3.8-flash-medium",
+  "reasoning": "provider default",
+  "per_problem": [
+    {
+      "id": "Prob001_zero",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 20,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11161,
+          "completion_tokens": 432,
+          "latency_s": 14.94,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob002_m2014_q4i",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 12421,
+          "completion_tokens": 436,
+          "latency_s": 14.27,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob003_step_one",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 20,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11167,
+          "completion_tokens": 253,
+          "latency_s": 12.96,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob004_vector2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 110,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11177,
+          "completion_tokens": 563,
+          "latency_s": 13.96,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob005_notgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 239,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11166,
+          "completion_tokens": 291,
+          "latency_s": 13.13,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob006_vectorr",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 218,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11188,
+          "completion_tokens": 2336,
+          "latency_s": 18.41,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob007_wire",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 120,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11168,
+          "completion_tokens": 600,
+          "latency_s": 14.0,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob008_m2014_q4h",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11179,
+          "completion_tokens": 238,
+          "latency_s": 11.79,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob009_popcount3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 220,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11194,
+          "completion_tokens": 972,
+          "latency_s": 13.93,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob010_mt2015_q4a",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 202,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11176,
+          "completion_tokens": 279,
+          "latency_s": 12.7,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob011_norgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11169,
+          "completion_tokens": 254,
+          "latency_s": 12.04,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob012_xnorgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11170,
+          "completion_tokens": 520,
+          "latency_s": 14.49,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob013_m2014_q4e",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11186,
+          "completion_tokens": 488,
+          "latency_s": 13.41,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob014_andgate",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11177,
+          "completion_tokens": 720,
+          "latency_s": 13.15,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob015_vector1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 218,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11225,
+          "completion_tokens": 345,
+          "latency_s": 12.37,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob016_m2014_q4j",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11194,
+          "completion_tokens": 13254,
+          "latency_s": 56.95,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob017_mux2to1v",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 114,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11218,
+          "completion_tokens": 294,
+          "latency_s": 12.59,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob018_mux256to1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11247,
+          "completion_tokens": 435,
+          "latency_s": 11.64,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob019_m2014_q4f",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11216,
+          "completion_tokens": 629,
+          "latency_s": 13.09,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob020_mt2015_eq2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11222,
+          "completion_tokens": 810,
+          "latency_s": 13.94,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob021_mux256to1v",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11264,
+          "completion_tokens": 1344,
+          "latency_s": 17.29,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob022_mux2to1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 122,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11197,
+          "completion_tokens": 480,
+          "latency_s": 12.61,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob023_vector100r",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11186,
+          "completion_tokens": 1412,
+          "latency_s": 15.0,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob024_hadd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11199,
+          "completion_tokens": 889,
+          "latency_s": 13.29,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob025_reduction",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11242,
+          "completion_tokens": 671,
+          "latency_s": 13.59,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob026_alwaysblock1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11195,
+          "completion_tokens": 1074,
+          "latency_s": 13.53,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob027_fadd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 214,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11203,
+          "completion_tokens": 961,
+          "latency_s": 14.98,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob028_m2014_q4a",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11180,
+          "completion_tokens": 997,
+          "latency_s": 14.1,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob029_m2014_q4g",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11231,
+          "completion_tokens": 969,
+          "latency_s": 13.95,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob030_popcount255",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 215,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11208,
+          "completion_tokens": 1606,
+          "latency_s": 17.84,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob031_dff",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11179,
+          "completion_tokens": 8348,
+          "latency_s": 43.88,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob032_vector0",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 21,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11232,
+          "completion_tokens": 525,
+          "latency_s": 12.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob033_ece241_2014_q1c",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 116,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11233,
+          "completion_tokens": 1803,
+          "latency_s": 17.53,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob034_dff8",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 41,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 2402,
+          "completion_tokens": 898,
+          "latency_s": 14.82,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob035_count1to10",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11227,
+          "completion_tokens": 1015,
+          "latency_s": 15.51,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob036_ringer",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 19,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11269,
+          "completion_tokens": 467,
+          "latency_s": 12.94,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob037_review2015_count1k",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 8027,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11224,
+          "completion_tokens": 870,
+          "latency_s": 14.87,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob038_count15",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 421,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11229,
+          "completion_tokens": 936,
+          "latency_s": 14.35,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob039_always_if",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 114,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11247,
+          "completion_tokens": 2040,
+          "latency_s": 16.95,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob040_count10",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11224,
+          "completion_tokens": 118,
+          "latency_s": 12.45,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob041_dff8r",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 432,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11219,
+          "completion_tokens": 1441,
+          "latency_s": 16.5,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob042_vector4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11357,
+          "completion_tokens": 683,
+          "latency_s": 13.61,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob043_vector5",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11298,
+          "completion_tokens": 2862,
+          "latency_s": 20.05,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob044_vectorgates",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 261,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11276,
+          "completion_tokens": 1191,
+          "latency_s": 15.49,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob045_edgedetect2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 228,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11262,
+          "completion_tokens": 3133,
+          "latency_s": 21.88,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob046_dff8p",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11223,
+          "completion_tokens": 1001,
+          "latency_s": 13.83,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob047_dff8ar",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11220,
+          "completion_tokens": 1202,
+          "latency_s": 15.88,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob048_m2014_q4c",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11189,
+          "completion_tokens": 742,
+          "latency_s": 14.22,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob049_m2014_q4b",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11186,
+          "completion_tokens": 818,
+          "latency_s": 14.84,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob050_kmap1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11239,
+          "completion_tokens": 1058,
+          "latency_s": 14.79,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob051_gates4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 234,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11251,
+          "completion_tokens": 690,
+          "latency_s": 14.31,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob052_gates100",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 433,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11270,
+          "completion_tokens": 839,
+          "latency_s": 14.06,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob053_m2014_q4d",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11228,
+          "completion_tokens": 1154,
+          "latency_s": 14.89,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob054_edgedetect",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 227,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11219,
+          "completion_tokens": 7124,
+          "latency_s": 37.6,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob055_conditional",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 112,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11227,
+          "completion_tokens": 1673,
+          "latency_s": 16.53,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob056_ece241_2013_q7",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 422,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11241,
+          "completion_tokens": 1519,
+          "latency_s": 17.02,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob057_kmap2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 232,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11272,
+          "completion_tokens": 8134,
+          "latency_s": 40.39,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob058_alwaysblock2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 219,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11273,
+          "completion_tokens": 498,
+          "latency_s": 13.81,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob059_wire4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 218,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11219,
+          "completion_tokens": 535,
+          "latency_s": 13.72,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob060_m2014_q4k",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 299,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11206,
+          "completion_tokens": 1869,
+          "latency_s": 18.62,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob061_2014_q4a",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 2114,
+          "completion_tokens": 3349,
+          "latency_s": 22.98,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob062_bugs_mux2",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 111,
+          "testbench_samples": 114,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 2033,
+          "completion_tokens": 2047,
+          "latency_s": 20.03,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob063_review2015_shiftcount",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2071,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11307,
+          "completion_tokens": 2200,
+          "latency_s": 22.04,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob064_vector3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 126,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11352,
+          "completion_tokens": 1491,
+          "latency_s": 16.7,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob065_7420",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 239,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11273,
+          "completion_tokens": 598,
+          "latency_s": 13.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob066_edgecapture",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 266,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11256,
+          "completion_tokens": 2346,
+          "latency_s": 20.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob067_countslow",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 499,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11261,
+          "completion_tokens": 1007,
+          "latency_s": 15.09,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob068_countbcd",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 39805,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11282,
+          "completion_tokens": 8697,
+          "latency_s": 43.04,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob069_truthtable1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 58,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11316,
+          "completion_tokens": 1622,
+          "latency_s": 16.53,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob070_ece241_2013_q2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 107,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11357,
+          "completion_tokens": 12965,
+          "latency_s": 59.45,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob071_always_casez",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 346,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11259,
+          "completion_tokens": 1579,
+          "latency_s": 16.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob072_thermostat",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 248,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11375,
+          "completion_tokens": 1308,
+          "latency_s": 14.7,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob073_dff16e",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11304,
+          "completion_tokens": 1525,
+          "latency_s": 17.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob074_ece241_2014_q4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 118,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11322,
+          "completion_tokens": 2254,
+          "latency_s": 19.15,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob075_counter_2bc",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1051,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11330,
+          "completion_tokens": 1292,
+          "latency_s": 21.3,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob076_always_case",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 118,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11274,
+          "completion_tokens": 1368,
+          "latency_s": 18.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob077_wire_decl",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 122,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11340,
+          "completion_tokens": 1805,
+          "latency_s": 17.64,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob078_dualedge",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 224,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11238,
+          "completion_tokens": 5331,
+          "latency_s": 31.79,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob079_fsm3onehot",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11359,
+          "completion_tokens": 3056,
+          "latency_s": 20.25,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob080_timer",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 7127,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11398,
+          "completion_tokens": 5079,
+          "latency_s": 31.24,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob081_7458",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 439,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11432,
+          "completion_tokens": 1050,
+          "latency_s": 14.96,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob082_lfsr32",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11326,
+          "completion_tokens": 8393,
+          "latency_s": 37.7,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob083_mt2015_q4b",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 110,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11388,
+          "completion_tokens": 1295,
+          "latency_s": 16.07,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob084_ece241_2013_q12",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 530,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11416,
+          "completion_tokens": 123,
+          "latency_s": 12.76,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob085_shift4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 427,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11339,
+          "completion_tokens": 1655,
+          "latency_s": 17.18,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob086_lfsr5",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 4443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11361,
+          "completion_tokens": 3241,
+          "latency_s": 23.25,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob087_gates",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 210,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11329,
+          "completion_tokens": 607,
+          "latency_s": 14.11,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob088_ece241_2014_q5b",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11288,
+          "completion_tokens": 2166,
+          "latency_s": 18.34,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob089_ece241_2014_q5a",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 436,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11285,
+          "completion_tokens": 10359,
+          "latency_s": 47.98,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob090_circuit1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 120,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 2266,
+          "completion_tokens": 515,
+          "latency_s": 13.6,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob091_2012_q2b",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 600,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11455,
+          "completion_tokens": 2714,
+          "latency_s": 19.74,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob092_gatesv100",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 201,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11518,
+          "completion_tokens": 3721,
+          "latency_s": 23.95,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob093_ece241_2014_q3",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 11,
+          "testbench_samples": 60,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11470,
+          "completion_tokens": 7946,
+          "latency_s": 43.09,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob094_gatesv",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 213,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11507,
+          "completion_tokens": 8810,
+          "latency_s": 43.03,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob095_review2015_fsmshift",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11260,
+          "completion_tokens": 6262,
+          "latency_s": 41.52,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob096_review2015_fsmseq",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 643,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11238,
+          "completion_tokens": 5215,
+          "latency_s": 31.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob097_mux9to1v",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 220,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11328,
+          "completion_tokens": 2596,
+          "latency_s": 20.83,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob098_circuit7",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 123,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11416,
+          "completion_tokens": 6177,
+          "latency_s": 34.08,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob100_fsm3comb",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11358,
+          "completion_tokens": 2048,
+          "latency_s": 18.3,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob101_circuit4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11494,
+          "completion_tokens": 2618,
+          "latency_s": 20.2,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob102_circuit3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11498,
+          "completion_tokens": 2291,
+          "latency_s": 20.76,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob103_circuit2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11495,
+          "completion_tokens": 1809,
+          "latency_s": 18.39,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob104_mt2015_muxdff",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1,
+          "testbench_samples": 199,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11380,
+          "completion_tokens": 1455,
+          "latency_s": 17.15,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob105_rotate100",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 4005,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11395,
+          "completion_tokens": 907,
+          "latency_s": 16.29,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob106_always_nolatches",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 30020,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11365,
+          "completion_tokens": 1941,
+          "latency_s": 18.18,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob107_fsm1s",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 230,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11262,
+          "completion_tokens": 1262,
+          "latency_s": 17.49,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob108_rule90",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 7121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11471,
+          "completion_tokens": 1783,
+          "latency_s": 17.34,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob109_fsm1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 228,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11229,
+          "completion_tokens": 2146,
+          "latency_s": 19.41,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob110_fsm2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 241,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11268,
+          "completion_tokens": 1411,
+          "latency_s": 16.54,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob111_fsm2s",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 241,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11273,
+          "completion_tokens": 780,
+          "latency_s": 15.04,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob112_always_case2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 94,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11306,
+          "completion_tokens": 1982,
+          "latency_s": 20.07,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob113_2012_q1g",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11281,
+          "completion_tokens": 8831,
+          "latency_s": 42.25,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob114_bugs_case",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1041,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11376,
+          "completion_tokens": 1974,
+          "latency_s": 17.36,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob115_shift18",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 4041,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11408,
+          "completion_tokens": 1982,
+          "latency_s": 18.81,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob116_m2014_q3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11296,
+          "completion_tokens": 11663,
+          "latency_s": 56.21,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob117_circuit9",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 245,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11402,
+          "completion_tokens": 4878,
+          "latency_s": 31.86,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob118_history_shift",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 2055,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11453,
+          "completion_tokens": 2842,
+          "latency_s": 23.64,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob119_fsm3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 230,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11297,
+          "completion_tokens": 2158,
+          "latency_s": 21.07,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob120_fsm3s",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 230,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11291,
+          "completion_tokens": 2588,
+          "latency_s": 26.85,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob121_2014_q3bfsm",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1006,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11350,
+          "completion_tokens": 996,
+          "latency_s": 16.97,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob122_kmap4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 232,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11268,
+          "completion_tokens": 2806,
+          "latency_s": 20.39,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob123_bugs_addsubz",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 118,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11289,
+          "completion_tokens": 2326,
+          "latency_s": 20.4,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob124_rule110",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 6283,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11512,
+          "completion_tokens": 8140,
+          "latency_s": 38.31,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob125_kmap3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 232,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11279,
+          "completion_tokens": 4457,
+          "latency_s": 30.14,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob126_circuit6",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 113,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11416,
+          "completion_tokens": 1997,
+          "latency_s": 18.21,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob127_lemmings1",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 229,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11413,
+          "completion_tokens": 3004,
+          "latency_s": 25.48,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob128_fsm_ps2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 400,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11374,
+          "completion_tokens": 4365,
+          "latency_s": 28.36,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob129_ece241_2013_q8",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 440,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11273,
+          "completion_tokens": 2275,
+          "latency_s": 20.0,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob130_circuit5",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 141,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11566,
+          "completion_tokens": 1923,
+          "latency_s": 19.21,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob131_mt2015_q4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11504,
+          "completion_tokens": 32290,
+          "latency_s": 141.86,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob132_always_if2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 121,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11268,
+          "completion_tokens": 1793,
+          "latency_s": 17.78,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob133_2014_q3fsm",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1414,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11367,
+          "completion_tokens": 18440,
+          "latency_s": 91.2,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob134_2014_q3c",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11354,
+          "completion_tokens": 5921,
+          "latency_s": 34.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob135_m2014_q6b",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 100,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11359,
+          "completion_tokens": 16840,
+          "latency_s": 71.41,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob136_m2014_q6",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11319,
+          "completion_tokens": 4058,
+          "latency_s": 27.22,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob137_fsm_serial",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 905,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11365,
+          "completion_tokens": 8264,
+          "latency_s": 42.75,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob138_2012_q2fsm",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 400,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11387,
+          "completion_tokens": 2469,
+          "latency_s": 20.51,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob139_2013_q2bfsm",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1002,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11464,
+          "completion_tokens": 7802,
+          "latency_s": 44.11,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob140_fsm_hdlc",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": false,
+          "mismatches": null,
+          "testbench_samples": null,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11455,
+          "completion_tokens": 4428,
+          "latency_s": 27.79,
+          "error": null,
+          "detail": "ref.sv:2: warning: timescale for RefModule inherited from another file.\ntest.sv:1: ...: The inherited timescale is here.\nwarning: Some design elements have no explicit time unit and/or\n       : time precision. This may cause confusing timing results.\n       : Affected design elements are:\n       :   -- module TopModule declared here: dut.sv:1\ndut.sv:34: error: This assignment requires an explicit cast.\ndut.sv:35: error: This assignment requires an explicit cast.\ndut.sv:36: error: This assignment requires an explicit cast.\ndut.sv:37: error: This assignment requires an explicit cast.\ndut.sv:38: error: This assignment requires an explicit cast.\ndut.sv:39: error: This assignment requires an explicit cast.\ndut.sv:40: error: This assignment requires an explicit cast.\ndut.sv:41: error: This assignment requires an explicit cast.\ndut.sv:42: error: This assignment requires an explicit cast.\ndut.sv:43: error: This assignment requires an explicit cast.\n10 error(s) during elaboration."
+        }
+      ]
+    },
+    {
+      "id": "Prob141_count_clock",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11381,
+          "completion_tokens": 4150,
+          "latency_s": 29.05,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob142_lemmings2",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 441,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11506,
+          "completion_tokens": 2605,
+          "latency_s": 21.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob143_fsm_onehot",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 224,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11766,
+          "completion_tokens": 3265,
+          "latency_s": 25.3,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob144_conwaylife",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 5023,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 2180,
+          "completion_tokens": 5055,
+          "latency_s": 30.28,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob145_circuit8",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 240,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11721,
+          "completion_tokens": 10929,
+          "latency_s": 57.94,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob146_fsm_serialdata",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 72,
+          "testbench_samples": 905,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 13457,
+          "completion_tokens": 48131,
+          "latency_s": 369.93,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob147_circuit10",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 232,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11861,
+          "completion_tokens": 12963,
+          "latency_s": 57.88,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob148_2013_q2afsm",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1054,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11713,
+          "completion_tokens": 3746,
+          "latency_s": 27.2,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob149_ece241_2013_q4",
+      "n": 1,
+      "c": 0,
+      "samples": [
+        {
+          "passed": false,
+          "compiled": true,
+          "mismatches": 1171,
+          "testbench_samples": 2040,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 23044,
+          "completion_tokens": 29486,
+          "latency_s": 304.55,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob150_review2015_fsmonehot",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 300,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11855,
+          "completion_tokens": 3514,
+          "latency_s": 25.44,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob151_review2015_fsm",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 5069,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11468,
+          "completion_tokens": 6151,
+          "latency_s": 34.14,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob152_lemmings3",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 443,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11690,
+          "completion_tokens": 3915,
+          "latency_s": 27.66,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob153_gshare",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1083,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11777,
+          "completion_tokens": 9435,
+          "latency_s": 52.01,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob154_fsm_ps2data",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1619,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 12086,
+          "completion_tokens": 36361,
+          "latency_s": 146.86,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob155_lemmings4",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 1003,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11821,
+          "completion_tokens": 21080,
+          "latency_s": 92.68,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "id": "Prob156_review2015_fancytimer",
+      "n": 1,
+      "c": 1,
+      "samples": [
+        {
+          "passed": true,
+          "compiled": true,
+          "mismatches": 0,
+          "testbench_samples": 200000,
+          "calls": 1,
+          "rounds": 1,
+          "prompt_tokens": 11626,
+          "completion_tokens": 12580,
+          "latency_s": 58.32,
+          "error": null,
+          "detail": ""
+        }
+      ]
+    }
+  ]
+}

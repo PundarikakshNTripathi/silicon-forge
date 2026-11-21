@@ -152,7 +152,9 @@ def main() -> int:
                       "note": "reward = signoff-aware quality score without the runtime term; area and power are relative to the default run"},
         "space": [{"name": d.name, "kind": d.kind, "low": d.low, "high": d.high, "choices": list(d.choices)} for d in DEFAULT_SPACE.dims],
         "tools_present": flow_version, "summary": summary, "arms": results, "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-        "default_metrics": asdict(md) | {"run_dir": None, "gds_path": None},
+        # no local paths in a committed result: drop the layout locations
+        "default_metrics": asdict(md) | {"run_dir": None, "gds_path": None,
+                                         "extra": {k: v for k, v in md.extra.items() if k != "render_png"}},
     }
     out = ROOT / "benchmarks" / "results" / f"ppa-{args.design}{('-' + args.tag) if args.tag else ''}-{time.strftime('%Y-%m-%d')}.json"
     out.write_text(json.dumps(doc, indent=2, default=str), encoding="utf-8")

@@ -6,8 +6,24 @@
   "ctx": 4096,
   "kv_cache": "q8_0",
   "calls": [
-    {"call": 1, "prompt_tokens": 394, "completion_tokens": 21, "cached_tokens": 0, "ttft_s": 2.0247, "tokens_per_s": 4.94, "latency_s": 6.0728},
-    {"call": 2, "prompt_tokens": 394, "completion_tokens": 21, "cached_tokens": 390, "ttft_s": 0.235, "tokens_per_s": 5.09, "latency_s": 4.1679}
+    {
+      "call": 1,
+      "prompt_tokens": 394,
+      "completion_tokens": 21,
+      "cached_tokens": 0,
+      "ttft_s": 2.0247,
+      "tokens_per_s": 4.94,
+      "latency_s": 6.0728
+    },
+    {
+      "call": 2,
+      "prompt_tokens": 394,
+      "completion_tokens": 21,
+      "cached_tokens": 390,
+      "ttft_s": 0.235,
+      "tokens_per_s": 5.09,
+      "latency_s": 4.1679
+    }
   ],
   "ttft_speedup_from_prefix_cache": 8.6,
   "json_schema_output_valid": true,
