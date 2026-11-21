@@ -136,3 +136,22 @@ def test_the_token_protects_the_metrics_endpoint(tmp_path, monkeypatch):
     c = TestClient(create_app(db_path=tmp_path / "t.db", serve_ui=False, runs_root=tmp_path / "runs"))
     assert c.get("/api/metrics").status_code == 401
     assert c.get("/api/metrics", headers={"Authorization": "Bearer sekret"}).status_code == 200
+
+
+def test_benchmarks_endpoint_drops_agentbench_run_records(tmp_path, monkeypatch):
+    """The AgentBench result files carry hundreds of KB of per-run records; the web page only needs their summary."""
+    import json
+
+    from fastapi.testclient import TestClient
+
+    from services.orchestrator.api.app import create_app
+
+    monkeypatch.setenv("SILICONFORGE_HOME", str(tmp_path))
+    res = tmp_path / "benchmarks" / "results"
+    res.mkdir(parents=True)
+    (res / "agentbench-m-x-2026-01-01.json").write_text(json.dumps({"model": "m", "summary": {"arms": {}}, "runs": [{"task": "t"}] * 50}), encoding="utf-8")
+    (res / "eval-other.json").write_text(json.dumps({"runs": [1, 2, 3]}), encoding="utf-8")
+    client = TestClient(create_app(db_path=tmp_path / "t.db", serve_ui=False, runs_root=tmp_path / "runs"))
+    got = {b["file"]: b["data"] for b in client.get("/api/benchmarks").json()}
+    assert "runs" not in got["agentbench-m-x-2026-01-01.json"] and got["agentbench-m-x-2026-01-01.json"]["model"] == "m"
+    assert got["eval-other.json"]["runs"] == [1, 2, 3]  # other result files are served as they are
