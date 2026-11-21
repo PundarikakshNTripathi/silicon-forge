@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (telemetry)
+- **Tracing and agent metrics** (`services/orchestrator/telemetry/`, `docs/telemetry.md`): spans for agent runs (`run > step > llm | tool`, metadata only), and the four figures an agent should be judged on, with their definitions in code and tests: end-to-end latency split into reasoning / action / overhead, tool success rate with a failure taxonomy (refusals by policy counted separately), cost per task and per *solved* task, and failure-recovery rate with steps and tokens to recover.
+- `chat --trace` / `agent --trace`, `siliconforge trace summary`; the API server records agent sessions into SQLite and serves `GET /api/insights/agent` and a Prometheus `GET /api/metrics`.
+- Optional OpenTelemetry export (`pip install "siliconforge[otel]"`) in the GenAI semantic conventions, with original timestamps. A test caught parents being exported after children when spans shared a start time; fixed.
 
 ## [0.4.0] - 2026-11-21
 First release under **AGPL-3.0-or-later** (a commercial license is available; see `COMMERCIAL.md`). The headline changes: an

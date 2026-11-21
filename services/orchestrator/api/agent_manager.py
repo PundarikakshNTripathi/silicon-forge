@@ -15,6 +15,7 @@ from typing import Any
 
 from services.orchestrator.agent import AgentEvent, AgentSession, create_session
 from services.orchestrator.agent.session import MODES
+from services.orchestrator.telemetry import Tracer
 from services.orchestrator.workspace import load_workspace, remember_workspace
 
 APPROVAL_TIMEOUT_S = 600.0
@@ -52,9 +53,11 @@ class ManagedSession:
 
 
 class AgentManager:
-    def __init__(self, approval_timeout_s: float = APPROVAL_TIMEOUT_S) -> None:
+    def __init__(self, approval_timeout_s: float = APPROVAL_TIMEOUT_S, store: Any = None) -> None:
         self.sessions: dict[str, ManagedSession] = {}
         self.approval_timeout_s = approval_timeout_s
+        #: when given, every agent session records spans (latency, tool success, tokens, cost; no content) into this Store
+        self.store = store
 
     # ------------------------------------------------------------------------------------------ lifecycle
 
@@ -80,6 +83,9 @@ class AgentManager:
             m.add("approval_result", "allowed" if (answered and pending.allow) else "declined", {"id": aid})
             return answered and pending.allow
 
+        if self.store is not None and "tracer" not in session_kw:
+            store = self.store
+            session_kw["tracer"] = Tracer(sinks=[lambda span: store.add_span(span, session=sid)])
         session = create_session(ws, profile=profile, mode=mode, approver=approver, on_event=on_event, **session_kw)  # type: ignore[arg-type]
         holder["m"] = m = ManagedSession(sid, session, str(ws.root))
         self.sessions[sid] = m

@@ -46,6 +46,10 @@ tui = [
 mcp = [
     "mcp>=2.0",
 ]
+otel = [  # export agent traces as OpenTelemetry (GenAI conventions) to any OTLP collector
+    "opentelemetry-sdk>=1.25",
+    "opentelemetry-exporter-otlp-proto-http>=1.25",
+]
 plots = [
     "matplotlib>=3.8",
 ]
