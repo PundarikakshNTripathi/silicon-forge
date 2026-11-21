@@ -18,6 +18,7 @@ from services.orchestrator.inference.providers.base import (
     LLMResponse,
     ProviderError,
     TransientProviderError,
+    parse_retry_after,
     retry_call,
 )
 
@@ -144,7 +145,8 @@ class OpenAICompatibleProvider(BaseLLMProvider):
 
     def _raise_for_status(self, resp: httpx.Response) -> None:
         if resp.status_code == 429 or resp.status_code >= 500:
-            raise TransientProviderError(f"{self.name}: HTTP {resp.status_code}: {resp.text[:300]}")
+            raise TransientProviderError(f"{self.name}: HTTP {resp.status_code}: {resp.text[:300]}",
+                                         retry_after=parse_retry_after(resp.headers.get("retry-after")))
         if resp.status_code >= 400:
             raise ProviderError(f"{self.name}: HTTP {resp.status_code}: {resp.text[:500]}")
 

@@ -118,6 +118,30 @@ enforces this by dropping every other target from the profile's chain; an empty 
 fallback. Every call is recorded (metadata and a prompt hash, never prompt text) in `.siliconforge/ai-usage.jsonl`, and
 `siliconforge report ai-usage` turns that into a disclosure document. See [workspaces](workspaces.md).
 
+## Retries and rate limits
+
+Every provider already retries a transient failure (HTTP 429, 5xx, a timeout) three times with exponential backoff and jitter.
+Two refinements:
+
+- **`Retry-After` is honoured.** When a 429 or 503 carries the header (seconds or an HTTP date), the retry waits that long
+  instead of a random few seconds, so the three attempts are not burned inside the server's cool-down. A request to wait longer
+  than 60 seconds is not waited out: the error is raised and the router moves to the next target in the chain.
+- **Pacing before the request.** A provider entry in `configs/models.yaml` may declare a limit, and the router spaces calls to
+  stay under it instead of discovering it as a 429:
+
+  ```yaml
+  providers:
+    openai:
+      kind: openai_compat
+      rate_limit: {rpm: 60, tpm: 200000, max_wait_s: 30}
+  ```
+
+  It is a sliding 60-second window over requests and estimated prompt tokens (about four characters per token, so leave
+  headroom in `tpm`). If pacing a call would take longer than `max_wait_s`, the router falls through to the next target without
+  counting it as a provider failure, and the time spent pacing is reported as `rate_wait_s` in the router's stats. A request
+  larger than the whole per-minute token allowance is refused immediately, and a malformed `rate_limit` is an error. No provider
+  has a limit configured by default: the right numbers depend on your plan.
+
 ## Cost control
 
 - **Pre-run estimate** on the New run screen (`GET /api/estimate`), from typical per-stage token volumes.

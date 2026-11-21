@@ -19,6 +19,7 @@ from services.orchestrator.inference.providers.base import (
     ProviderError,
     RefusalError,
     TransientProviderError,
+    parse_retry_after,
     retry_call,
 )
 
@@ -91,7 +92,9 @@ class AnthropicProvider(BaseLLMProvider):
             else:
                 msg = self._client.messages.create(**params)
         except anthropic.RateLimitError as exc:
-            raise TransientProviderError(f"anthropic: rate limited: {exc}") from exc
+            hdrs = getattr(getattr(exc, "response", None), "headers", None) or {}
+            raise TransientProviderError(f"anthropic: rate limited: {exc}",
+                                         retry_after=parse_retry_after(hdrs.get("retry-after"))) from exc
         except (anthropic.APIConnectionError, anthropic.APITimeoutError) as exc:
             raise TransientProviderError(f"anthropic: connection error: {exc}") from exc
         except anthropic.APIStatusError as exc:
