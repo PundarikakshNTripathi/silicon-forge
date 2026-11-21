@@ -78,9 +78,17 @@ What this shows, and what it does not:
 - **It is not output-identical.** In theory verification makes speculative decoding lossless; in practice the batched
   verification changes floating-point results, and greedy output differed from the plain run on 3 of 4 edit prompts with `ngram-mod`.
   The control matters: the same server configuration run twice produced identical text 8 times out of 8, so the differences come from speculation. The
-  differences seen were in the wording of comments and in where the model branched. **Whether they change RTL correctness has not
-  been measured**, so speculation stays off by default; it is the thing to try for edit-heavy agent sessions, with the tool checks
-  (lint, equivalence, simulation) as the safety net they already are.
+  differences seen were in the wording of comments and in where the model branched.
+- **Does it change RTL correctness? Measured once: not detectably.** The full 155-problem VerilogEval run with `ngram-mod`
+  (`evals run verilogeval --serve <gguf> --spec-type ngram-mod`, same settings as the baseline: single shot, temperature 0, thinking
+  off) scored **49.0%** pass@1 against **47.7%** without speculation. The paired difference is +1.3 points (95% interval -1.3 to
+  +3.9), so the data do not separate them. The outputs were not identical: **4 of 155 problems changed outcome** (3 went from fail to
+  pass, 1 from pass to fail), which is what batched verification changing floating-point results predicts, in either direction. Total
+  completion tokens were the same (117,011 against 116,468) and the run took 2,169 s against 2,235 s (3% less, because
+  VerilogEval answers are mostly fresh generation, where speculation is neutral). One model, one run per arm, so a small harm
+  (under about 4 points) is not excluded. Speculation stays off by default; try it for edit-heavy agent sessions, with the tool
+  checks (lint, equivalence, simulation) as the safety net they already are
+  (`eval-verilogeval-spec2rtl-Qwen3.5-9B-Q4_K_M-single-spec-ngram-mod-*.json`).
 - **KV q4_0** saves 128 MiB at this context length, is no faster, and changed every output. There is no reason to use it at 16k.
 - **Not measured:** an f16 KV cache and a 32k context did not fit beside this model on the 8 GB card (the VRAM guard
   estimated 7.9 GB and 8.1 GB needed against 7.8 GB free) and were not tried; no draft-model arm, because no smaller model of
