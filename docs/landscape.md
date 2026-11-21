@@ -21,6 +21,14 @@ reference was checked against its abstract page.
 | [Open-source LLM formal verification pipeline](https://arxiv.org/abs/2607.28877) (2607.28877) | multi-agent RTL repair with open models | open-model formal repair | same direction; SiliconForge adds provenance on every tool result |
 | [Dawn of Agentic EDA](https://arxiv.org/abs/2512.23189), [small models with agentic scaffolding](https://arxiv.org/abs/2512.05073) | survey; how far small models go with an agent loop | the survey is the best map of the field | the local-first design bets on exactly the small-model result |
 
+**Open physical-design agents** (checked 2026-11-21; none of these was run for this page):
+
+- [AgenticLane](https://github.com/meyanik/Agenticlane) (MIT): a multi-agent orchestration layer for LibreLane RTL-to-GDS flows,
+  built as a LibreLane plugin. The repository showed five commits, so it is early. It is the closest open project to the
+  physical half of SiliconForge; SiliconForge differs in keeping tool verdicts, not agents, as the gate on every stage.
+- [ORFS-agent](https://arxiv.org/abs/2506.08332) and [Automated QoR improvement in OpenROAD with coding agents](https://arxiv.org/abs/2601.06268)
+  (both Ghose): agents that tune the open flow's parameters, and agents that propose diffs to OpenROAD itself.
+
 Benchmarks these systems are measured on: [VerilogEval](https://arxiv.org/abs/2309.07544) and its
 [revisit](https://arxiv.org/abs/2408.11053), [RTLLM](https://arxiv.org/abs/2308.05345), and NVIDIA's
 [CVDP](https://arxiv.org/abs/2506.14074), which covers design and verification tasks and agentic settings. They measure
@@ -76,12 +84,18 @@ cell or per tile, real-hardware conformance, electrical pin behaviour, silicon b
 | the gaps above | functional + toggle coverage reported, independent protocol decoders, per-protocol area from real synthesis, an AI-usage ledger | `verify/`, `tt/`, `inference/ledger.py` |
 | agentic systems (Chip-Chat, AutoChip, MAGE) | tool-using agent in the user's folder | `docs/workspaces.md` |
 | benchmark practice (CVDP, VerilogEval) | evaluation against formal and equivalence, not only simulation | `benchmarks/` |
+| MAGE | a text waveform window around the failing step and the earliest divergence between traces | `services/orchestrator/debug/`, `docs/debug-context.md` |
+| Veri-Sure | dependency slicing, now with control dependencies (the first version ignored `if` and `case` conditions) | `guardrails/rtl_slicer.py` |
+| repository-level evolution (2606.28279) | scoring tests withheld from the agent; the agent sees compile diagnostics only | `docs/evals.md` |
+| agent-harness study (2603.19347) | a single-call baseline in every comparison, because a loop can lower the score | `siliconforge evals` |
+| RLVR work (CodeV-R1) | verifier-based reward and a train/test split by problem, in an environment with the testbench hidden | `evals/env.py`, `evals/trajectory.py` |
+| open-flow practice | a project flow for existing RTL with signoff gates, where a missing metric is never a pass | `docs/flow.md` |
 
 Not adopted, deliberately: n-way candidate voting without a tool verdict, vendor-style UVM, and any claim about macro
 placement or scale beyond blocks.
 
 ## 6. Where SiliconForge is weaker
 
-No UVM or constrained-random class libraries; no line or branch coverage here (Icarus has none, and the WSL setup has no C++
+No UVM or constrained-random class libraries; one benchmark suite (VerilogEval, close to saturated for strong models) and no CVDP or ChipBench run yet; no clock-domain-crossing analysis, hierarchical macros or SRAM macros in the project flow; no learned improvement demonstrated yet beyond what `docs/evals.md` reports; no line or branch coverage here (Icarus has none, and the WSL setup has no C++
 toolchain); one PDK family is deeply supported; designs are blocks, not SoCs; timing, DRC and LVS signoff for the contest
 process rely on the official Tiny Tapeout flow.
