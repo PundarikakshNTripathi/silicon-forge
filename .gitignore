@@ -71,3 +71,6 @@ build/
 
 # bundled into the wheel at build time
 services/_resources/
+
+# benchmark datasets are downloaded at run time, never committed
+/datasets/
