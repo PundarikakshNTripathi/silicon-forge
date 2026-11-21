@@ -49,3 +49,28 @@ def test_arm_table_builds_valid_configs_and_rejects_unknown_names(tmp_path):
         cfg.validate()
     with pytest.raises(SystemExit):
         b.arm_config("turbo", m, 16384, 8190)
+
+
+def test_every_prompt_is_distinct_so_ngram_speculation_cannot_replay_an_earlier_answer():
+    b = load()
+    prompts = b.build_prompts(Path(__file__).resolve().parents[1])
+    assert set(prompts) == {"generate", "edit"} and len(prompts["generate"]) == len(prompts["edit"]) >= 4
+    for kind, items in prompts.items():
+        assert len(set(items)) == len(items), f"{kind} prompts repeat"
+    assert not set(prompts["generate"]) & set(prompts["edit"])
+
+
+def test_a_label_suffix_reruns_the_same_configuration(tmp_path):
+    b = load()
+    m = tmp_path / "m.gguf"
+    again = b.arm_config("baseline@end", m, 16384, 8190)
+    assert again.kv_type == b.arm_config("baseline", m, 16384, 8190).kv_type and again.spec_type == "none"
+    assert b.arm_config("ngram-mod@2", m, 16384, 8190).spec_type == "ngram-mod"
+
+
+def test_identity_counts_compare_prompt_by_prompt():
+    b = load()
+    h = [b.output_hash(t) for t in ("a", "b", "c")]
+    assert b.identical_count(h, h) == {"identical": 3, "of": 3}
+    assert b.identical_count(h, [h[0], b.output_hash("x"), h[2]]) == {"identical": 2, "of": 3}
+    assert b.output_hash("a") == b.output_hash("a") != b.output_hash("b")

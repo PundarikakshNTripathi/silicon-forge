@@ -1,0 +1,249 @@
+{
+  "schema": "siliconforge.speed/1",
+  "model": "Qwen3.5-9B-Q4_K_M.gguf",
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "gpu_total_mib": 8151,
+  "prompts_per_kind": {
+    "generate": 4,
+    "edit": 4
+  },
+  "max_tokens": 700,
+  "temperature": 0.0,
+  "thinking": "off",
+  "arms": {
+    "baseline": {
+      "vram_used_mib": 5766,
+      "ctx": 16384,
+      "kv": "q8_0",
+      "spec_type": "none",
+      "generate": {
+        "samples": 4,
+        "decode_tok_s_median": 56.93,
+        "decode_tok_s_min": 56.85,
+        "decode_tok_s_max": 57.03,
+        "prompt_tok_s_median": 1796.4,
+        "tokens_generated": 2532,
+        "output_hashes": [
+          "7376b935e8bbd6c1",
+          "5b99db6ebf103789",
+          "de47367c4440660a",
+          "5667043194292ed0"
+        ],
+        "speedup_vs_baseline": 1.0,
+        "same_output_as_baseline": {
+          "identical": 4,
+          "of": 4
+        }
+      },
+      "edit": {
+        "samples": 4,
+        "decode_tok_s_median": 56.88,
+        "decode_tok_s_min": 56.78,
+        "decode_tok_s_max": 56.96,
+        "prompt_tok_s_median": 1942.0,
+        "tokens_generated": 1978,
+        "output_hashes": [
+          "ae4c383dc7fae61c",
+          "7c97d533b28a4da7",
+          "9a7aee1c27983e1b",
+          "534bd8bca916c778"
+        ],
+        "speedup_vs_baseline": 1.0,
+        "same_output_as_baseline": {
+          "identical": 4,
+          "of": 4
+        }
+      }
+    },
+    "ngram-mod": {
+      "vram_used_mib": 5766,
+      "ctx": 16384,
+      "kv": "q8_0",
+      "spec_type": "ngram-mod",
+      "generate": {
+        "samples": 4,
+        "decode_tok_s_median": 56.42,
+        "decode_tok_s_min": 56.24,
+        "decode_tok_s_max": 56.67,
+        "prompt_tok_s_median": 1796.9,
+        "tokens_generated": 2532,
+        "draft_acceptance": 0.016,
+        "drafted": 128,
+        "accepted": 2,
+        "output_hashes": [
+          "7376b935e8bbd6c1",
+          "5b99db6ebf103789",
+          "de47367c4440660a",
+          "5667043194292ed0"
+        ],
+        "speedup_vs_baseline": 0.991,
+        "same_output_as_baseline": {
+          "identical": 4,
+          "of": 4
+        }
+      },
+      "edit": {
+        "samples": 4,
+        "decode_tok_s_median": 167.05,
+        "decode_tok_s_min": 102.1,
+        "decode_tok_s_max": 263.84,
+        "prompt_tok_s_median": 1830.7,
+        "tokens_generated": 1871,
+        "draft_acceptance": 0.756,
+        "drafted": 1792,
+        "accepted": 1354,
+        "output_hashes": [
+          "b31e8b0242b41eb1",
+          "0800046aef739263",
+          "202b833a3b77393e",
+          "534bd8bca916c778"
+        ],
+        "speedup_vs_baseline": 2.937,
+        "same_output_as_baseline": {
+          "identical": 1,
+          "of": 4
+        }
+      }
+    },
+    "ngram-simple": {
+      "vram_used_mib": 5766,
+      "ctx": 16384,
+      "kv": "q8_0",
+      "spec_type": "ngram-simple",
+      "generate": {
+        "samples": 4,
+        "decode_tok_s_median": 56.48,
+        "decode_tok_s_min": 56.26,
+        "decode_tok_s_max": 57.13,
+        "prompt_tok_s_median": 1805.9,
+        "tokens_generated": 2539,
+        "draft_acceptance": 0.069,
+        "drafted": 317,
+        "accepted": 22,
+        "output_hashes": [
+          "db4335c86be02a64",
+          "5b99db6ebf103789",
+          "1d592d85dcfcc074",
+          "5667043194292ed0"
+        ],
+        "speedup_vs_baseline": 0.992,
+        "same_output_as_baseline": {
+          "identical": 2,
+          "of": 4
+        }
+      },
+      "edit": {
+        "samples": 4,
+        "decode_tok_s_median": 160.26,
+        "decode_tok_s_min": 108.8,
+        "decode_tok_s_max": 275.95,
+        "prompt_tok_s_median": 1930.3,
+        "tokens_generated": 1974,
+        "draft_acceptance": 0.595,
+        "drafted": 2222,
+        "accepted": 1323,
+        "output_hashes": [
+          "ae4c383dc7fae61c",
+          "f988a034a63b1580",
+          "9a7aee1c27983e1b",
+          "534bd8bca916c778"
+        ],
+        "speedup_vs_baseline": 2.818,
+        "same_output_as_baseline": {
+          "identical": 3,
+          "of": 4
+        }
+      }
+    },
+    "kv-q4_0": {
+      "vram_used_mib": 5638,
+      "ctx": 16384,
+      "kv": "q4_0",
+      "spec_type": "none",
+      "generate": {
+        "samples": 4,
+        "decode_tok_s_median": 55.87,
+        "decode_tok_s_min": 55.07,
+        "decode_tok_s_max": 56.31,
+        "prompt_tok_s_median": 1713.7,
+        "tokens_generated": 2457,
+        "output_hashes": [
+          "97025b2c7e14f5a7",
+          "5745200a4977f09a",
+          "bc843dd96e25632d",
+          "a4c2b87790f7a967"
+        ],
+        "speedup_vs_baseline": 0.981,
+        "same_output_as_baseline": {
+          "identical": 0,
+          "of": 4
+        }
+      },
+      "edit": {
+        "samples": 4,
+        "decode_tok_s_median": 56.9,
+        "decode_tok_s_min": 56.74,
+        "decode_tok_s_max": 56.99,
+        "prompt_tok_s_median": 1836.0,
+        "tokens_generated": 1949,
+        "output_hashes": [
+          "f6d820a953eb7954",
+          "1084086eb64e5f7a",
+          "202b833a3b77393e",
+          "6f329710777fe70a"
+        ],
+        "speedup_vs_baseline": 1.0,
+        "same_output_as_baseline": {
+          "identical": 0,
+          "of": 4
+        }
+      }
+    },
+    "baseline@end": {
+      "vram_used_mib": 5790,
+      "ctx": 16384,
+      "kv": "q8_0",
+      "spec_type": "none",
+      "generate": {
+        "samples": 4,
+        "decode_tok_s_median": 56.96,
+        "decode_tok_s_min": 56.91,
+        "decode_tok_s_max": 56.97,
+        "prompt_tok_s_median": 1807.9,
+        "tokens_generated": 2532,
+        "output_hashes": [
+          "7376b935e8bbd6c1",
+          "5b99db6ebf103789",
+          "de47367c4440660a",
+          "5667043194292ed0"
+        ],
+        "speedup_vs_baseline": 1.001,
+        "same_output_as_baseline": {
+          "identical": 4,
+          "of": 4
+        }
+      },
+      "edit": {
+        "samples": 4,
+        "decode_tok_s_median": 56.92,
+        "decode_tok_s_min": 56.82,
+        "decode_tok_s_max": 56.94,
+        "prompt_tok_s_median": 1836.7,
+        "tokens_generated": 1978,
+        "output_hashes": [
+          "ae4c383dc7fae61c",
+          "7c97d533b28a4da7",
+          "9a7aee1c27983e1b",
+          "534bd8bca916c778"
+        ],
+        "speedup_vs_baseline": 1.001,
+        "same_output_as_baseline": {
+          "identical": 4,
+          "of": 4
+        }
+      }
+    }
+  },
+  "created": "2026-11-21T21:16:38+0530",
+  "note": "decode speed is llama-server's own predicted_per_second; one request at a time; the same distinct prompts for every arm, each sent once (repeating a prompt inflates n-gram speculation)"
+}
