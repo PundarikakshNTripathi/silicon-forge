@@ -43,6 +43,18 @@ ranked by what is cheap and deterministic, guardrails first and then Verilator l
 are logged as an `RTL_REPAIR` event. Formal verification is not part of the ranking; it stays the loop's own gate.
 Candidates are generated one after another, so on a single-slot local server N repairs cost N times the generation time.
 
+## Grounding the formal properties
+
+Repair is not the only place a small model loses the thread. In the first local-model run, three of four designs ended at
+the formal stage because the model wrote SVA (`cover`, `posedge`) and helper names (`f_past_valid`) into the expression
+fields of the property IR, which the grounding guardrail rejects. Two changes address that, in `FormalVerifierAgent`:
+
+- Fields that name one signal (`signal`, `valid_signal`, `ready_signal`, `data_signal`, `signals`) are an `enum` of the
+  contract's ports in the JSON schema, so constrained decoding cannot produce another name.
+- Expression fields stay free text, so they are checked after the reply, inside the agent's re-ask loop. A reply that uses
+  an unknown signal is rejected with the offending identifiers, the allowed ones and the expression rules, and the retry
+  escalates the model tier. The pipeline's own guardrail audit still runs afterwards.
+
 ## What is not claimed
 
 These are mechanisms. Whether they raise the fraction of designs a given model gets through is measured by the evals
