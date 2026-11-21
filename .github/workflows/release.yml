@@ -16,7 +16,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - uses: pnpm/action-setup@v4
         with: {package_json_file: services/dashboard/package.json}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: {node-version: 22}
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Python environment
