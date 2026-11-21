@@ -136,7 +136,91 @@ def profile_cost() -> None:
     plt.close(fig)
 
 
+def _short(model: str) -> str:
+    return (model.replace("cli_agy:", "").replace("-Q4_K_M", "").replace("gemini-3.8-flash-medium", "Gemini 3.8 Flash")
+            .replace("qwen2.5-coder-7b-instruct-q4_k_m", "Qwen2.5-Coder-7B"))
+
+
+def verilogeval() -> None:
+    """pass@1 with 95% interval for every committed VerilogEval result, grouped by model; subsets are marked."""
+    rows = []
+    for f in sorted(glob.glob(str(RES / "eval-verilogeval-*.json"))):
+        d = json.loads(Path(f).read_text(encoding="utf-8"))
+        key = next((k for k in d if k.startswith("pass_at_")), None)
+        if not key or d["errors"]:
+            continue  # a run with failed calls is not plotted as a clean result
+        a = d[key]
+        rows.append((_short(d["model"]), d["arm"]["arm"], a["mean"], a["ci95"][0], a["ci95"][1], a["problems"], d["selection"].get("all", False)))
+    if not rows:
+        return
+    rows.sort(key=lambda r: (r[0], r[1], r[5]))
+    fig, ax = plt.subplots(figsize=(7.2, 0.46 * len(rows) + 1.2))
+    for i, (_m, _arm, mean, lo, hi, n, full) in enumerate(rows[::-1]):
+        ax.plot([lo, hi], [i, i], color=BLUE, lw=5, alpha=0.28, solid_capstyle="butt")
+        ax.plot([mean, mean], [i - 0.3, i + 0.3], color=BLUE, lw=2.4)
+        ax.text(1.02, i, f"{mean * 100:.1f}%  [{lo * 100:.0f}, {hi * 100:.0f}]  n={n}{'' if full else ' subset'}", va="center", fontsize=8, color=INK)
+    ax.set_yticks(range(len(rows)), [f"{m}, {arm}" for m, arm, *_ in rows[::-1]], fontsize=8.5)
+    ax.set_xlim(0, 1)
+    ax.set_xlabel("pass@1 (95% bootstrap interval over problems)")
+    ax.set_title("VerilogEval v2, spec to RTL, Icarus Verilog 14", loc="left", fontsize=10.5, color=INK)
+    ax.grid(axis="y", visible=False)
+    fig.savefig(OUT / "verilogeval.png")
+    plt.close(fig)
+
+
+def ppa_search() -> None:
+    """Best reward so far against flow evaluations, per search strategy: mean across seeds with the min-max band."""
+    d = latest("ppa-*-full-*.json")
+    if not d:
+        return
+    colors = {"default": MUTED, "random": AMBER, "lhs": "#8b95a3", "bandit": RED, "gpbo": GREEN}
+    fig, ax = plt.subplots(figsize=(6.6, 4.0))
+    for arm, v in d["arms"].items():
+        runs = [r["best_curve"] for r in v["runs"]]
+        width = max(len(r) for r in runs)
+        if arm == "default":
+            ax.axhline(runs[0][0], color=colors[arm], ls="--", lw=1.2)
+            ax.text(width, runs[0][0], " default knobs", color=colors[arm], va="bottom", ha="right", fontsize=8)
+            continue
+        xs = list(range(1, width + 1))
+        cols = [[r[min(i, len(r) - 1)] for r in runs] for i in range(width)]
+        ax.fill_between(xs, [min(c) for c in cols], [max(c) for c in cols], color=colors.get(arm, BLUE), alpha=0.15, lw=0)
+        ax.plot(xs, [sum(c) / len(c) for c in cols], color=colors.get(arm, BLUE), lw=2, label=f"{arm} ({len(runs)} run{'s' if len(runs) != 1 else ''})")
+    ax.set_xlabel("Place-and-route evaluations")
+    ax.set_ylabel("Best reward so far (higher is better)")
+    ax.legend(frameon=False, fontsize=8.5, loc="lower right")
+    ax.set_title(f"Knob search on {d['design']} (sky130A, real flow): mean and range over seeds", loc="left", fontsize=10.5, color=INK)
+    fig.savefig(OUT / "ppa_search.png")
+    plt.close(fig)
+
+
+def pipeline_runs() -> None:
+    """Which designs each local-model pipeline run verified through equivalence (filled square) and which it did not."""
+    files = sorted(glob.glob(str(RES / "local-*.json")))
+    if not files:
+        return
+    runs = []
+    for f in files:
+        d = json.loads(Path(f).read_text(encoding="utf-8"))
+        runs.append((Path(f).stem.split("-2026")[0].replace("local-", ""), d["results"]))
+    designs = sorted({r["design"] for _, rows in runs for r in rows})
+    fig, ax = plt.subplots(figsize=(7.2, 0.4 * len(runs) + 1.2))
+    for yi, (_tag, rows) in enumerate(runs[::-1]):
+        by = {r["design"]: r for r in rows}
+        for xi, name in enumerate(designs):
+            ok = bool(by.get(name) and by[name]["verified"])
+            ax.scatter(xi, yi, s=170, marker="s", color=BLUE if ok else "white", edgecolor=BLUE, linewidth=1.6)
+    ax.set_xticks(range(len(designs)), designs, fontsize=8.5)
+    ax.set_yticks(range(len(runs)), [t for t, _ in runs[::-1]], fontsize=7.5)
+    ax.set_xlim(-0.5, len(designs) - 0.5)
+    ax.set_ylim(-0.6, len(runs) - 0.4)
+    ax.set_title("Local-model pipeline runs: filled = verified through equivalence", loc="left", fontsize=10.5, color=INK)
+    ax.grid(False)
+    fig.savefig(OUT / "pipeline_runs.png")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
-    for fn in (pareto, corners, prefix_cache, telemetry, profile_cost):
+    for fn in (pareto, corners, prefix_cache, telemetry, profile_cost, verilogeval, ppa_search, pipeline_runs):
         fn()
     print("plots written to", OUT)

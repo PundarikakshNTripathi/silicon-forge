@@ -70,7 +70,7 @@ export default function Models() {
                     <tr key={m.name}><td className="mono">{m.name}</td><td className="num">{m.size_gb} GB</td>
                       <td className="num">{l.server.running && l.server.model === m.name
                         ? <button className="btn sm" onClick={() => stop.mutate()}><Square size={13} /> Stop</button>
-                        : <button className="btn sm primary" disabled={!l.installed || start.isPending} onClick={() => start.mutate(m.name)}><Play size={13} /> {start.isPending ? "Loading…" : "Start"}</button>}</td></tr>
+                        : <button className="btn sm" disabled={!l.installed || start.isPending} onClick={() => start.mutate(m.name)}><Play size={13} /> {start.isPending ? "Loading…" : "Start"}</button>}</td></tr>
                   ))}
                 </tbody></table>
 
