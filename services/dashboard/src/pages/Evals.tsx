@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { useMemo, useState } from "react";
+import { AgentLoops } from "./AgentLoops";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api";
 import { Empty, Panel, Prov } from "../ui";
@@ -94,6 +95,7 @@ export function EvalsPage() {
   const tele = files.find((b) => b.file.startsWith("telemetry-"));
   const [open, setOpen] = useState<string | null>(null);
   const [pick, setPick] = useState<string[]>([]);
+  const [view, setView] = useState<"models" | "agents">("models");
   const byFile = new Map(results.map((r) => [r.file, r]));
   const models = [...new Set(results.map((r) => r.model))].sort();
   const toggle = (f: string) => setPick((p) => (p.includes(f) ? p.filter((x) => x !== f) : [...p.slice(-1), f]));
@@ -108,6 +110,11 @@ export function EvalsPage() {
           overlap, the data do not separate the two setups. Method and limits are in <code>docs/evals.md</code>.
         </p>
 
+        <div className="tabs" role="tablist">
+          <button role="tab" aria-selected={view === "models"} onClick={() => setView("models")}>Model quality</button>
+          <button role="tab" aria-selected={view === "agents"} onClick={() => setView("agents")}>Agent loops</button>
+        </div>
+        {view === "agents" ? <AgentLoops files={files} /> : <>
         <Panel title="Model quality on VerilogEval (spec to RTL)" flush>
           {results.length === 0 ? (
             <Empty title="No evaluation results yet">
@@ -175,6 +182,7 @@ export function EvalsPage() {
             <div className="body small muted">{tele.data.note}</div>
           </Panel>
         )}
+        </>}
       </div>
     </>
   );

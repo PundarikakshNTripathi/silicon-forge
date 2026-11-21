@@ -400,9 +400,12 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
                 continue
             seen.add(f.name)
             try:
-                out.append({"file": f.name, "data": json.loads(f.read_text(encoding="utf-8"))})
+                doc = json.loads(f.read_text(encoding="utf-8"))
             except (OSError, ValueError):
                 continue
+            if f.name.startswith("agentbench-") and isinstance(doc, dict):
+                doc.pop("runs", None)  # per-run records are hundreds of KB; the page needs the summary only (use `agentbench report` for runs)
+            out.append({"file": f.name, "data": doc})
         return out
 
     @app.get("/api/config/defaults", dependencies=[api])

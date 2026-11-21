@@ -24,7 +24,7 @@ const NAV = [
   { to: "/runs", label: "Runs", icon: ListChecks },
   { to: "/workspace", label: "Workspace", icon: FolderTree },
   { to: "/models", label: "Models", icon: Cpu },
-  { to: "/cost", label: "Cost", icon: Coins },
+  { to: "/cost", label: "Insights", icon: Coins },
   { to: "/evals", label: "Evals", icon: FlaskConical },
   { to: "/knowledge", label: "Knowledge", icon: BookOpen },
 ];
