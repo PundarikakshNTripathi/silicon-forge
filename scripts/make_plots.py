@@ -43,11 +43,11 @@ def pareto() -> None:
         ok = e["wns_ns"] >= 0 and e["drc_violations"] == 0 and e["lvs_clean"]
         ax.scatter(e["area_um2"], e["wns_ns"], s=90 if i == d.get("best_index") else 60, color=GREEN if ok else RED,
                    edgecolor=BLUE if i == d.get("best_index") else "white", linewidth=2.2, zorder=3)
-        ax.annotate(f"{e['knobs'].get('CLOCK_PERIOD', '?')} ns", (e["area_um2"], e["wns_ns"]), textcoords="offset points",
-                    xytext=(6, 5), fontsize=8, color=MUTED)
+        ax.annotate(f"{e['knobs'].get('SYNTH_STRATEGY', '?')}, {e['knobs'].get('FP_CORE_UTIL', '?')}% util", (e["area_um2"], e["wns_ns"]),
+                    textcoords="offset points", xytext=(7, 5), fontsize=7.5, color=MUTED)
     ax.set_xlabel("Standard-cell area (µm²)")
     ax.set_ylabel("Worst slack across corners (ns)")
-    ax.set_title(f"{d['module']}: layout episodes on real OpenROAD (label = clock period)", loc="left", color=INK, fontsize=10.5)
+    ax.set_title(f"{d['module']}: 9 real layout recipes at 10 ns, worst corner", loc="left", color=INK, fontsize=10.5)
     fig.savefig(OUT / "pareto.png")
     plt.close(fig)
 
@@ -56,17 +56,23 @@ def corners() -> None:
     d = latest("real-axi_lite_alu-*.json")
     if not d or not d["episodes"]:
         return
-    e = d["episodes"][d["best_index"] if d.get("best_index") is not None else 0]
-    cw = {k: v for k, v in e["corner_wns"].items() if k.startswith("nom_")}
-    if not cw:
-        return
+    best_i = d["best_index"] if d.get("best_index") is not None else 0
+    fail_i = next(i for i, e in enumerate(d["episodes"]) if i != best_i and e["wns_ns"] < 0)
     names = {"nom_ff_n40C_1v95": "fast\n-40 °C, 1.95 V", "nom_tt_025C_1v80": "typical\n25 °C, 1.80 V", "nom_ss_100C_1v60": "slow\n100 °C, 1.60 V"}
-    fig, ax = plt.subplots(figsize=(5.4, 3.4))
-    keys = [k for k in names if k in cw]
-    ax.bar([names[k] for k in keys], [cw[k] for k in keys], color=[GREEN if cw[k] >= 0 else RED for k in keys], width=0.55)
+    keys = list(names)
+    fig, ax = plt.subplots(figsize=(6.0, 3.6))
+    w = 0.36
+    for off, idx, col, label in ((-w / 2, fail_i, RED, "a recipe that fails"), (w / 2, best_i, GREEN, "the recipe that closes")):
+        e = d["episodes"][idx]
+        vals = [e["corner_wns"][k] for k in keys]
+        bars = ax.bar([i + off for i in range(3)], vals, w, color=col, label=f"{label} ({e['knobs']['SYNTH_STRATEGY']}, {e['knobs']['FP_CORE_UTIL']}% util)")
+        for b, v in zip(bars, vals, strict=True):
+            ax.text(b.get_x() + b.get_width() / 2, v + (0.12 if v >= 0 else -0.45), f"{v:.1f}", ha="center", fontsize=8, color=INK)
     ax.axhline(0, color=INK, lw=1)
+    ax.set_xticks(range(3), [names[k] for k in keys])
     ax.set_ylabel("Setup slack (ns)")
-    ax.set_title(f"{d['module']} at {e['knobs'].get('CLOCK_PERIOD')} ns: timing depends on the corner", loc="left", fontsize=10.5, color=INK)
+    ax.legend(frameon=False, fontsize=8, loc="upper right")
+    ax.set_title(f"{d['module']} at 10 ns: only the slow corner decides", loc="left", fontsize=10.5, color=INK)
     ax.grid(axis="x", visible=False)
     fig.savefig(OUT / "corners.png")
     plt.close(fig)

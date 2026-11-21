@@ -103,9 +103,36 @@ class PpaOptimizationEnv:
         else:
             with self._lock:
                 self.cache_hits += 1
+            self._materialize(metrics, episode_idx)
         reward = compute_ppa_reward(metrics, self.targets, self.reward_weights)
         metrics.reward = reward
         return metrics, reward
+
+    def _materialize(self, metrics: PPAMetrics, episode_idx: int) -> None:
+        """A cached episode's artifacts live in the run that produced it: copy the final outputs into this run."""
+        import shutil
+
+        src_dir = Path(metrics.run_dir) if metrics.run_dir else None
+        if src_dir is None or not src_dir.exists():
+            return
+        dest = self.run_dir / f"pnr_ep_{episode_idx:02d}"
+        if dest.resolve() == src_dir.resolve():
+            return
+        final_src = src_dir / "runs" / "sf" / "final"
+        if final_src.exists():
+            final_dst = dest / "runs" / "sf" / "final"
+            for sub in ("gds", "render"):
+                if (final_src / sub).exists():
+                    shutil.copytree(final_src / sub, final_dst / sub, dirs_exist_ok=True)
+            if (final_src / "metrics.json").exists():
+                final_dst.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(final_src / "metrics.json", final_dst / "metrics.json")
+            gds = next((final_dst / "gds").glob("*.gds"), None) if (final_dst / "gds").exists() else None
+            metrics.gds_path = str(gds) if gds else metrics.gds_path
+            render = next((final_dst / "render").glob("*.png"), None) if (final_dst / "render").exists() else None
+            if render:
+                metrics.extra["render_png"] = str(render)
+        metrics.run_dir = str(dest)
 
     # --- on-disk result cache (real flows only; simulated results are cheap) --------------------------
 
