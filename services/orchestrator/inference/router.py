@@ -7,6 +7,7 @@ discounts) and recorded in the CostTracker, which enforces USD / total / per-sta
 """
 from __future__ import annotations
 
+import fnmatch
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -15,6 +16,7 @@ from services.orchestrator.inference.cache import ResponseCache
 from services.orchestrator.inference.catalog import Catalog, Target, load_catalog
 from services.orchestrator.inference.cost_tracker import CostTracker, UsageRecord
 from services.orchestrator.inference.factory import build_provider
+from services.orchestrator.inference.ledger import Ledger, prompt_hash
 from services.orchestrator.inference.providers.base import (
     BaseLLMProvider,
     CircuitBreaker,
@@ -32,10 +34,16 @@ TASK_TIER_MAP: dict[str, str] = {
     "architecture_contract": "frontier_reasoning",
     "counterexample_repair": "frontier_reasoning",
     "physical_eco": "balanced",
+    "agent_step": "balanced",
 }
 
 #: only low-temperature calls are cached: a replayed answer is as valid as a fresh sample
 CACHE_MAX_TEMPERATURE = 0.11
+
+
+def _model_allowed(target: Target, patterns: list[str]) -> bool:
+    ident = f"{target.provider}:{target.model}"
+    return any(fnmatch.fnmatchcase(target.model, p) or fnmatch.fnmatchcase(ident, p) for p in patterns)
 
 
 @dataclass
@@ -62,6 +70,7 @@ class ModelRouter:
         self._providers: dict[str, BaseLLMProvider] = {}
         self._breakers: dict[str, CircuitBreaker] = {}
         self.stats = RouterStats()
+        self.ledger = Ledger(config.ledger_path) if config.ledger_path else None
         #: optional observer called once per completed call (used to stream the agent log to the UI)
         self.on_call: Callable[[dict], None] | None = None
         replay_only = self._override is not None and self._override.name == "replay" or all(
@@ -100,7 +109,17 @@ class ModelRouter:
         return self._breakers.setdefault(name, CircuitBreaker())
 
     def chain(self, tier: str) -> list[Target]:
-        return self.catalog.chain(self.profile, tier)
+        chain = self.catalog.chain(self.profile, tier)
+        allowed = self.config.allowed_models
+        if not allowed:
+            return chain
+        kept = [t for t in chain if _model_allowed(t, allowed)]
+        if not kept:
+            raise ProviderError(
+                f"Model policy forbids every target in tier '{tier}' of profile '{self.profile}' "
+                f"(allowed: {', '.join(allowed)}; chain: {', '.join(f'{t.provider}:{t.model}' for t in chain)})."
+            )
+        return kept
 
     # ----------------------------------------------------------------------------------------------
 
@@ -128,6 +147,7 @@ class ModelRouter:
             hit = self.cache.get(cache_key)
             if hit is not None:
                 self._record_cache_hit(stage, tier, primary, hit)
+                self._ledger(stage, task_type, tier, primary, hit, system_prompt, user_prompt, cache_hit=True)
                 self._emit(stage, tier, primary, hit, system_prompt, user_prompt, cache_hit=True)
                 return hit
 
@@ -163,6 +183,7 @@ class ModelRouter:
             if cache_key is not None and self.cache is not None:
                 self.cache.put(cache_key, resp)
             self._record(stage, tier, target, provider, resp)
+            self._ledger(stage, task_type, tier, target, resp, system_prompt, user_prompt, cache_hit=False)
             self._emit(stage, tier, target, resp, system_prompt, user_prompt, cache_hit=False)
             return resp
 
@@ -171,6 +192,17 @@ class ModelRouter:
         ) from last_error
 
     # ----------------------------------------------------------------------------------------------
+
+    def _ledger(self, stage: str, task_type: str, tier: str, target: Target, resp: LLMResponse, system_prompt: str,
+                user_prompt: str, cache_hit: bool) -> None:
+        if self.ledger is None:
+            return
+        self.ledger.record(
+            stage=stage, task=task_type, tier=tier, provider=target.provider, model=resp.model or target.model,
+            prompt_tokens=resp.prompt_tokens, completion_tokens=resp.completion_tokens, cached_tokens=resp.cached_tokens,
+            latency_s=resp.latency_s, billing=str(resp.extra.get("billing", "local" if self.catalog.provider_is_local(target.provider) else "metered")),
+            cache_hit=cache_hit, phash=prompt_hash(system_prompt, user_prompt),
+        )
 
     def _emit(self, stage: str, tier: str, target: Target, resp: LLMResponse, system_prompt: str,
               user_prompt: str, cache_hit: bool) -> None:

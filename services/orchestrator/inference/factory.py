@@ -43,6 +43,14 @@ def build_provider(name: str, catalog: Catalog, cli_bridge_enabled: bool = False
             default_effort=str(cfg.get("default_effort", "medium")),
             fallbacks=bool(cfg.get("fallbacks", True)),
         )
+    if kind == "cli_bridge" and cfg.get("cli") == "agy":
+        from services.orchestrator.inference.providers.agy import AgyProvider
+
+        return AgyProvider(
+            enabled=cli_bridge_enabled, default_effort=str(cfg.get("default_effort", "medium")),
+            max_concurrency=int(cfg.get("max_concurrency", 2)), timeout_s=float(cfg.get("timeout_s", 600)),
+            sandbox=bool(cfg.get("sandbox", True)),
+        )
     if kind == "cli_bridge":
         from services.orchestrator.inference.providers.cli_bridge import CliBridgeProvider
 

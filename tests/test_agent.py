@@ -1,0 +1,206 @@
+"""Workspace agent: protocol parsing, permission modes, sandbox, protected files, undo, transcript compaction.
+
+The model is a scripted fake, so these tests are deterministic and never call a live model or an EDA tool.
+"""
+from __future__ import annotations
+
+import json
+
+import pytest
+
+from services.orchestrator.agent.session import ACTION_SCHEMA, AgentSession, parse_action
+from services.orchestrator.agent.tools import ToolBox, ToolError
+from services.orchestrator.config import InferenceConfig
+from services.orchestrator.inference.catalog import Catalog, Target
+from services.orchestrator.inference.cost_tracker import CostTracker
+from services.orchestrator.inference.providers.base import BaseLLMProvider, LLMResponse
+from services.orchestrator.inference.router import ModelRouter
+from services.orchestrator.workspace import init_workspace
+
+
+class Script(BaseLLMProvider):
+    """Replays a list of model replies and records what it was shown."""
+
+    name = "script"
+    local = True
+
+    def __init__(self, replies):
+        self.replies = list(replies)
+        self.prompts: list[str] = []
+        self.schemas: list[dict | None] = []
+
+    def generate(self, model, system_prompt, user_prompt, temperature=0.1, json_schema=None):
+        self.prompts.append(user_prompt)
+        self.schemas.append(json_schema)
+        reply = self.replies.pop(0)
+        return LLMResponse(content=reply if isinstance(reply, str) else json.dumps(reply), prompt_tokens=50,
+                           completion_tokens=10, model=model, provider="script")
+
+
+def act(say="", tool=None, **args):
+    return {"say": say, "tool": tool, "args": args}
+
+
+@pytest.fixture
+def env(tmp_path):
+    ws = init_workspace(tmp_path / "proj", profile="dev", backend="simulated")
+    (ws.root / "rtl").mkdir()
+    (ws.root / "rtl" / "cnt.sv").write_text("module cnt(input logic clk);\nendmodule\n")
+    catalog = Catalog(providers={"script": {"kind": "replay", "local": True}},
+                      profiles={"dev": {t: [Target("script", "m")] for t in ("local_fast", "balanced", "frontier_reasoning")}})
+
+    def make(replies, mode="auto", approver=None, **kw):
+        prov = Script(replies)
+        router = ModelRouter(InferenceConfig(profile="dev", enable_semantic_cache=False), CostTracker(),
+                             provider=prov, catalog=catalog)
+        events = []
+        s = AgentSession(router, ws, ToolBox(ws), mode=mode, approver=approver, on_event=events.append, **kw)
+        return s, prov, events
+
+    return ws, make
+
+
+# ------------------------------------------------------------------------------------------------ protocol
+
+def test_parse_action_tolerates_fences_and_prose():
+    assert parse_action('{"say":"hi","tool":null,"args":{}}')["tool"] is None
+    assert parse_action('Sure!\n```json\n{"say":"x","tool":"read_file","args":{"path":"a"}}\n```')["tool"] == "read_file"
+    assert parse_action('noise {"say":"x","tool":"null","args":null} trailing')["tool"] is None
+    with pytest.raises(ValueError):
+        parse_action('{"tool": "x"}')
+
+
+def test_turn_reads_then_answers_and_sends_the_schema(env):
+    ws, make = env
+    s, prov, events = make([act("looking", "read_file", path="rtl/cnt.sv"), act("It is an empty module.")])
+    res = s.send("what is in rtl/cnt.sv?")
+    assert res.stopped == "done" and res.reply == "It is an empty module." and res.steps == 2
+    assert all(sch == ACTION_SCHEMA for sch in prov.schemas)  # constrained decoding is requested every step
+    assert "module cnt" in prov.prompts[1]  # the tool result reached the model
+    assert [e.kind for e in events] == ["assistant", "tool_call", "tool_result", "assistant", "done"]
+
+
+def test_malformed_reply_gets_one_correction_then_fails_cleanly(env):
+    ws, make = env
+    s, _, _ = make(["not json", act("ok")])
+    assert s.send("hi").stopped == "done"
+    s2, _, ev = make(["bad", "still bad"])
+    r = s2.send("hi")
+    assert r.stopped == "error" and ev[-1].kind == "error"
+
+
+def test_step_limit_stops_a_looping_model(env):
+    ws, make = env
+    s, _, _ = make([act("", "list_dir", path=".")] * 5, max_steps=3)
+    assert s.send("loop").stopped == "step_limit"
+
+
+# ------------------------------------------------------------------------------------------- permissions
+
+def test_plan_mode_is_read_only(env):
+    ws, make = env
+    s, _, _ = make([act("", "write_file", path="rtl/new.sv", content="x"), act("done")], mode="plan")
+    s.send("add a file")
+    assert not (ws.root / "rtl" / "new.sv").exists()
+    assert "plan mode is read-only" in s.history[2]["text"]
+
+
+def test_ask_mode_requires_approval_and_a_decline_stops_the_turn(env):
+    ws, make = env
+    asked = []
+    s, _, _ = make([act("", "write_file", path="a.sv", content="x"), act("unreachable")], mode="ask",
+                   approver=lambda kind, summary, details: asked.append(kind) or False)
+    r = s.send("write a")
+    assert asked == ["edit"] and r.stopped == "denied" and not (ws.root / "a.sv").exists()
+
+
+def test_ask_mode_with_no_approver_denies_but_lets_the_model_adapt(env):
+    ws, make = env
+    s, _, _ = make([act("", "write_file", path="a.sv", content="x"), act("I could not write it.")], mode="ask")
+    assert s.send("write a").stopped == "done" and not (ws.root / "a.sv").exists()
+
+
+def test_accept_edits_allows_files_but_still_asks_for_commands(env):
+    ws, make = env
+    asked = []
+    s, _, _ = make([act("", "write_file", path="a.sv", content="module a; endmodule"),
+                    {"say": "", "tool": "eda", "args": {"tool": "yosys", "args": ["-V"]}}, act("done")], mode="accept-edits",
+                   approver=lambda kind, summary, details: asked.append(kind) or True)
+    s.send("go")
+    assert (ws.root / "a.sv").exists() and asked == ["command"]
+
+
+# ---------------------------------------------------------------------------------------------- sandbox
+
+@pytest.mark.parametrize("bad", ["../escape.txt", "rtl/../../escape.txt"])
+def test_paths_cannot_leave_the_workspace(env, bad):
+    ws, _ = env
+    with pytest.raises(ToolError, match="outside the workspace"):
+        ToolBox(ws).call("write_file", {"path": bad, "content": "x"})
+    with pytest.raises(ToolError, match="outside the workspace"):
+        ToolBox(ws).call("read_file", {"path": bad})
+
+
+@pytest.mark.parametrize("target", ["siliconforge.yaml", ".siliconforge/ai-usage.jsonl", ".git/config"])
+def test_agent_cannot_edit_its_own_policy_ledger_or_git(env, target):
+    ws, _ = env
+    with pytest.raises(ToolError, match="managed by SiliconForge"):
+        ToolBox(ws).call("write_file", {"path": target, "content": "allowed_models: []"})
+
+
+def test_eda_tool_is_allowlisted_and_keeps_arguments_inside(env):
+    ws, _ = env
+    tb = ToolBox(ws)
+    with pytest.raises(ToolError, match="not allowed"):
+        tb.call("eda", {"tool": "bash", "args": ["-c", "echo hi"]})
+    with pytest.raises(ToolError, match="outside the workspace"):
+        tb.call("eda", {"tool": "yosys", "args": ["/etc/passwd"]})
+    with pytest.raises(ToolError, match="outside the workspace"):
+        tb.call("eda", {"tool": "yosys", "args": ["C:\\Windows\\win.ini"]})
+
+
+def test_simulated_backend_refuses_to_fake_eda_results(env):
+    ws, _ = env
+    from services.orchestrator.agent.factory import _Simulated
+
+    tb = ToolBox(ws, runner_factory=_Simulated)
+    with pytest.raises(ToolError, match="simulated"):
+        tb.call("eda", {"tool": "yosys", "args": ["-V"]})
+
+
+# ------------------------------------------------------------------------------------- edits and history
+
+def test_edit_requires_a_unique_match_and_undo_restores(env):
+    ws, _ = env
+    tb = ToolBox(ws)
+    with pytest.raises(ToolError, match="matched 0 times"):
+        tb.call("edit_file", {"path": "rtl/cnt.sv", "old": "nonexistent", "new": "x"})
+    tb.call("edit_file", {"path": "rtl/cnt.sv", "old": "input logic clk", "new": "input logic clk, rst_n"})
+    assert "rst_n" in (ws.root / "rtl" / "cnt.sv").read_text()
+    tb.call("write_file", {"path": "rtl/new.sv", "content": "x"})
+    assert tb.undo().startswith("removed") and not (ws.root / "rtl" / "new.sv").exists()
+    assert tb.undo().startswith("restored") and "rst_n" not in (ws.root / "rtl" / "cnt.sv").read_text()
+    assert tb.undo() == "nothing to undo"
+
+
+def test_old_tool_results_are_compacted_but_recent_ones_stay_full(env):
+    ws, make = env
+    replies = [act("", "read_file", path="rtl/cnt.sv")] * 5 + [act("done")]
+    s, prov, _ = make(replies, max_steps=10)
+    s.send("read it many times")
+    last = prov.prompts[-1]
+    assert last.count("[earlier result:") == 2 and last.count("module cnt") >= 3  # 5 results: 2 compacted, 3 full
+
+
+def test_instructions_file_reaches_the_system_prompt(env):
+    ws, make = env
+    (ws.root / "SILICONFORGE.md").write_text("Always use active-low reset named rst_n.")
+    s, _, _ = make([act("ok")])
+    assert "active-low reset named rst_n" in s._system() and "SILICONFORGE.md" in s._system()
+
+
+def test_workspace_instruction_text_cannot_break_the_prompt_template(env):
+    ws, make = env
+    (ws.root / "AGENTS.md").write_text("Use {braces} and {0} freely: {tools}")
+    s, _, _ = make([act("ok")])
+    assert "{braces}" in s._system()

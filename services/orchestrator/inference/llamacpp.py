@@ -162,6 +162,32 @@ class LlamaCpp:
     def models(self) -> list[Path]:
         return sorted((self.home / "gguf").glob("*.gguf")) if (self.home / "gguf").exists() else []
 
+    def discover_models(self) -> list[dict]:
+        """Every GGUF already on this machine: our own folder, the Hugging Face cache and `SILICONFORGE_MODEL_DIRS`.
+
+        Reusing a file in place means a model you already downloaded is never copied or downloaded twice."""
+        roots: list[tuple[str, Path, str]] = [("siliconforge", self.home / "gguf", "*.gguf")]
+        hf = Path(os.getenv("HF_HOME") or Path.home() / ".cache" / "huggingface") / "hub"
+        roots.append(("huggingface-cache", hf, "models--*/snapshots/*/*.gguf"))
+        for extra in filter(None, os.getenv("SILICONFORGE_MODEL_DIRS", "").split(os.pathsep)):
+            roots.append(("custom", Path(extra), "**/*.gguf"))
+        seen: set[str] = set()
+        found: list[dict] = []
+        for source, root, pattern in roots:
+            if not root.exists():
+                continue
+            for f in sorted(root.glob(pattern)):
+                try:
+                    real = str(f.resolve())
+                    if real in seen or "mmproj" in f.name.lower() or not f.is_file():
+                        continue
+                    seen.add(real)
+                    found.append({"name": f.name, "path": str(f), "source": source,
+                                  "size_gb": round(f.stat().st_size / 1e9, 2)})
+                except OSError:
+                    continue
+        return found
+
 
 @dataclass
 class ServerConfig:
@@ -200,9 +226,15 @@ class LlamaServer:
     def base_url(self) -> str:
         return f"http://{self.cfg.host}:{self.cfg.port}"
 
-    def start(self, wait_s: float = 180.0) -> None:
+    def start(self, wait_s: float = 180.0, check_gpu: bool = True) -> None:
+        """Start our own server. Refuses (GpuBusyError) when the GPU cannot hold it; never evicts anything."""
         if self.is_healthy():
             return
+        if check_gpu:
+            from services.orchestrator.inference.gpu import require_free_vram
+
+            require_free_vram(self.cfg.model_path, self.cfg.ctx, self.cfg.kv_type, self.cfg.parallel,
+                              self.cfg.gpu_layers)
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         log = self.log_path.open("w")
         flags = subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0

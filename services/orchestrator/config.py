@@ -18,6 +18,10 @@ class InferenceConfig:
     max_total_tokens: int = 500_000
     stage_token_budgets: dict[str, int] = field(default_factory=dict)
     cli_bridge_enabled: bool = False  # opt-in subscription CLI bridge (see docs/providers.md)
+    #: model policy: glob patterns matched against `model` and `provider:model`; empty = no restriction.
+    #: The router drops every target that matches none, so a workspace can be technically limited to one model family.
+    allowed_models: list[str] = field(default_factory=list)
+    ledger_path: str | None = None  # append-only AI-usage ledger (JSONL); set by the workspace
 
     @property
     def provider(self) -> str:
@@ -86,6 +90,7 @@ def load_flow_config(
         max_total_tokens=int(inf_raw.get("max_total_tokens", 500_000)),
         stage_token_budgets={k: int(v) for k, v in (inf_raw.get("stage_token_budgets") or {}).items()},
         cli_bridge_enabled=bool(inf_raw.get("cli_bridge_enabled", False)),
+        allowed_models=[str(m) for m in (inf_raw.get("allowed_models") or [])],
     )
 
     pdk_cfg = PdkConfig(

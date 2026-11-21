@@ -20,14 +20,17 @@ python -m pytest -q tests/test_guardrails.py    # one file
 siliconforge serve                # API + built UI at http://127.0.0.1:8000
 cd services/dashboard && pnpm install && pnpm dev   # UI dev server :5173 (proxies /api to :8000)
 siliconforge tui                  # terminal UI
+siliconforge chat                 # interactive agent in the current folder (a workspace); `agent "task"` is headless
+siliconforge init . --profile dev # write siliconforge.yaml (profile, backend, model policy)
+siliconforge models detect        # local models + other model servers on this machine (read-only)
 pytest -m real_eda                # real Yosys/SymbiYosys checks (auto-skipped without tools)
 ```
 Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,tui,mcp,dev]"`. Python >= 3.11.
 
 ## Layout
-- `services/orchestrator/` Python backend: `pipeline.py` (DAG), `agents/`, `guardrails/`, `eda/` (bridge, `backends/`
-  simulated+real, `runner.py`, `librelane.py`, `formal_ir.py`, `vcd.py`), `inference/` (`router.py`, `providers/`,
-  `catalog.py`, `cache.py`, `llamacpp.py`), `rl/` (PPA optimizer), `api/` (FastAPI, SQLite store, run manager),
+- `services/orchestrator/` Python backend: `pipeline.py` (DAG), `workspace.py` + `agent/` (workspace agent), `agents/`, `guardrails/`, `eda/` (bridge, `backends/`
+  simulated+real, `runner.py`, `librelane.py`, `formal_ir.py`, `vcd.py`), `inference/` (`router.py`, `providers/` incl. `agy`,
+  `catalog.py`, `cache.py`, `llamacpp.py`, `gpu.py`, `ledger.py`), `rl/` (PPA optimizer), `api/` (FastAPI, SQLite store, run manager),
   `skills/` (BM25 skill packs), `schemas.py` (pydantic IR), `paths.py` (resource vs data dir).
 - `services/telemetry_engine/` C++20 log parser + static RTL linter (`sf-telemetry`), CMake.
 - `services/dashboard/` React + Vite web UI (built to `dist/`, served by the API). `services/tui/` Textual TUI.
@@ -45,7 +48,9 @@ Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,t
 4. **Secrets.** Never commit keys, `.env`, model weights (`*.gguf`), run outputs (`runs/`) or personal paths.
    Provider keys live in the OS keychain. The repo is **public**.
 5. **Subscription CLI bridge** (`claude -p`, `codex exec`, `gemini -p`) is opt-in and must never read, copy or store OAuth tokens.
-6. Prefer editing existing modules; keep prompts in `configs/prompts/`, PDK facts in `configs/pdks/`.
+6. **Shared machine.** Never stop, evict or attach to another program's model server or GPU job (`inference/gpu.py` only reads). Tests never
+   allocate large files (the dev laptop disk has filled up once from a test).
+7. Prefer editing existing modules; keep prompts in `configs/prompts/`, PDK facts in `configs/pdks/`.
 
 ## Git workflow
 Branch from `main` (`feat/*`, `fix/*`, `perf/*`, `docs/*`, `chore/*`), Conventional Commits, PR into `main`
