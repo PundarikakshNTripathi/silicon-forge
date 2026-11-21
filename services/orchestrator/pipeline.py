@@ -90,6 +90,12 @@ class SiliconForgePipeline:
         state = FlowState(run_id=rid, spec_text=spec_text, eda_mode=self.eda.mode)
         state.set_listener(on_event)
         self._cancel_check = cancel_check
+        self.router.on_call = lambda c: state.log_event(
+            "LLM", "CALL",
+            f"{c['stage']} -> {c['provider']}/{c['model']} ({c['prompt_tokens']}+{c['completion_tokens']} tok"
+            f"{', cache hit' if c['cache_hit'] else ''})",
+            c,
+        )
         t0 = time.perf_counter()
         state.log_event("INIT", "INFO", f"Run {rid} started (EDA backend: {self.eda.mode}).",
                         {"eda_mode": self.eda.mode, "pdk": self.config.pdk})
@@ -132,6 +138,10 @@ class SiliconForgePipeline:
         # Stage 4: formal verification (TypedPropertyIR -> SymbiYosys + COI repair)
         if not self._formal_loop(state, run_dir, contract):
             return
+        stop_after = str(self.config.pipeline.get("stop_after") or "")
+        if stop_after == "formal":
+            state.log_event("FORMAL_VERIFY", "INFO", "Stopped after formal verification (verify-only run).")
+            return
 
         # Stage 5: synthesis + LEC (gate 6)
         self._enter(state, PipelineStage.SYNTHESIS_LEC)
@@ -148,6 +158,10 @@ class SiliconForgePipeline:
         state.log_event("SYNTHESIS_LEC", "PASS",
                         f"Yosys synthesis + RTL-to-gate LEC passed ({lec.cell_count} cells, mode={lec.mode}).",
                         {"mode": lec.mode, "cells": lec.cell_count, "elapsed_sec": lec.elapsed_sec})
+
+        if stop_after == "lec":
+            state.log_event("SYNTHESIS_LEC", "INFO", "Stopped after LEC (verify-only run).")
+            return
 
         # Stage 6: physical implementation + hybrid RL / Pareto PPA optimization
         self._enter(state, PipelineStage.PNR_RL_OPT)

@@ -20,6 +20,8 @@ class EchoProvider(BaseLLMProvider):
 
 def test_tier_escalation_and_cache():
     cfg = load_flow_config()
+    cfg.inference.profile = "local"  # replay-only profiles intentionally skip the response cache
+    cfg.inference.cache_path = None
     tracker = CostTracker(max_budget_usd=5.0, max_total_tokens=100_000)
     provider = EchoProvider()
     router = ModelRouter(cfg.inference, tracker, provider=provider)
@@ -37,6 +39,8 @@ def test_tier_escalation_and_cache():
 
 def test_cache_can_be_bypassed():
     cfg = load_flow_config()
+    cfg.inference.profile = "local"  # replay-only profiles intentionally skip the response cache
+    cfg.inference.cache_path = None
     provider = EchoProvider()
     router = ModelRouter(cfg.inference, CostTracker(), provider=provider)
     router.complete("S", "rtl_generation", "sys", "x")

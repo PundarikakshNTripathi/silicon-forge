@@ -32,6 +32,7 @@ pipeline:
   max_formal_iters: 4
   max_pnr_rl_episodes: 6
   formal_bmc_depth: 20
+  stop_after: null               # null | "formal" | "lec": verify-only runs (skip place-and-route)
   timing_corner: "worst"         # "worst" = multi-corner signoff; or "tt" / "ss" / "ff" to pick a corner
   require_lec_pass: true
   require_zero_drc: true
@@ -63,22 +64,17 @@ rl_optimizer:
     lvs_penalty: 10.0
     runtime_penalty: 0.2
 
-# Inference routing, caching, and cost guardrails
+# Inference routing, caching, and cost guardrails (profiles and prices live in configs/models.yaml)
 inference:
-  provider: "replay" # "replay" (bundled fixtures, offline) | "openai" (OpenAI-compatible, incl. llama.cpp) | ...
-  enable_semantic_cache: true
+  profile: "replay"              # replay | local | hybrid | cloud | openai | gemini | subscription
+  enable_semantic_cache: true    # exact-match response cache for low-temperature calls
+  cache_path: "runs/_cache/llm.sqlite"   # persistent across runs; remove for an in-memory cache
   max_budget_usd: 15.0
   max_total_tokens: 500000
-  tiers:
-    local_fast:
-      model: "qwen2.5-coder-14b"
-      input_cost_per_1m: 0.15
-      output_cost_per_1m: 0.60
-    balanced:
-      model: "gemini-2.5-flash"
-      input_cost_per_1m: 0.30
-      output_cost_per_1m: 2.50
-    frontier_reasoning:
-      model: "gemini-2.5-pro"
-      input_cost_per_1m: 1.25
-      output_cost_per_1m: 10.00
+  stage_token_budgets:           # hard per-stage ceilings (prompt + completion tokens)
+    ARCHITECT: 60000
+    RTL_GEN: 80000
+    RTL_REPAIR: 150000
+    FORMAL_VERIFY: 100000
+    PNR_RL_OPT: 40000
+  cli_bridge_enabled: false      # opt-in: use your signed-in claude/codex/gemini CLI (subscription). See docs/providers.md

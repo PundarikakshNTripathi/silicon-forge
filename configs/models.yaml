@@ -1,0 +1,97 @@
+# Model catalog: providers, prices and routing profiles.
+#
+# A *profile* maps each routing tier to an ordered fallback chain of (provider, model). The router tries the first
+# healthy entry and falls through on transient failures; repeated failures at a tier escalate to a stronger tier.
+#   local_fast         log triage, lint fixes                       (cheap, fast)
+#   balanced           RTL generation, ECO advice
+#   frontier_reasoning architecture contract, formal IR, counterexample repair (hardest, worth the cost)
+#
+# Prices are USD per 1M tokens. Claude prices are from Anthropic's published rates as of 2026-11-03; OpenAI/Gemini
+# entries are placeholders you should check against your account. Edit freely: unknown models are priced at $0.
+
+pricing_as_of: "2026-11-03"
+
+providers:
+  replay:
+    kind: replay
+  llamacpp:                       # local llama.cpp server (see `siliconforge models`)
+    kind: openai_compat
+    base_url: "http://127.0.0.1:8189/v1"
+    local: true
+    supports_json_schema: true    # constrained decoding via llama.cpp grammar
+    cache_prompt: true            # reuse the KV cache for the shared prompt prefix
+    max_tokens: 6000
+    extra_body:                   # thinking models (Qwen3.x): skip hidden reasoning, it conflicts with JSON constraints
+      chat_template_kwargs: {enable_thinking: false}
+  openai:
+    kind: openai_compat
+    base_url: "https://api.openai.com/v1"
+    api_key_env: OPENAI_API_KEY
+    supports_json_schema: false
+    send_temperature: false       # reasoning models reject non-default sampling params
+    max_tokens_param: max_completion_tokens
+  gemini:                         # Gemini through its OpenAI-compatible endpoint
+    kind: openai_compat
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+    api_key_env: GEMINI_API_KEY
+  anthropic:
+    kind: anthropic
+    api_key_env: ANTHROPIC_API_KEY
+    efforts:                      # output_config.effort per model (Claude 5.x rejects temperature)
+      claude-opus-5-5: medium
+      claude-sonnet-5-5: medium
+      claude-haiku-5-5: low
+  cli_claude:                     # OPT-IN: your signed-in `claude` CLI (subscription). See docs/providers.md.
+    kind: cli_bridge
+    cli: claude
+  cli_codex:
+    kind: cli_bridge
+    cli: codex
+  cli_gemini:
+    kind: cli_bridge
+    cli: gemini
+
+models:
+  claude-opus-5-5:   {input: 4.00, output: 20.00, cache_read: 0.20, cache_write: 5.00}
+  claude-sonnet-5-5: {input: 2.00, output: 10.00, cache_read: 0.10, cache_write: 2.50}
+  claude-haiku-5-5:  {input: 0.10, output: 0.50,  cache_read: 0.01, cache_write: 0.125}
+  gemini-2.5-pro:    {input: 1.25, output: 10.00, cache_read: 0.31}
+  gemini-2.5-flash:  {input: 0.30, output: 2.50,  cache_read: 0.075}
+  gpt-5:             {input: 1.25, output: 10.00, cache_read: 0.125}
+  gpt-5-mini:        {input: 0.25, output: 2.00,  cache_read: 0.025}
+
+profiles:
+  replay:                         # bundled fixtures only: offline, free, deterministic
+    local_fast:         [{provider: replay, model: replay}]
+    balanced:           [{provider: replay, model: replay}]
+    frontier_reasoning: [{provider: replay, model: replay}]
+
+  local:                          # everything on your GPU via llama.cpp
+    local_fast:         [{provider: llamacpp, model: local}]
+    balanced:           [{provider: llamacpp, model: local}]
+    frontier_reasoning: [{provider: llamacpp, model: local}]
+
+  hybrid:                         # local for cheap tiers, Claude for the hard ones; either falls back to the other
+    local_fast:         [{provider: llamacpp, model: local}, {provider: anthropic, model: claude-haiku-5-5}]
+    balanced:           [{provider: llamacpp, model: local}, {provider: anthropic, model: claude-sonnet-5-5}]
+    frontier_reasoning: [{provider: anthropic, model: claude-opus-5-5}, {provider: llamacpp, model: local}]
+
+  cloud:                          # Claude only
+    local_fast:         [{provider: anthropic, model: claude-haiku-5-5}]
+    balanced:           [{provider: anthropic, model: claude-sonnet-5-5}]
+    frontier_reasoning: [{provider: anthropic, model: claude-opus-5-5}]
+
+  openai:
+    local_fast:         [{provider: openai, model: gpt-5-mini}]
+    balanced:           [{provider: openai, model: gpt-5-mini}]
+    frontier_reasoning: [{provider: openai, model: gpt-5}]
+
+  gemini:
+    local_fast:         [{provider: gemini, model: gemini-2.5-flash}]
+    balanced:           [{provider: gemini, model: gemini-2.5-flash}]
+    frontier_reasoning: [{provider: gemini, model: gemini-2.5-pro}]
+
+  subscription:                   # OPT-IN CLI bridge (no per-token billing); needs SILICONFORGE_ENABLE_CLI_BRIDGE=1
+    local_fast:         [{provider: cli_claude, model: claude}]
+    balanced:           [{provider: cli_claude, model: claude}]
+    frontier_reasoning: [{provider: cli_claude, model: claude}]

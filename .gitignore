@@ -53,3 +53,7 @@ Thumbs.db
 .claude/settings.local.json
 .claude/projects/
 .codex/auth.json
+
+# Playwright / screenshot scratch
+.playwright-mcp/
+/ui-*.png

@@ -8,9 +8,9 @@ WORKDIR /app
 COPY . /app
 
 # Build native C++20 EDA telemetry & RTL static linter engine
-RUN make -C services/telemetry_engine
+RUN cmake -S services/telemetry_engine -B services/telemetry_engine/build -DCMAKE_BUILD_TYPE=Release && cmake --build services/telemetry_engine/build
 
-RUN pip install --no-cache-dir -e ".[api]"
+RUN pip install --no-cache-dir -e ".[api,providers]"
 
 EXPOSE 8000
-CMD ["uvicorn", "services.orchestrator.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "services.orchestrator.api.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
