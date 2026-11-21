@@ -4,21 +4,9 @@ SiliconForge is a deterministic pipeline in which **tool verdicts, not language 
 propose artifacts (a design contract, RTL, formal properties); guardrails, SymbiYosys, Yosys and OpenROAD accept or
 reject them, and rejections come back to the model as precise, localized diagnostics.
 
-```mermaid
-flowchart LR
-    S[Spec] --> A[Architect agent<br/>DesignContract]
-    A --> R[RTL agent<br/>SystemVerilog]
-    R --> G{Guardrails<br/>+ lint}
-    G -- violations --> R
-    G -- pass --> F{Formal<br/>BMC, PDR, cover}
-    F -- counterexample<br/>COI-sliced repair --> R
-    F -- proven, non-vacuous --> L{Synthesis<br/>+ LEC}
-    L -- not equivalent --> X[Fail]
-    L -- equivalent --> P[Place and route<br/>RL + Pareto search]
-    P --> O{Signoff<br/>timing, DRC, LVS}
-    O -- closed --> D[GDSII + report]
-    O -- not closed --> E[ECO advice]
-```
+<p align="center"><img src="assets/diagrams/flow.svg" width="900" alt="The flow from spec to signoff with repair loops"></p>
+
+<p align="center"><img src="assets/diagrams/system.svg" width="900" alt="Surfaces, core, model router and EDA runner"></p>
 
 ## 1. Contract first
 

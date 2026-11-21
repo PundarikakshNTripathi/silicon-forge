@@ -17,8 +17,8 @@ RES = ROOT / "benchmarks" / "results"
 OUT = ROOT / "assets" / "plots"
 OUT.mkdir(parents=True, exist_ok=True)
 
-INK, MUTED, GRID = "#14202e", "#6b7d90", "#d7dee5"
-BLUE, GREEN, RED, AMBER = "#2b4a7a", "#1f7a5c", "#b3402f", "#d9971a"
+INK, MUTED, GRID = "#0e1520", "#626c7b", "#c9cfd8"
+BLUE, GREEN, RED, AMBER = "#0e1520", "#17775a", "#b2392b", "#f2a900"
 plt.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 10, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
     "xtick.color": MUTED, "ytick.color": MUTED, "axes.spines.top": False, "axes.spines.right": False,

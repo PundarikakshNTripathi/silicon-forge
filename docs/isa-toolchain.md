@@ -53,7 +53,7 @@ after the previous one, and `.bound N` before a branch says a loop's branch is t
   `min == max` the gap cannot jitter whatever the data is. A loop with no `.bound` has an open maximum.
 - **Dynamic** analysis runs the golden model and measures the real gaps for chosen inputs.
 - `.expect` is checked against both, and the report says whether the control-flow graph proves it or it was only
-  observed. In the UART example every one of the 11 bit gaps is proven to be 16 cycles.
+  observed. In the UART example each of the 10 gaps between its 11 pin events is proven to be 16 cycles.
 
 ## What this does and does not cover
 
