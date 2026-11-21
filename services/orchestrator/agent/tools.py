@@ -69,6 +69,21 @@ class ToolBox:
                      {"path": "string", "old": "string", "new": "string"}, self.edit_file),
             ToolSpec("lint_rtl", READ, "Static lint of a SystemVerilog file for synthesizability problems.",
                      {"path": "string"}, self.lint_rtl),
+            ToolSpec("cone_of", READ,
+                     "Backward cone of influence of one signal in an RTL file: the signals that can influence it and only "
+                     "the lines that matter (conditions guarding an assignment included). Use it to localise a failure.",
+                     {"path": "string", "signal": "string", "module": "string, optional", "context_lines": "integer, default 1"},
+                     self.cone_of),
+            ToolSpec("waveform", READ,
+                     "Text window of a VCD trace: values of selected signals at the change times around a moment ('.' = "
+                     "unchanged). Far cheaper than reading the file. Mark the failing signal to put it in the last column.",
+                     {"path": "string, a .vcd file", "time": "integer, optional (default: end of trace)",
+                      "signals": "list of strings, optional", "mark": "string, optional", "before": "integer, default 6",
+                      "after": "integer, default 1"}, self.waveform),
+            ToolSpec("trace_diff", READ,
+                     "Earliest time at which two VCD traces differ (for example RTL versus a reference model, or before and "
+                     "after a fix) and which signals differ, with a window around that time.",
+                     {"path_a": "string", "path_b": "string", "signals": "list of strings, optional"}, self.trace_diff),
             ToolSpec("eda", COMMAND,
                      f"Run one EDA program ({', '.join(EDA_ALLOWLIST)}) with an argument list, in the workspace.",
                      {"tool": "string", "args": "list of strings", "cwd": "string, default '.'",
@@ -203,6 +218,47 @@ class ToolBox:
         return {"passed": not any(f.severity == "ERROR" for f in findings),
                 "findings": [{"rule": f.rule_id, "severity": f.severity, "line": f.line_number, "message": f.message}
                              for f in findings]}
+
+    def cone_of(self, path: str, signal: str, module: str | None = None, context_lines: int = 1) -> dict:
+        from services.orchestrator.guardrails.rtl_slicer import RtlDependencySlicer
+
+        rtl = self._path(path).read_text(encoding="utf-8", errors="replace")
+        slicer = RtlDependencySlicer()
+        cone = slicer.cone(rtl, signal, module)
+        if not cone.found:
+            return {"found": False, "note": f"'{signal}' is never assigned in {path} (an input, a parameter, or a typo)"}
+        return {"found": True, "module": cone.module, "signals": sorted(cone.signals),
+                "slice": self._clip(slicer.extract_coi_slice(rtl, signal, int(context_lines), module))}
+
+    def _vcd(self, path: str):
+        from services.orchestrator.eda.vcd import parse_vcd
+
+        p = self._path(path)
+        if p.suffix.lower() == ".fst":
+            raise ToolError("FST traces are not read directly; convert with `eda fst2vcd` (OSS CAD Suite) first")
+        if not p.is_file():
+            raise ToolError(f"'{path}' is not a file")
+        return parse_vcd(p.read_text(encoding="utf-8", errors="replace"))
+
+    def waveform(self, path: str, time: int | None = None, signals: list[str] | None = None, mark: str | None = None,
+                 before: int = 6, after: int = 1) -> dict:
+        from services.orchestrator.debug import waveform_window
+
+        tr = self._vcd(path)
+        return {"signals": list(tr.signals)[:60], "end_time": tr.end_time,
+                "window": waveform_window(tr, time, int(before), int(after), signals, mark)}
+
+    def trace_diff(self, path_a: str, path_b: str, signals: list[str] | None = None) -> dict:
+        from services.orchestrator.debug import first_divergence, waveform_window
+
+        a, b = self._vcd(path_a), self._vcd(path_b)
+        hit = first_divergence(a, b, signals)
+        if hit is None:
+            return {"identical": True, "compared": len([s for s in (signals or a.signals) if s in b.signals])}
+        t, bad = hit
+        cols = bad + [s for s in (signals or list(a.signals)) if s not in bad and s in b.signals][:6]
+        return {"identical": False, "time": t, "differing_signals": bad,
+                "a": waveform_window(a, t, signals=cols, mark=bad[0]), "b": waveform_window(b, t, signals=cols, mark=bad[0])}
 
     # ----------------------------------------------------------------------------------------- edit tools
 

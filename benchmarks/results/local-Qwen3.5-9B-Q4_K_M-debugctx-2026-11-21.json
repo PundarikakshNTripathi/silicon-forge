@@ -1,0 +1,316 @@
+{
+  "model": "Qwen3.5-9B-Q4_K_M.gguf",
+  "ctx": 16384,
+  "kv_cache": "q8_0",
+  "backend": "wsl",
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "vram_used_mib_loaded": 5946,
+  "load_s": 5.8,
+  "verified": 0,
+  "designs": 4,
+  "llama_cpp": "b12600",
+  "pipeline_overrides": {},
+  "max_repair": 3,
+  "results": [
+    {
+      "design": "axi_lite_alu",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "Formal IR failed anti-vacuity / port-grounding guardrail.",
+      "formal_iterations": 0,
+      "rtl_versions": 2,
+      "llm_calls": 5,
+      "tokens": 13612,
+      "elapsed_sec": 86.3,
+      "tokens_per_s_p50": 54.6,
+      "ttft_p50_s": 0.741,
+      "prefix_cache_ratio": 0.155,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_axi_lite_alu started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'axi_lite_alu' (10 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (95 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 3 error(s), 4 warning(s); repairing RTL.",
+          "log_tail": "//verilator.org/warn/UNOPTFLAT?v=5.055\n                    ... Use \"/* verilator lint_off UNOPTFLAT */\" and lint_on around source to disable this message.\n                    axi_lite_alu.sv:17:45:      Example path: result_o\n                    axi_lite_alu.sv:93:21:      Example path: ASSIGNW\n                    axi_lite_alu.sv:17:45:      Example path: result_o\n%Error: Exiting due to 2 error(s)"
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-1' (92 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 2."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "PASS",
+          "detail": "Verilator lint: 0 error(s), 1 warning(s)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Property IR failed grounding/vacuity guardrail.",
+          "violations": [
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_RESET_INIT' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_RESET_INIT' references non-existent port 'posedge' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_ZERO_LOGIC' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_ZERO_LOGIC' references non-existent port 'posedge' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_NON_ZERO_REACH' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_NON_ZERO_REACH' references non-existent port 'posedge' not in DesignContract.\", 'line_number': 0}"
+          ]
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Property IR failed grounding/vacuity guardrail.",
+          "violations": [
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_RESET_INIT' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_RESET_INIT' references non-existent port 'f_past_valid' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_ZERO_LOGIC' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_ZERO_VALIDITY' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_ADD_CORRECT' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_SUB_CORRECT' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}"
+          ]
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "Formal IR failed anti-vacuity / port-grounding guardrail."
+        }
+      ]
+    },
+    {
+      "design": "sync_fifo",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "RTL failed guardrails / lint after the maximum number of repair iterations.",
+      "formal_iterations": 0,
+      "rtl_versions": 4,
+      "llm_calls": 5,
+      "tokens": 17534,
+      "elapsed_sec": 120.5,
+      "tokens_per_s_p50": 55.2,
+      "ttft_p50_s": 1.294,
+      "prefix_cache_ratio": 0.1501,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_sync_fifo started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'sync_fifo_4x8' (9 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (134 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 2 error(s), 1 warning(s); repairing RTL.",
+          "log_tail": "ator lint_off EOFNEWLINE */\" and lint_on around source to disable this message.\n%Error: sync_fifo_4x8.sv:86:33: syntax error, unexpected IDENTIFIER, expecting \"'{\"\n   86 |                     logic [2:0] write_addr;\n      |                                 ^~~~~~~~~~\n        ... See the manual at https://verilator.org/verilator_doc.html?v=5.055 for more assistance.\n%Error: Exiting due to 1 error(s)"
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-1' (123 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 2."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 2 error(s), 1 warning(s); repairing RTL.",
+          "log_tail": "ator lint_off EOFNEWLINE */\" and lint_on around source to disable this message.\n%Error: sync_fifo_4x8.sv:86:33: syntax error, unexpected IDENTIFIER, expecting \"'{\"\n   86 |                     logic [2:0] write_addr;\n      |                                 ^~~~~~~~~~\n        ... See the manual at https://verilator.org/verilator_doc.html?v=5.055 for more assistance.\n%Error: Exiting due to 1 error(s)"
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-2' (123 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 3."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "RETRY",
+          "detail": "Lint failed: Verilator lint: 2 error(s), 1 warning(s); repairing RTL.",
+          "log_tail": "ator lint_off EOFNEWLINE */\" and lint_on around source to disable this message.\n%Error: sync_fifo_4x8.sv:86:33: syntax error, unexpected IDENTIFIER, expecting \"'{\"\n   86 |                     logic [2:0] write_addr;\n      |                                 ^~~~~~~~~~\n        ... See the manual at https://verilator.org/verilator_doc.html?v=5.055 for more assistance.\n%Error: Exiting due to 1 error(s)"
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'guardrail-repair-3' (124 lines)"
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "RTL failed guardrails / lint after the maximum number of repair iterations."
+        }
+      ]
+    },
+    {
+      "design": "uart_tx",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "Post-synthesis LEC failed: the netlist is not equivalent to the RTL.",
+      "formal_iterations": 1,
+      "rtl_versions": 1,
+      "llm_calls": 4,
+      "tokens": 12846,
+      "elapsed_sec": 153.7,
+      "tokens_per_s_p50": 55.6,
+      "ttft_p50_s": 0.526,
+      "prefix_cache_ratio": 0.3082,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_uart_tx started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'uart_tx_8n1' (6 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (148 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "PASS",
+          "detail": "Verilator lint: 0 error(s), 1 warning(s)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "PASS",
+          "detail": "BMC + k-induction/PDR + cover proved on iteration 1 (mode=wsl)."
+        },
+        {
+          "stage": "SYNTHESIS_LEC",
+          "status": "FAIL",
+          "detail": "Post-synthesis LEC failed.",
+          "log_tail": "for \\state_curr [3]: success!\nProved 4 previously unproven $equiv cells.\n\n16. Executing EQUIV_STATUS pass.\nFound 10 $equiv cells in equiv:\n  Of those cells 9 are proven and 1 are unproven.\n  Unproven $equiv $auto$equiv_make.cc:297:find_same_wires$516: \\state_next_gold [0] \\state_next_gate [0]\nFound a total of 1 unproven $equiv cells.\nERROR: Found 1 unproven $equiv cells in 'equiv_status -assert'.\n"
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "Post-synthesis LEC failed: the netlist is not equivalent to the RTL."
+        }
+      ]
+    },
+    {
+      "design": "up_down_counter",
+      "verified": false,
+      "stage": "FAILED",
+      "error": "Formal IR failed anti-vacuity / port-grounding guardrail.",
+      "formal_iterations": 0,
+      "rtl_versions": 1,
+      "llm_calls": 4,
+      "tokens": 9152,
+      "elapsed_sec": 62.5,
+      "tokens_per_s_p50": 55.6,
+      "ttft_p50_s": 0.658,
+      "prefix_cache_ratio": 0.3236,
+      "trace": [
+        {
+          "stage": "INIT",
+          "status": "INFO",
+          "detail": "Run bench_up_down_counter started (EDA backend: wsl)."
+        },
+        {
+          "stage": "ARCHITECT",
+          "status": "PASS",
+          "detail": "Synthesized DesignContract for 'up_down_counter' (8 ports)."
+        },
+        {
+          "stage": "RTL",
+          "status": "VERSION",
+          "detail": "RTL version 'initial' (75 lines)"
+        },
+        {
+          "stage": "GUARDRAIL_AUDIT",
+          "status": "PASS",
+          "detail": "RTL passed contract + lint + PDK guardrails on attempt 1."
+        },
+        {
+          "stage": "SIMULATION",
+          "status": "PASS",
+          "detail": "Verilator lint: 0 error(s), 1 warning(s)"
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Property IR failed grounding/vacuity guardrail.",
+          "violations": [
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_RESET_INIT' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_RESET_INIT' references non-existent port 'f_past_valid' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_LOAD_PROPAGATION' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_LOAD_PROPAGATION' references non-existent port 'f_past_valid' not in DesignContract.\", 'line_number",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_WRAP_REACHABILITY' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0}",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'REQ_WRAP_REACHABILITY' references non-existent port 'f_past_valid' not in DesignContract.\", 'line_numbe"
+          ]
+        },
+        {
+          "stage": "FORMAL_VERIFY",
+          "status": "RETRY",
+          "detail": "Property IR failed grounding/vacuity guardrail.",
+          "violations": [
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'COVER_RESET_REACHABILITY' references non-existent port 'cover' not in DesignContract.\", 'line_number': ",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'COVER_RESET_REACHABILITY' references non-existent port 'f_reset_active' not in DesignContract.\", 'line_",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'COVER_WRAP_REACHABILITY' references non-existent port 'cover' not in DesignContract.\", 'line_number': 0",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'SAFETY_RESET_INIT' references non-existent port 'f_reset_active' not in DesignContract.\", 'line_number'",
+            "{'gate': 'FORMAL_GROUNDING', 'rule_id': 'SF-GRD-501', 'severity': 'ERROR', 'message': \"Property 'SAFETY_LOAD_PROPAGATION' references non-existent port 'f_reset_active' not in DesignContract.\", 'line_n"
+          ]
+        },
+        {
+          "stage": "FAILED",
+          "status": "FAIL",
+          "detail": "Formal IR failed anti-vacuity / port-grounding guardrail."
+        }
+      ]
+    }
+  ]
+}

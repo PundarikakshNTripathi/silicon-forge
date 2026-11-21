@@ -19,6 +19,7 @@ from services.orchestrator.agents.formal_verifier import FormalVerifierAgent
 from services.orchestrator.agents.physical_designer import PhysicalDesignerAgent
 from services.orchestrator.agents.rtl_coder import RtlCoderAgent
 from services.orchestrator.config import FlowConfig
+from services.orchestrator.debug import AttemptMemory
 from services.orchestrator.eda.bridge import EDABridge
 from services.orchestrator.eda.errors import EDAError
 from services.orchestrator.guardrails.hallucination import HallucinationGuardrail
@@ -177,10 +178,48 @@ class SiliconForgePipeline:
     # stage helpers
     # ------------------------------------------------------------------------------------------------
 
+    def _repair(
+        self, state: FlowState, run_dir: Path, contract: DesignContract, rtl: str, diagnostic: str, *, attempt: int,
+        memory: AttemptMemory | None = None, witness: object | None = None, failing_signal: str | None = None,
+    ) -> str:
+        """One repair step. `pipeline.debug_context` (default on) adds the waveform window and attempt history to the
+        prompt; `pipeline.repair_candidates` (default 1) samples several repairs and keeps the one the cheap verifiers
+        like best. Both exist as switches so an evaluation can measure what each is worth."""
+        ctx = bool(self.config.pipeline.get("debug_context", True))
+        kw: dict = {"failing_signal": failing_signal, "retry_attempt": attempt,
+                    "witness": witness if ctx else None, "memory": memory if ctx else None}
+        n = max(1, int(self.config.pipeline.get("repair_candidates", 1)))
+        first = self.rtl_coder.repair_rtl(contract, rtl, diagnostic, **kw)
+        if n == 1:
+            return first
+        candidates = [first]
+        for _ in range(n - 1):  # candidate 0 is the low-temperature answer; the rest explore
+            extra = self.rtl_coder.repair_rtl(contract, rtl, diagnostic, temperature=0.7, **kw)
+            if extra not in candidates:
+                candidates.append(extra)
+        return self._pick_best(state, run_dir, contract, candidates)
+
+    def _pick_best(self, state: FlowState, run_dir: Path, contract: DesignContract, candidates: list[str]) -> str:
+        """Rank candidates by the verifiers that are cheap and deterministic: guardrails, then Verilator lint.
+        Ties keep the earliest candidate. The choice and every score are logged."""
+        scores: list[tuple[int, int, int]] = []
+        for rtl in candidates:
+            grd = self.guardrail.audit_rtl(rtl, contract)
+            errors = sum(1 for v in grd.violations if v.severity == "ERROR")
+            lint_ok = 0
+            if grd.passed:
+                lint_ok = int(self.eda.run_simulation(run_dir, contract, rtl, None).passed)
+            scores.append((int(grd.passed), lint_ok, -errors))
+        best = max(range(len(candidates)), key=lambda k: (scores[k], -k))
+        state.log_event("RTL_REPAIR", "INFO", f"Sampled {len(candidates)} repair candidates; kept #{best + 1}.",
+                        {"scores": [{"guardrails": s[0], "lint": s[1], "errors": -s[2]} for s in scores], "picked": best})
+        return candidates[best]
+
     def _rtl_quality_loop(
         self, state: FlowState, run_dir: Path, contract: DesignContract, rtl: str
     ) -> str | None:
         max_iters = int(self.config.pipeline.get("max_rtl_repair_iters", 5))
+        memory = AttemptMemory()
         for attempt in range(1, max_iters + 1):
             self._check_cancel()
             state.stage = PipelineStage.GUARDRAIL_AUDIT
@@ -204,7 +243,9 @@ class SiliconForgePipeline:
                 state.log_event("GUARDRAIL_AUDIT", "RETRY",
                                 f"Guardrail violations on attempt {attempt}; repairing RTL.",
                                 {"attempt": attempt, "violations": self._violations(grd)})
-            rtl = self.rtl_coder.repair_rtl(contract, rtl, diagnostic, retry_attempt=attempt)
+            before = rtl
+            rtl = self._repair(state, run_dir, contract, before, diagnostic, attempt=attempt, memory=memory)
+            memory.record(f"guardrail-repair-{attempt}", diagnostic, before, rtl)
             state.add_rtl_version(f"guardrail-repair-{attempt}", rtl)
         self._fail(state, "RTL failed guardrails / lint after the maximum number of repair iterations.")
         return None
@@ -230,6 +271,7 @@ class SiliconForgePipeline:
         state.formal_properties_ir = props_ir
 
         max_iters = int(self.config.pipeline.get("max_formal_iters", 4))
+        memory = AttemptMemory()
         for f_iter in range(1, max_iters + 1):
             self._check_cancel()
             report, sva = self.eda.run_formal_verification(run_dir, contract, state.rtl_source, props_ir)
@@ -261,9 +303,9 @@ class SiliconForgePipeline:
                             payload)
             if f_iter == max_iters:
                 break
-            repaired = self.rtl_coder.repair_rtl(
-                contract, state.rtl_source, diag, failing_signal=fail_sig, retry_attempt=f_iter
-            )
+            repaired = self._repair(state, run_dir, contract, state.rtl_source, diag, attempt=f_iter,
+                                    memory=memory, witness=witness, failing_signal=fail_sig)
+            memory.record(f"formal-repair-{f_iter}", diag, state.rtl_source, repaired)
             state.add_rtl_version(f"formal-repair-{f_iter}", repaired)
             # Re-audit every repair: a fix must not reintroduce guardrail violations
             grd = self.guardrail.audit_rtl(repaired, contract)

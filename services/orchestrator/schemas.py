@@ -141,5 +141,35 @@ def contract_json_schema() -> dict:
     return ContractModel.model_json_schema()
 
 
-def property_list_json_schema() -> dict:
-    return PROPERTY_LIST.json_schema()
+SIGNAL_FIELDS = ("signal", "valid_signal", "ready_signal", "data_signal")
+
+
+def property_list_json_schema(ports: list[str] | None = None) -> dict:
+    """JSON schema of a property list. With `ports`, every field that names one design signal is an enum of those ports,
+    so constrained decoding cannot produce a signal the contract does not have (a small model that writes `cover` or
+    `f_past_valid` as a signal name simply cannot). Free-form expression fields stay strings: they are checked after the
+    fact, see `FormalVerifierAgent`."""
+    import copy
+
+    schema = copy.deepcopy(PROPERTY_LIST.json_schema())
+    if not ports:
+        return schema
+    enum = sorted(set(ports))
+
+    def walk(node):
+        if isinstance(node, dict):
+            props = node.get("properties")
+            if isinstance(props, dict):
+                for name in SIGNAL_FIELDS:
+                    if name in props:
+                        props[name] = {"type": "string", "enum": enum}
+                if "signals" in props and isinstance(props["signals"], dict):
+                    props["signals"] = {**props["signals"], "items": {"type": "string", "enum": enum}}
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(schema)
+    return schema
