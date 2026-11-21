@@ -50,6 +50,43 @@ Limits you should know about:
   and why `auto` is for workspaces you trust.
 - With the `simulated` backend the `eda` tool refuses to run rather than invent results.
 
+## Permission rules
+
+The four modes decide what asks for confirmation. For finer control, add rules to `siliconforge.yaml` (the agent cannot edit that
+file, so it cannot loosen its own rules):
+
+```yaml
+permissions:
+  allow:
+    - write_file(rtl/*)          # no prompt for edits under rtl/, even in `ask` mode
+    - eda(yosys *)               # nor for yosys runs
+    - run_pipeline
+  deny:
+    - read_file(secrets/*)       # refused in every mode, reads included
+    - write_file(rtl/locked/*)
+    - eda(rm *)
+```
+
+A rule is a tool name, or `tool(glob)`. The glob is matched against the path (file tools) or `program arguments...` (`eda`).
+Paths are normalised first, so `rtl/../secrets/x` and `.\secrets\x` match `secrets/*`. **Deny wins over allow and applies in
+`auto` mode.** Allow only removes the prompt; it does not lift `plan` mode's read-only rule. A malformed rule is an error when
+the agent starts, not something silently skipped.
+
+## Guards inside the loop
+
+- **Context budget.** The transcript is kept under `context_chars` (36,000 characters, about 9k tokens). When a session grows past
+  it, older turns are replaced by a short digest built by code (what was asked, which files were read and changed, which commands
+  ran, how many calls failed); the last two user turns stay verbatim and the saved session keeps everything. Nothing here calls a
+  model, so it costs no tokens. What is lost is old tool output; the agent re-reads a file if it needs it.
+- **Loop guard.** Three identical calls with identical results add a note telling the model to change approach; the fifth ends the
+  turn as `loop`. Any different call or result resets the count.
+- **Untrusted output.** Tool results are wrapped in `<tool_output>` tags, a closing tag inside them is defanged, and the system
+  prompt says to treat the content as data. This reduces prompt-injection risk from file contents; it does not remove it, so keep
+  `ask` mode for repositories you did not write.
+- **Redaction.** API keys, tokens, private keys, bearer headers and values of variables named like secrets are replaced with
+  `[redacted ...]` in tool output before the model sees it and in saved sessions. It is pattern-based and will miss a secret with
+  an unusual shape; a secret you paste into your own message is sent to the model as typed.
+
 ## Saved conversations
 
 Nothing is saved by default. `siliconforge chat --save` (or `agent --save "task"`) writes the conversation to

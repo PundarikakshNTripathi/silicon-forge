@@ -5,6 +5,10 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 ## [Unreleased]
 ### Added (local inference)
 - Speculative decoding options for the managed llama-server (`--spec-type`, `--draft-model`, `--draft-max`), validated, with the draft model counted in the VRAM guard; and `benchmarks/bench_speed.py`, a speed sweep over KV type, context length and speculation. **No speedup has been measured yet** (the GPU was busy); speculation stays off by default.
+### Added (agent safety and context)
+- Workspace `permissions: allow/deny` rules (`tool` or `tool(glob)`; deny wins and applies in `auto`; paths normalised so `..` and backslashes cannot dodge a pattern).
+- Staged context compaction: the transcript stays inside `context_chars`; earlier turns become a deterministic digest, no model call.
+- Loop guard (note at 3 identical calls, stop at 5), `<tool_output>` fencing of tool results, and redaction of keys and tokens in tool output and saved sessions.
 ### Added (verification)
 - `siliconforge triage sim.json ...`: buckets failing runs by a normalised signature (lockstep divergences by the fields that disagree), with seeds, tests, an example and a replay line per bucket. `docs/verification.md`.
 ### Fixed (verification)
