@@ -117,6 +117,20 @@ def load_problems(root: Path | None = None, include_excluded: bool = False) -> l
     return out
 
 
+def split_problems(problems: list[Problem], split: str = "all", test_fraction: float = 0.35, seed: int = 0) -> list[Problem]:
+    """A fixed train/test split by problem id. The ranking hashes `seed:id`, so the split does not depend on the order of
+    the files or on which problems are excluded: adding or removing a problem moves only that problem."""
+    import hashlib
+
+    if split == "all":
+        return list(problems)
+    if split not in ("train", "test"):
+        raise ValueError("split must be all, train or test")
+    ranked = sorted(problems, key=lambda p: hashlib.sha256(f"{seed}:{p.id}".encode()).hexdigest())
+    test_ids = {p.id for p in ranked[: round(len(problems) * test_fraction)]}
+    return [p for p in problems if (p.id in test_ids) == (split == "test")]
+
+
 def select(problems: list[Problem], count: int | None, seed: int = 0) -> list[Problem]:
     """A reproducible subset: `count` problems drawn with `seed`, returned in problem order. None means all."""
     import random

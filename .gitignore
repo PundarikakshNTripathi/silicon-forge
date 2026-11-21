@@ -74,3 +74,6 @@ services/_resources/
 
 # benchmark datasets are downloaded at run time, never committed
 /datasets/
+
+# trajectories hold full prompt and reply text: local only
+/trajectories/

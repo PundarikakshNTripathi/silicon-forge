@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (training data)
+- Opt-in **trajectories** (`evals run --save-trajectories`): every graded sample with its full prompt and reply text, kept locally under `trajectories/` (gitignored). `evals export-sft` turns verified samples into chat-format training examples for a chosen split.
+- A fixed **train/test split** of VerilogEval (`--split`), disjoint and stable under file order and exclusions, so a fine-tuned model is judged on problems it never saw.
+- `VerilogEnv`: a Gymnasium-style environment (`reset`, `step`) over the same problems with a verifier-cascade reward and the testbench output withheld.
 ### Added (evals)
 - **`siliconforge evals`**: a VerilogEval v2 (spec-to-RTL) harness with the unbiased pass@k estimator, bootstrap confidence intervals over problems, a paired `compare`, versioned result files (`siliconforge.eval/1`), and four arms (`single`, `feedback-plain`, `feedback`, `sampled`) so that what a loop buys can be separated from what its extra context buys. Arms see only the compile diagnostic of their own candidate; the scoring testbench is never exposed to them. `docs/evals.md`.
 - `evals selfcheck`: grades every problem's own reference through the real grader. All 155 usable problems pass; `Prob099_m2014_q6c` is excluded because its testbench and prompt disagree with its reference (recorded in every result). The benchmark's testbenches needed one patch to compile on Icarus Verilog 14 (waveform-dump block), also recorded.

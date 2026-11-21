@@ -78,6 +78,26 @@ run reports a non-zero exit code; failures are not dropped from the denominator.
 
 Datasets are downloaded into the data directory (`/datasets` is gitignored) and never committed or redistributed.
 
+## Trajectories, a fixed split and an environment
+
+For fine-tuning you need the replies, not only the scores.
+
+```bash
+siliconforge evals run verilogeval --serve model.gguf --arm single --n 8 --k 1 --split train --save-trajectories
+siliconforge evals export-sft ~/.../trajectories/traj-*.jsonl --out sft.jsonl --split train --per-problem 2
+siliconforge evals run verilogeval --serve model.gguf --arm single --split test     # judge on problems it never saw
+```
+
+- `--split train|test|all` is a fixed partition of the problems: 35% go to `test`, chosen by hashing the problem id, so the split
+  does not depend on file order and removing a problem moves only that problem. The two partitions are disjoint.
+- `--save-trajectories` writes one JSON line per graded sample with the **full prompt and reply text**. That is why it is opt-in
+  and why the files live under `trajectories/` (gitignored). The AI-usage ledger, by contrast, records only hashes.
+- `export-sft` writes chat-format examples (`system`, `user`, `assistant`) from samples the grader **passed**, capped per problem, and
+  only for problems in the split you name. Export `train`; exporting `test` would contaminate the evaluation.
+- `VerilogEnv` (`services/orchestrator/evals/env.py`) is a Gymnasium-style environment (`reset`, `step`) over the same problems:
+  -0.1 for a candidate that does not compile (the compiler message comes back as the observation), 0.0 for one that compiles but fails
+  the testbench, 1.0 for a pass. The testbench output is never in the observation.
+
 ## Limits
 
 - One suite so far. CVDP (Apache-2.0) is the next candidate; ChipBench declares no license and is not used.
