@@ -49,6 +49,8 @@ class Workspace:
     #: agent permission rules from the manifest's `permissions:` section; see agent/safety.py `Rules`
     allow: list[str] = field(default_factory=list)
     deny: list[str] = field(default_factory=list)
+    #: raw `hooks:` entries from the manifest; parsed and validated by agent/hooks.py when a session starts
+    hooks: list[dict[str, Any]] = field(default_factory=list)
 
     # ------------------------------------------------------------------ paths
     @property
@@ -139,10 +141,15 @@ def load_workspace(path: str | Path) -> Workspace:
         val = perms.get(key) or []
         return [str(val)] if isinstance(val, str) else [str(v) for v in val]
 
+    hooks_raw = raw.get("hooks") or []
+    if not isinstance(hooks_raw, list):
+        raise WorkspaceError(f"{manifest}: `hooks` must be a list of mappings (event, match, run)")
+
     return Workspace(
         root=root,
         allow=rule_list("allow"),
         deny=rule_list("deny"),
+        hooks=hooks_raw,
         name=str(raw.get("name") or root.name),
         profile=str(raw.get("profile", "replay")),
         backend=str(raw.get("backend", "simulated")),

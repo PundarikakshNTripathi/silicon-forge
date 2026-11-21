@@ -72,6 +72,31 @@ Paths are normalised first, so `rtl/../secrets/x` and `.\secrets\x` match `secre
 `auto` mode.** Allow only removes the prompt; it does not lift `plan` mode's read-only rule. A malformed rule is an error when
 the agent starts, not something silently skipped.
 
+## Hooks
+
+Hooks run a command of yours before or after a tool call, for checks that must happen every time and should not depend on the
+model remembering:
+
+```yaml
+hooks:
+  - event: post_tool
+    match: write_file(rtl/*)       # same `tool` / `tool(glob)` syntax as the permission rules
+    run: [python, scripts/style_check.py]
+    timeout: 60                    # seconds, default 60, at most 600
+  - event: pre_tool
+    match: eda(openroad *)
+    run: [python, scripts/require_clean_lint.py]
+```
+
+- `pre_tool` runs before the call. A non-zero exit **blocks** it and the hook's output goes to the model as the reason. A hook
+  that cannot start, or times out, blocks too: a safety check that did not run is not a pass. The first blocking hook decides.
+- `post_tool` runs after a call that succeeded; its output is appended to the result the model sees (a style report on the file
+  it just wrote, for example). A failing post hook adds its exit status and output; it does not undo the call.
+- The command is an argument list run without a shell, in the workspace folder, with `SF_HOOK_EVENT`, `SF_TOOL`, `SF_ARGS` (JSON),
+  `SF_SUBJECT` (the normalised path or command) and, for post hooks, `SF_RESULT_HEAD` in its environment.
+- Hooks live in `siliconforge.yaml`, which the agent cannot write, so it cannot add, remove or edit one. They run with your own
+  privileges: treat a manifest you did not write as you would a Makefile.
+
 ## Guards inside the loop
 
 - **Context budget.** The transcript is kept under `context_chars` (36,000 characters, about 9k tokens). When a session grows past

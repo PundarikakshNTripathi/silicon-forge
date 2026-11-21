@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent hooks)
+- Manifest `hooks:` (`pre_tool` blocks on a non-zero exit, a failed start or a timeout; `post_tool` appends its output to the tool result). Argument lists, no shell, strict validation, environment describing the call. `docs/workspaces.md`.
 ### Added (agent safety and context)
 - Workspace `permissions: allow/deny` rules (`tool` or `tool(glob)`; deny wins and applies in `auto`; paths normalised so `..` and backslashes cannot dodge a pattern).
 - Staged context compaction: the transcript stays inside `context_chars`; earlier turns become a deterministic digest, no model call.
