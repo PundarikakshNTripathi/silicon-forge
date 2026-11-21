@@ -357,16 +357,18 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
 
     # --- skills (knowledge packs) --------------------------------------------------------------------
 
-    packs_dir = REPO_ROOT / "services" / "orchestrator" / "skills" / "packs"
+    packs_dir = data_root() / "skills"  # your packs; a pack here replaces a built-in of the same name
 
     @app.get("/api/skills", dependencies=[api])
     def list_skills() -> list[dict[str, Any]]:
-        return [{"name": p.name, "content": p.content, "tokens": len(p.tokens)} for p in SkillRegistry().packs]
+        return [{"name": p.name, "content": p.content, "tokens": len(p.tokens), "source": p.source, "sections": len(p.chunks)}
+                for p in SkillRegistry().packs]
 
     @app.put("/api/skills/{name}", dependencies=[api])
     def put_skill(name: str, body: SkillBody) -> dict[str, bool]:
         if not name.replace("_", "").replace("-", "").isalnum():
             raise HTTPException(400, "invalid skill name")
+        packs_dir.mkdir(parents=True, exist_ok=True)
         (packs_dir / f"{name}.md").write_text(body.content, encoding="utf-8")
         return {"saved": True}
 

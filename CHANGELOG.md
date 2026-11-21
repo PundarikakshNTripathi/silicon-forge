@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Changed (knowledge packs)
+- A ninth pack, `iverilog_errors`, written after the first full VerilogEval run: 54 of the Qwen3-8B answers that failed to compile were the same mistake (assigning in an `always` block to an output declared as a plain net), and the packs had no entry for Icarus messages. New evaluation arm `feedback-guided` adds retrieved guidance to the repair prompt, so the value of the packs is measured against `feedback`.
+- **Knowledge packs rebuilt**: retrieval is over `## ` sections instead of whole files (the three stub packs were ~690 bytes each), with headings weighted, identifiers split at underscores, and a **relevance floor** set from measured scores so that an irrelevant query returns nothing instead of "the first packs anyway". Eight new packs (Verilator warnings, synthesizable idioms, handshakes and FIFOs, CDC and resets, SDC, LibreLane variables, cocotb, formal) and a rewritten formal pack. The old formal pack told the model to use an `f_past_valid` register, which the typed-property guardrail rejects. `docs/knowledge-packs.md`.
+- The RTL coder now receives relevant guidance for generation and repair (it used no packs before); the workspace agent has a read-only `knowledge` tool; user packs live in `<data dir>/skills/` and can override built-ins.
 ### Fixed (guardrails)
 - **`SF-RTL-005` rejected correct RTL.** The static linter reported any `identifier <=` inside `always_comb` as a non-blocking assignment, so a less-or-equal comparison such as `if (count <= LIMIT)` was an ERROR the model could not repair (a local-model run failed `uart_tx` three times with unchanged code). `<=` now counts as an assignment only when it is the first assignment-like operator of a statement outside parentheses, with state carried across wrapped lines. Tests in the C++ suite fail against the old rule.
 ### Added (training data)

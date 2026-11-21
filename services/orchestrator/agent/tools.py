@@ -69,6 +69,11 @@ class ToolBox:
                      {"path": "string", "old": "string", "new": "string"}, self.edit_file),
             ToolSpec("lint_rtl", READ, "Static lint of a SystemVerilog file for synthesizability problems.",
                      {"path": "string"}, self.lint_rtl),
+            ToolSpec("knowledge", READ,
+                     "Look up engineering guidance from SiliconForge's knowledge packs (Verilator warnings and fixes, synthesizable "
+                     "SystemVerilog idioms, handshakes and FIFOs, clock-domain crossings, SDC, LibreLane variables, cocotb, formal). "
+                     "Returns the most relevant sections, or none when nothing matches well.",
+                     {"query": "string, e.g. a warning code or a topic", "top_k": "integer, default 3"}, self.knowledge),
             ToolSpec("cone_of", READ,
                      "Backward cone of influence of one signal in an RTL file: the signals that can influence it and only "
                      "the lines that matter (conditions guarding an assignment included). Use it to localise a failure.",
@@ -218,6 +223,14 @@ class ToolBox:
         return {"passed": not any(f.severity == "ERROR" for f in findings),
                 "findings": [{"rule": f.rule_id, "severity": f.severity, "line": f.line_number, "message": f.message}
                              for f in findings]}
+
+    def knowledge(self, query: str, top_k: int = 3) -> dict:
+        from services.orchestrator.skills.registry import SkillRegistry
+
+        hits = SkillRegistry().retrieve(query, top_k=max(1, min(int(top_k), 5)))
+        if not hits:
+            return {"found": 0, "note": "no section matches that query well; try the exact warning code or a more specific term"}
+        return {"found": len(hits), "sections": [{"name": h.name, "content": self._clip(h.content, 3000)} for h in hits]}
 
     def cone_of(self, path: str, signal: str, module: str | None = None, context_lines: int = 1) -> dict:
         from services.orchestrator.guardrails.rtl_slicer import RtlDependencySlicer
