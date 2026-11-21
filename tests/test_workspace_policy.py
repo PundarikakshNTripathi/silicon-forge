@@ -321,3 +321,21 @@ def test_workspace_can_raise_the_token_ceiling_for_subscription_models(tmp_path)
     assert InferenceConfig().max_total_tokens == 500_000
     ws.apply(cfg)
     assert cfg.inference.max_total_tokens == 20_000_000 and ws.describe()["max_total_tokens"] == 20_000_000
+
+
+def test_a_scratch_folder_that_cannot_be_deleted_does_not_discard_the_answer(fake_agy, monkeypatch):
+    """Seen on Windows: the CLI still held a handle on its working directory, deletion raised PermissionError (WinError 32)
+    after the reply had arrived, and a full evaluation run lost that sample."""
+    import tempfile as real_tempfile
+
+    from services.orchestrator.inference.providers import agy as agy_module
+
+    class Stubborn(real_tempfile.TemporaryDirectory):
+        def cleanup(self):
+            if not getattr(self, "_ignore_cleanup_errors", False):
+                raise PermissionError("[WinError 32] The process cannot access the file")
+            super().cleanup()
+
+    monkeypatch.setattr(agy_module.tempfile, "TemporaryDirectory", Stubborn)
+    p = AgyProvider(enabled=True, executable=fake_agy)
+    assert p.generate("gemini-3.8-flash", "s", "u").content.startswith("echo:")
