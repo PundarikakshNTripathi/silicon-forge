@@ -110,6 +110,52 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_models(args: argparse.Namespace) -> int:
+    """Manage the local llama.cpp server and GGUF models."""
+    from services.orchestrator.inference.llamacpp import (
+        LlamaCpp,
+        LlamaServer,
+        ServerConfig,
+        gpu_info,
+    )
+
+    lc = LlamaCpp()
+    if args.action == "status":
+        gpu = gpu_info()
+        print(f"GPU: {gpu.get('name', 'none')}  VRAM {gpu.get('vram_used_mib', '-')}/{gpu.get('vram_total_mib', '-')} MiB")
+        print(f"llama.cpp: {lc.installed_tag() or 'not installed'}")
+        for m in lc.models():
+            print(f"  model: {m.name} ({m.stat().st_size / 1e9:.1f} GB)")
+        return 0
+    if args.action == "install":
+        print(f"installed: {lc.install()}")
+        return 0
+    if args.action == "pull":
+        if not (args.repo and args.file):
+            print("usage: siliconforge models pull --repo <hf-repo> --file <name.gguf>")
+            return 2
+        print(f"ready: {lc.pull_model(args.repo, args.file)}")
+        return 0
+    exe = lc.server_exe
+    if exe is None:
+        print("llama-server not installed: run `siliconforge models install`")
+        return 1
+    if args.action == "start":
+        if not args.file:
+            print("usage: siliconforge models start --file <name.gguf> [--ctx N]")
+            return 2
+        server = LlamaServer(exe, ServerConfig(model_path=lc.home / "gguf" / args.file, ctx=args.ctx, port=args.port))
+        server.start()
+        print(f"serving {args.file} on {server.base_url} (Ctrl+C to stop)")
+        try:
+            while True:
+                time.sleep(3600)
+        except KeyboardInterrupt:
+            server.stop()
+        return 0
+    return 2
+
+
 def cmd_serve(args: argparse.Namespace) -> int:
     try:
         import uvicorn
@@ -147,6 +193,14 @@ def build_parser() -> argparse.ArgumentParser:
     d = sub.add_parser("doctor", help="Check the toolchain")
     d.add_argument("--config", default="configs/flow_default.yaml")
     d.set_defaults(func=cmd_doctor)
+
+    m = sub.add_parser("models", help="Manage local llama.cpp models")
+    m.add_argument("action", choices=["status", "install", "pull", "start"])
+    m.add_argument("--repo", default=None)
+    m.add_argument("--file", default=None)
+    m.add_argument("--ctx", type=int, default=16384)
+    m.add_argument("--port", type=int, default=8189)
+    m.set_defaults(func=cmd_models)
 
     s = sub.add_parser("serve", help="Start the HTTP API (and web UI)")
     s.add_argument("--host", default="127.0.0.1")

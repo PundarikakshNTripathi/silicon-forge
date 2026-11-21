@@ -188,6 +188,8 @@ class FlowState:
 
     def add_rtl_version(self, label: str, source: str) -> None:
         self.rtl_versions.append({"label": label, "source": source, "ts": round(time.time(), 3)})
+        self.log_event("RTL", "VERSION", f"RTL version '{label}' ({len(source.splitlines())} lines)",
+                       {"label": label, "source": source})
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

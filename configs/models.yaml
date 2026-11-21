@@ -16,7 +16,7 @@ providers:
     kind: replay
   llamacpp:                       # local llama.cpp server (see `siliconforge models`)
     kind: openai_compat
-    base_url: "http://127.0.0.1:8080/v1"
+    base_url: "http://127.0.0.1:8189/v1"
     local: true
     supports_json_schema: true    # constrained decoding via llama.cpp grammar
     cache_prompt: true            # reuse the KV cache for the shared prompt prefix

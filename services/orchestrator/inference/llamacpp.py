@@ -164,7 +164,7 @@ class LlamaCpp:
 @dataclass
 class ServerConfig:
     model_path: Path
-    port: int = 8080
+    port: int = 8189
     host: str = "127.0.0.1"
     ctx: int = 16384
     gpu_layers: int = 99

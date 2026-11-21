@@ -46,7 +46,7 @@ class ServerBody(BaseModel):
     model: str
     ctx: int | None = None
     kv: str | None = None
-    port: int = 8080
+    port: int = 8189
 
 
 class PullBody(BaseModel):
@@ -359,6 +359,16 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
     def retrieve(body: RetrieveBody) -> list[dict[str, Any]]:
         return [{"name": p.name, "content": p.content} for p in SkillRegistry().retrieve(body.query, body.top_k)]
 
+    @app.get("/api/benchmarks", dependencies=[api])
+    def benchmarks() -> list[dict[str, Any]]:
+        out = []
+        for f in sorted((REPO_ROOT / "benchmarks" / "results").glob("*.json"), reverse=True):
+            try:
+                out.append({"file": f.name, "data": json.loads(f.read_text(encoding="utf-8"))})
+            except (OSError, ValueError):
+                continue
+        return out
+
     @app.get("/api/config/defaults", dependencies=[api])
     def config_defaults() -> dict[str, Any]:
         cfg = load_flow_config()
@@ -369,7 +379,17 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
 
     dist = REPO_ROOT / "services" / "dashboard" / "dist"
     if serve_ui and dist.exists():
-        app.mount("/", StaticFiles(directory=dist, html=True), name="ui")
+        app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+        @app.get("/{path:path}", include_in_schema=False)
+        def spa(path: str) -> FileResponse:
+            """Serve built files, falling back to index.html so client-side routes survive a refresh."""
+            if path.startswith("api/"):
+                raise HTTPException(404, "not found")
+            target = (dist / path).resolve()
+            if path and str(target).startswith(str(dist.resolve())) and target.is_file():
+                return FileResponse(target)
+            return FileResponse(dist / "index.html")
 
     return app
 

@@ -32,7 +32,7 @@ def main() -> int:
     ap.add_argument("--designs", default="", help="comma-separated example names (default: all)")
     ap.add_argument("--ctx", type=int, default=16384)
     ap.add_argument("--kv", default="q8_0")
-    ap.add_argument("--port", type=int, default=8080)
+    ap.add_argument("--port", type=int, default=8189)
     ap.add_argument("--max-repair", type=int, default=3)
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
