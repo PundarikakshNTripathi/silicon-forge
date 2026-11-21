@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Measure the verification toolkit on the pio16 worked example and write a committed result artifact.
 
     python benchmarks/bench_verification.py [--backend wsl] [--seeds 8] [--mutants 80]

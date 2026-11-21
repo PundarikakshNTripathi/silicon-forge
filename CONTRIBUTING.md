@@ -26,5 +26,12 @@ The UI lives in `services/dashboard` (`pnpm install && pnpm dev`).
 - Add tests with your change. LLM-dependent tests use the replay provider, never live APIs.
 - Guardrail changes (`services/orchestrator/guardrails/`) need a test that fails without the change.
 
+## License and contributor grant
+SiliconForge is AGPL-3.0-or-later, and the maintainer also offers it under a commercial license ([COMMERCIAL.md](COMMERCIAL.md)).
+By opening a pull request you confirm that you wrote the change (or have the right to submit it) and you license it to the
+project under AGPL-3.0-or-later and also grant the maintainer a perpetual, worldwide, non-exclusive right to sublicense
+your contribution under other terms, including commercial ones. Sign off commits with `git commit -s` (Developer
+Certificate of Origin). If you cannot agree to this, say so in the PR before it is reviewed.
+
 ## Coding agents
 Agent harness files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, ...) are checked in. `AGENTS.md` is the single source of truth; keep the others as thin pointers.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """SiliconForge HTTP API (FastAPI): runs, live event streaming, artifacts, providers, local models, skills, system."""
 from __future__ import annotations
 
@@ -26,10 +27,10 @@ from services.orchestrator.inference.estimate import estimate_profile_cost
 from services.orchestrator.inference.gpu import GpuBusyError, foreign_servers
 from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, ServerConfig, gpu_info
 from services.orchestrator.inference.secrets import delete_secret, set_secret
-from services.orchestrator.paths import data_root
+from services.orchestrator.paths import RESOURCE_ROOT, data_root
 from services.orchestrator.skills.registry import SkillRegistry
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = RESOURCE_ROOT
 DEFAULT_SETTINGS: dict[str, Any] = {
     "default_profile": "replay",
     "default_backend": "simulated",
@@ -375,7 +376,12 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
     @app.get("/api/benchmarks", dependencies=[api])
     def benchmarks() -> list[dict[str, Any]]:
         out = []
-        for f in sorted((REPO_ROOT / "benchmarks" / "results").glob("*.json"), reverse=True):
+        folders = [REPO_ROOT / "benchmarks" / "results", data_root() / "benchmarks" / "results"]  # committed, then yours
+        seen: set[str] = set()
+        for f in sorted((f for d in folders if d.is_dir() for f in d.glob("*.json")), key=lambda p: p.name, reverse=True):
+            if f.name in seen:
+                continue
+            seen.add(f.name)
             try:
                 out.append({"file": f.name, "data": json.loads(f.read_text(encoding="utf-8"))})
             except (OSError, ValueError):

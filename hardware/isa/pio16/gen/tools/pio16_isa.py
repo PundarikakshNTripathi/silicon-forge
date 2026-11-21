@@ -13,6 +13,16 @@ from types import SimpleNamespace
 from typing import Any
 
 # ---------------------------------------------------------------- spec
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+
+
+
+
+
+
+
 class IsaError(ValueError):
     pass
 
@@ -182,6 +192,15 @@ def parse_spec(raw: dict[str, Any]) -> IsaSpec:
                    title=str(raw.get("title", raw["name"])), description=str(raw.get("description", "")).strip())
 
 # ---------------------------------------------------------------- asm
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+
+
+
+
+
+
 _BINOPS = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.LShift: operator.lshift,
            ast.RShift: operator.rshift, ast.BitOr: operator.or_, ast.BitAnd: operator.and_, ast.BitXor: operator.xor}
 
@@ -433,6 +452,16 @@ def disassemble(spec: IsaSpec, words: list[int]) -> str:
     return "\n".join(lines) + "\n"
 
 # ---------------------------------------------------------------- model
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+
+
+
+
+
+
+
 class IllegalInstruction(Exception):
     def __init__(self, addr: int, word: int) -> None:
         super().__init__(f"illegal instruction 0x{word:x} at address {addr}")
@@ -543,6 +572,12 @@ class Machine:
         return self.retired
 
 # ---------------------------------------------------------------- randprog
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+
+
+
 _CORNER_BIAS = 0.3
 
 
@@ -578,6 +613,13 @@ def random_program(spec: IsaSpec, rng: random.Random, length: int, weights: dict
     return words
 
 # ---------------------------------------------------------------- timing
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+
+
+
+
 START = -1  # virtual source: the first pin event after reset
 
 

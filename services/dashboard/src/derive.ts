@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // Turns the ordered event stream into the view the run page renders (works live and after the fact).
 import type { Contract, EventRec, PPA, Witness } from "./api";
 

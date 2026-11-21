@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // SiliconForge desktop shell.
 // Starts the Python backend as a supervised sidecar on a random localhost port with a per-launch token,
 // then shows the web UI (served by that backend) in a native window.

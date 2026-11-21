@@ -1,7 +1,11 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Coins, Cpu, FlaskConical, FolderTree, ListChecks, Moon, Play, Sun, Wrench } from "lucide-react";
+import { BookOpen, Code, Coins, Cpu, FlaskConical, FolderTree, ListChecks, Moon, Play, Sun, Wrench } from "lucide-react";
+
+// AGPL-3.0 section 13: users of a modified network-served version must be offered its source. A fork sets VITE_SOURCE_URL.
+const SOURCE_URL = (import.meta as { env?: Record<string, string> }).env?.VITE_SOURCE_URL ?? "https://github.com/PundarikakshNTripathi/silicon-forge";
 import { api, type RunSummary } from "./api";
 import { useHotkey, useTheme, useToasts } from "./lib";
 import NewRun from "./pages/NewRun";
@@ -87,6 +91,7 @@ export default function App() {
         <span className="spacer" />
         <div className="foot">
           <NavLink to="/system" className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Wrench size={17} /><span>System</span></NavLink>
+          <a className="nav" href={SOURCE_URL} target="_blank" rel="noreferrer"><Code size={17} /><span>Source (AGPL-3.0)</span></a>
           <button className="nav" onClick={() => setTheme(dark ? "light" : "dark")} aria-label="Toggle theme">{dark ? <Sun size={17} /> : <Moon size={17} />}<span>{dark ? "Light theme" : "Dark theme"}</span></button>
         </div>
       </nav>

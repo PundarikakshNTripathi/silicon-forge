@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Generate the architecture diagrams (assets/diagrams/*.svg) in the cockpit's visual language.
 
     python scripts/make_diagrams.py

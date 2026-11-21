@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Benchmark a local GGUF model on this machine: quality (real formal + LEC) and speed (TTFT, tokens/s, KV-cache reuse).
 
 For each bundled example spec the full pipeline runs with the model as every tier (profile `local`), verify-only
@@ -25,6 +26,22 @@ from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, Serv
 from services.orchestrator.pipeline import SiliconForgePipeline  # noqa: E402
 
 
+def _trace(state, limit: int = 30) -> list[dict]:
+    """Why a design did not verify: the non-LLM events (guardrail verdicts, lint, formal), trimmed. Kept for failures only."""
+    keep = []
+    for e in state.events:
+        if str(e.get("detail", "")).startswith("LLM CALL") or e.get("stage") == "LLM":
+            continue
+        row = {"stage": e.get("stage"), "status": e.get("status"), "detail": str(e.get("detail", ""))[:240]}
+        pay = e.get("payload") or {}
+        if pay.get("violations"):
+            row["violations"] = [str(v)[:200] for v in pay["violations"]][:6]
+        if pay.get("log_tail"):
+            row["log_tail"] = str(pay["log_tail"])[-400:]
+        keep.append(row)
+    return keep[-limit:]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True, help="path to a .gguf")
@@ -35,9 +52,15 @@ def main() -> int:
     ap.add_argument("--port", type=int, default=8189)
     ap.add_argument("--max-repair", type=int, default=3)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
+                    help="pipeline setting for an ablation, repeatable (debug_context=false, repair_candidates=3)")
     args = ap.parse_args()
+    overrides = {}
+    for item in args.set:
+        key, _, raw = item.partition("=")
+        overrides[key.strip()] = json.loads(raw.lower() if raw.lower() in ("true", "false") else raw)
 
-    model = Path(args.model)
+    model = Path(args.model).resolve()
     lc = LlamaCpp()
     exe = lc.server_exe
     if exe is None:
@@ -66,6 +89,7 @@ def main() -> int:
             cfg.pipeline["stop_after"] = "lec"
             cfg.pipeline["max_rtl_repair_iters"] = args.max_repair
             cfg.pipeline["max_formal_iters"] = args.max_repair
+            cfg.pipeline.update(overrides)
             with tempfile.TemporaryDirectory(prefix="sf_bench_") as tmp:
                 cfg.workspace_root = Path(tmp)
                 pipeline = SiliconForgePipeline(cfg, eda=EDABridge(cfg))
@@ -88,6 +112,7 @@ def main() -> int:
                 "tokens_per_s_p50": snap["tokens_per_s_p50"],
                 "ttft_p50_s": snap["ttft_p50_s"],
                 "prefix_cache_ratio": snap["prefix_cache_ratio"],
+                "trace": [] if reached_lec else _trace(state),
             })
             r = rows[-1]
             print(f"{'OK ' if r['verified'] else 'FAIL'} {r['design']:<18} {r['stage']:<14} calls={r['llm_calls']} "
@@ -100,7 +125,7 @@ def main() -> int:
         "model": model.name, "ctx": args.ctx, "kv_cache": args.kv, "backend": args.backend,
         "gpu": vram.get("name"), "vram_used_mib_loaded": vram.get("vram_used_mib"), "load_s": load_s,
         "verified": sum(r["verified"] for r in rows), "designs": len(rows),
-        "llama_cpp": lc.installed_tag(), "results": rows,
+        "llama_cpp": lc.installed_tag(), "pipeline_overrides": overrides, "max_repair": args.max_repair, "results": rows,
     }
     out = ROOT / "benchmarks" / "results" / f"local-{model.stem}{('-' + args.tag) if args.tag else ''}-{time.strftime('%Y-%m-%d')}.json"
     out.parent.mkdir(parents=True, exist_ok=True)

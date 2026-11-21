@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Typed Property IR -> SymbiYosys SVA & .sby compiler + counterexample witness parser.
 
 The LLM never writes raw SVA. It emits structured `TypedPropertyIR` objects (see `schemas.py`) and this

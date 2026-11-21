@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """OpenAI-compatible chat-completions provider: llama.cpp `llama-server`, OpenAI, Gemini (compat endpoint), Ollama, LM Studio.
 
 Streams responses so time-to-first-token and decode speed are measured, supports JSON-schema constrained decoding

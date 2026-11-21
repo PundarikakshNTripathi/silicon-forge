@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Workspace + agent-session HTTP API: folder browser, confinement, streaming events, and the approval round trip."""
 from __future__ import annotations
 

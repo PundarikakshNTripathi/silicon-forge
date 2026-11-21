@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """The agent's tools: a small, sandboxed set that works the same for any model.
 
 Design rules:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Principal Architect Agent: converts a natural-language spec into a schema-validated DesignContract."""
 from __future__ import annotations
 

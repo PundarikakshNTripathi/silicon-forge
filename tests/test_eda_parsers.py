@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """LibreLane metrics parsing (real metrics.json), runner path translation, and config generation."""
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """AI-usage ledger: an append-only record of every model call, and the disclosure report built from it.
 
 Contests that allow AI assistance (Jane Street x Tiny Tapeout does) ask you to say how it was used. The ledger makes

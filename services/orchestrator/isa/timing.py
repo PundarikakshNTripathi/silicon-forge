@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Timing analysis for protocol programs: how many clock cycles separate pin events?
 
 Bit-banged protocols live or die on exact timing. Two complementary views, both derived from the ISA spec:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Workspaces, the enforced model policy, the AI-usage ledger, the GPU guard and the Antigravity (`agy`) provider.
 
 No test calls a live model or the real nvidia-smi: `agy` is replaced by a tiny Python script that speaks its protocol.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Workspace agent: protocol parsing, permission modes, sandbox, protected files, undo, transcript compaction.
 
 The model is a scripted fake, so these tests are deterministic and never call a live model or an EDA tool.

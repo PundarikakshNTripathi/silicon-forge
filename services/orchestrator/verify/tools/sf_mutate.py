@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Mutation testing for Verilog/SystemVerilog: how many planted bugs does your test suite actually catch?
 
 Standard library only, so it runs wherever the EDA tools run (native, WSL, Docker) and can be vendored into a project's CI.

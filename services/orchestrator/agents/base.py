@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Base hardware engineering agent: grounded skill injection, JSON extraction, schema-validated calls."""
 from __future__ import annotations
 

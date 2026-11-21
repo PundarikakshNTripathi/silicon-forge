@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Agent sessions for the GUI: one worker thread per turn, an event log to stream, and blocking approvals.
 
 The agent loop is synchronous. When it needs the user's permission it parks on a `threading.Event` until the UI answers

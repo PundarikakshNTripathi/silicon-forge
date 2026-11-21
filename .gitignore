@@ -68,3 +68,6 @@ build/
 
 # per-workspace state created by the verification tools
 .siliconforge/
+
+# bundled into the wheel at build time
+services/_resources/

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Schema validation of structured LLM output (DesignContract / TypedPropertyIR)."""
 from __future__ import annotations
 

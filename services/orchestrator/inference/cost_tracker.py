@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Per-call token, latency and USD ledger with budget circuit breakers and cache-savings accounting."""
 from __future__ import annotations
 

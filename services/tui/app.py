@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """SiliconForge terminal UI (Textual). Runs the pipeline in-process and follows its event stream live."""
 from __future__ import annotations
 
@@ -12,8 +13,9 @@ from textual.widgets import Button, DataTable, Footer, Header, Label, Select, St
 
 from services.orchestrator.api.manager import RunManager, RunRequest
 from services.orchestrator.api.store import TERMINAL, Store
+from services.orchestrator.paths import RESOURCE_ROOT
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = RESOURCE_ROOT
 STAGES = [("ARCHITECT", "Contract"), ("RTL", "RTL"), ("GUARDRAIL_AUDIT", "Guardrails"), ("FORMAL_VERIFY", "Formal"),
           ("SYNTHESIS_LEC", "Synthesis"), ("PNR_RL_OPT", "Layout"), ("SIGNOFF", "Signoff")]
 ALIAS = {"RTL_GEN": "RTL", "SIMULATION": "GUARDRAIL_AUDIT"}

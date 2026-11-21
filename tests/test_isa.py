@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """ISA toolchain: spec validation, assembler/disassembler, golden model, timing checker, generators, standalone bundle."""
 from __future__ import annotations
 

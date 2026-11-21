@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Shared fixtures. Tests never call live LLM APIs; real-EDA tests auto-skip when the toolchain is absent."""
 from __future__ import annotations
 

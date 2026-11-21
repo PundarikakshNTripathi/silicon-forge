@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Minimal VCD (Value Change Dump) reader used to distill formal counterexamples and drive the waveform viewer."""
 from __future__ import annotations
 

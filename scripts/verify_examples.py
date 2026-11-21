@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Run every bundled example (good RTL must pass, bug RTL must be caught) through a real EDA backend.
 
 Usage: python scripts/verify_examples.py [--backend wsl|native|docker] [--lec]

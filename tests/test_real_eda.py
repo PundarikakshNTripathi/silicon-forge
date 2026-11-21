@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Real Yosys / SymbiYosys checks on every bundled example (auto-skipped when tools are absent)."""
 from __future__ import annotations
 

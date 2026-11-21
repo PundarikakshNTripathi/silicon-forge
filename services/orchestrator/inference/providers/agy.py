@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Gemini through the Antigravity CLI (`agy`), driven in print mode. OPT-IN, same rules as the other CLI bridges.
 
 Why this exists: a Google AI subscription includes Gemini 3.8 Flash inside Antigravity but not an API key. `agy` is the

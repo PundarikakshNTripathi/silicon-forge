@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """SiliconForge CLI.
 
     siliconforge run    --spec hardware/examples/axi_lite_alu/spec.md --backend wsl
@@ -17,6 +18,7 @@ from pathlib import Path
 from services.orchestrator.config import load_flow_config
 from services.orchestrator.eda.bridge import MODES, EDABridge, normalize_mode
 from services.orchestrator.inference.providers import ReplayProvider
+from services.orchestrator.paths import RESOURCE_ROOT, data_root
 from services.orchestrator.pipeline import SiliconForgePipeline
 from services.orchestrator.state import FlowState
 
@@ -85,7 +87,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def cmd_eval(args: argparse.Namespace) -> int:
     """Run every bundled example through the pipeline and write a results artifact."""
-    root = Path(__file__).resolve().parents[2]
+    root = RESOURCE_ROOT
     rows = []
     for fx in sorted((root / "hardware" / "examples").glob("*/fixtures/contract.json")):
         ex = fx.parent.parent
@@ -98,7 +100,7 @@ def cmd_eval(args: argparse.Namespace) -> int:
         rows.append(row)
         print(f"{'PASS' if state.signoff_passed else 'FAIL'} {ex.name:<18} {state.stage.value:<10} "
               f"formal_iters={row['formal_iterations']} {row['elapsed_sec']}s {state.error_message or ''}")
-    out = Path(args.out) if args.out else root / "benchmarks" / "results" / f"{time.strftime('%Y-%m-%d')}-{args.backend or 'default'}.json"
+    out = Path(args.out) if args.out else data_root() / "benchmarks" / "results" / f"{time.strftime('%Y-%m-%d')}-{args.backend or 'default'}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"backend": args.backend, "results": rows}, indent=2), encoding="utf-8")
     print(f"wrote {out}")

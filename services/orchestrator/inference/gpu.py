@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """GPU arbitration: SiliconForge shares the machine with other projects, so it asks before it loads anything.
 
 Everything here is read-only. We query VRAM, look for other OpenAI-compatible model servers on well-known ports, and

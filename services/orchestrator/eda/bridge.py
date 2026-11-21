@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """EDA bridge: selects an execution backend by `eda_mode` and exposes one stable interface to the pipeline.
 
 Modes: "simulated" (surrogate models), "native" (tools on PATH), "wsl" (WSL2 distro), "docker" (container).

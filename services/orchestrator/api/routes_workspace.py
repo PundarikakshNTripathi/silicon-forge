@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """HTTP routes for workspaces, a read-only folder browser and agent sessions.
 
 The API only listens on localhost behind a per-launch token, so the folder browser (which a native file dialog also

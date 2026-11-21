@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """ModelRouter tier escalation, response caching and the CostTracker circuit breaker."""
 from __future__ import annotations
 

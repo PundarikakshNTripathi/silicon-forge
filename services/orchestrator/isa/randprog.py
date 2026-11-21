@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Constrained-random program generation from an ISA spec, for lockstep regression.
 
 Every word produced is a valid encoding (it is built from the spec, never from random bits), operands are biased

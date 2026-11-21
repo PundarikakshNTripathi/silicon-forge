@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """End-to-end pipeline tests on the simulated backend with the replay provider (offline, CI-safe)."""
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Claude via the official Anthropic SDK, with prompt caching and refusal handling.
 
 Notes that matter on the current Claude 5.x models (see the claude-api reference):

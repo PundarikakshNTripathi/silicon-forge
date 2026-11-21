@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """MCP server: tool registration and offline tool behavior (real-tool paths are covered by real_eda tests)."""
 from __future__ import annotations
 

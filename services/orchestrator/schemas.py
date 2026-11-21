@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Pydantic schemas validating all structured LLM output (DesignContract, TypedPropertyIR).
 
 These models are also exported as JSON Schema for constrained decoding (llama.cpp `json_schema`,

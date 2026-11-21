@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // Minimal, explicit bridge. The UI needs almost nothing from Node: it identifies the shell and can ask the main process
 // to show the native folder dialog (the chosen path is the only thing returned).
 "use strict";

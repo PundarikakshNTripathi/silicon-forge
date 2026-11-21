@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for PPA reward shaping, Pareto front, and Hybrid RL Optimizer."""
 import tempfile
 import unittest

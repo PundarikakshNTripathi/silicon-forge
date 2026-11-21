@@ -1,14 +1,25 @@
 [build-system]
-requires = ["setuptools>=68.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "siliconforge"
-version = "0.2.0"
+version = "0.4.0"
 description = "Local-first autonomous Spec-to-RTL-to-GDSII chip design agent with formal verification guardrails"
 readme = "README.md"
+authors = [{name = "SiliconForge contributors"}]
+keywords = ["eda", "rtl", "verilog", "formal-verification", "asic", "openroad", "yosys", "llm-agents"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
 requires-python = ">=3.11"
-license = {text = "Apache-2.0"}
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 dependencies = [
     "numpy>=1.26",
     "pyyaml>=6.0",
@@ -47,6 +58,10 @@ dev = [
     "pillow>=10",
 ]
 
+[project.urls]
+Homepage = "https://github.com/PundarikakshNTripathi/silicon-forge"
+Issues = "https://github.com/PundarikakshNTripathi/silicon-forge/issues"
+
 [project.scripts]
 siliconforge = "services.orchestrator.main:cli_main"
 
@@ -56,6 +71,7 @@ exclude = ["services.dashboard*", "services.telemetry_engine*"]
 
 [tool.setuptools.package-data]
 "services.orchestrator" = ["skills/packs/*.md"]
+"services" = ["_resources/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

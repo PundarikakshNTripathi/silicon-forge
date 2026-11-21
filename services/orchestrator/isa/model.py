@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Golden model: an instruction-level reference machine derived from the ISA spec.
 
 The model decodes real words with the same `decode()` the disassembler uses and runs each instruction's `exec` snippet

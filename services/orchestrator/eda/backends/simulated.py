@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Simulated EDA backend: deterministic surrogate models for demos, CI and offline development.
 
 Everything returned here is labelled mode="simulated". It does NOT run Yosys/SymbiYosys/OpenROAD and its

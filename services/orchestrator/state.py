@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Core domain models and pipeline state for SiliconForge.
 
 Every EDA-derived result carries a `mode` (provenance): "simulated" | "native" | "wsl" | "docker".

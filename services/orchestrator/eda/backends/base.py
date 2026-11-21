@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """EDA backend interface. Every result carries `mode` provenance; missing tools raise, never fall back."""
 from __future__ import annotations
 

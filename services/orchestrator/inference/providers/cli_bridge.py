@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Opt-in bridge to the OFFICIAL provider CLIs you are already signed into (`claude -p`, `codex exec`, `gemini -p`).
 
 Usage is billed by your subscription, not per token, so cost is recorded as $0 and tokens are estimated.

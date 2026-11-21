@@ -23,6 +23,11 @@ jobs:
         run: uv pip install -e ".[api,providers,tui,mcp,dev]"
       - name: Lint
         run: uv run ruff check services tests scripts
+      - name: License headers and dependency licenses
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        run: |
+          uv run python scripts/spdx.py --check
+          uv run python scripts/notices.py --check
       - name: Test
         run: uv run pytest -q
 

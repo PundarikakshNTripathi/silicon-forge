@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Model catalog: prices, provider definitions and routing profiles loaded from configs/models.yaml."""
 from __future__ import annotations
 
@@ -6,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+from services.orchestrator.paths import RESOURCE_ROOT
 
 TIERS = ("local_fast", "balanced", "frontier_reasoning")
 
@@ -60,7 +63,7 @@ class Catalog:
 
 
 def load_catalog(path: str | Path | None = None, repo_root: Path | None = None) -> Catalog:
-    root = repo_root or Path(__file__).resolve().parents[3]
+    root = repo_root or RESOURCE_ROOT
     file = Path(path) if path else root / "configs" / "models.yaml"
     if not file.is_absolute():
         file = root / file

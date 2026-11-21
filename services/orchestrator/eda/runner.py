@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Process runners: execute EDA tools natively, inside WSL2, or in Docker.
 
 All real backends share the same flow logic and differ only in how a command is launched and how

@@ -9,7 +9,7 @@
 A local-first agent where tools, not language models, decide what passes. Desktop app, web cockpit, terminal, and an agent that works in your own folder.
 
 [![CI](https://github.com/PundarikakshNTripathi/silicon-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/PundarikakshNTripathi/silicon-forge/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-0e1520)](LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL--3.0--or--later-0e1520)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.11%2B-0e1520)
 ![EDA](https://img.shields.io/badge/EDA-Yosys%20%C2%B7%20SymbiYosys%20%C2%B7%20OpenROAD-0e1520)
 ![Tiny Tapeout](https://img.shields.io/badge/Tiny%20Tapeout-IHP%20SG13CMOS5L-f2a900)
@@ -311,4 +311,4 @@ configs/  benchmarks/  docs/  tests/  scripts/
 
 ## Contributing
 
-Workflow, branch names and commit style are in [CONTRIBUTING.md](CONTRIBUTING.md). If you use a coding agent, [AGENTS.md](AGENTS.md) is the single source of truth. Licensed under [Apache-2.0](LICENSE).
+Workflow, branch names and commit style are in [CONTRIBUTING.md](CONTRIBUTING.md). If you use a coding agent, [AGENTS.md](AGENTS.md) is the single source of truth. Licensed under [AGPL-3.0-or-later](LICENSE); a commercial license is available, see [COMMERCIAL.md](COMMERCIAL.md).

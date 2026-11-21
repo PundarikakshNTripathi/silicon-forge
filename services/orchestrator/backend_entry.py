@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Entry point for the packaged backend (PyInstaller) and for the Electron dev shell: serve the API and UI."""
 from __future__ import annotations
 

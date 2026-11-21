@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Verification toolkit: protocol decoders, coverage, toggle analysis (pure Python) and the pio16 lockstep regression
 end to end with real Icarus + cocotb (auto-skipped when the tools are absent)."""
 from __future__ import annotations

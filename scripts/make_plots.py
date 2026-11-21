@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Render README charts from the committed result files in benchmarks/results/ (no invented numbers)."""
 from __future__ import annotations
 

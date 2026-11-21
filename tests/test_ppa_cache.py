@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """EDA result cache: identical RTL + knobs reuse a layout, and the cached artifacts appear in the new run."""
 from __future__ import annotations
 
