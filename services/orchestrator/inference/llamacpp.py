@@ -190,6 +190,9 @@ class LlamaCpp:
         return found
 
 
+SPEC_TYPES = ("none", "draft-simple", "ngram-simple", "ngram-map-k", "ngram-map-k4v", "ngram-mod", "ngram-cache")
+
+
 @dataclass
 class ServerConfig:
     model_path: Path
@@ -204,8 +207,27 @@ class ServerConfig:
     threads: int | None = None
     reasoning: str = "auto"  # "on" | "off" | "auto" (the model's own default); "off" skips the thinking phase
     extra: tuple[str, ...] = ()
+    #: speculative decoding (llama.cpp `--spec-type`): "none", "draft-simple" (needs `draft_model`), or model-free n-gram
+    #: lookup ("ngram-simple", "ngram-mod", ...), which helps when the output repeats the prompt, as RTL edits do
+    spec_type: str = "none"
+    draft_model: Path | None = None
+    draft_max: int | None = None  # most tokens drafted per step (llama.cpp default 3)
+    draft_min: int | None = None
+    draft_gpu_layers: int | None = None
+
+    def validate(self) -> None:
+        if self.spec_type not in SPEC_TYPES:
+            raise ValueError(f"spec_type must be one of {', '.join(SPEC_TYPES)}; got {self.spec_type!r}")
+        if self.spec_type == "draft-simple" and self.draft_model is None:
+            raise ValueError("spec_type 'draft-simple' needs a draft_model (a smaller model of the same family)")
+        if self.draft_model is not None and self.spec_type == "none":
+            raise ValueError("a draft_model was given but spec_type is 'none'; use 'draft-simple'")
+        if self.spec_type != "none" and self.parallel > 1:
+            raise ValueError("speculative decoding is measured with one slot (parallel=1); combine them only with --extra "
+                             "after measuring, since slots share the draft")
 
     def argv(self, exe: Path) -> list[str]:
+        self.validate()
         # the server runs with its own directory as cwd, so a relative path would silently point somewhere else
         a = [str(exe), "-m", str(Path(self.model_path).resolve()), "--host", self.host, "--port", str(self.port),
              "-c", str(self.ctx), "-ngl", str(self.gpu_layers), "--parallel", str(self.parallel),
@@ -218,6 +240,16 @@ class ServerConfig:
             a += ["-t", str(self.threads)]
         if self.reasoning in ("on", "off"):
             a += ["--reasoning", self.reasoning]
+        if self.spec_type != "none":
+            a += ["--spec-type", self.spec_type]
+            if self.draft_model is not None:
+                a += ["--spec-draft-model", str(Path(self.draft_model).resolve())]
+            if self.draft_gpu_layers is not None:
+                a += ["--spec-draft-ngl", str(self.draft_gpu_layers)]
+            if self.draft_max is not None:
+                a += ["--spec-draft-n-max", str(self.draft_max)]
+            if self.draft_min is not None:
+                a += ["--spec-draft-n-min", str(self.draft_min)]
         return a + list(self.extra)
 
 
@@ -238,8 +270,13 @@ class LlamaServer:
         if check_gpu:
             from services.orchestrator.inference.gpu import require_free_vram
 
+            self.cfg.validate()
+            draft = self.cfg.draft_model
+            draft_mib = 0
+            if draft is not None and (self.cfg.draft_gpu_layers is None or self.cfg.draft_gpu_layers > 0):
+                draft_mib = int(Path(draft).stat().st_size / (1024 * 1024)) + 128  # weights plus a small draft KV cache
             require_free_vram(self.cfg.model_path, self.cfg.ctx, self.cfg.kv_type, self.cfg.parallel,
-                              self.cfg.gpu_layers)
+                              self.cfg.gpu_layers, draft_mib=draft_mib)
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         log = self.log_path.open("w")
         flags = subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0

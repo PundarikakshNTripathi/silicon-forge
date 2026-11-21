@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (local inference)
+- Speculative decoding options for the managed llama-server (`--spec-type`, `--draft-model`, `--draft-max`), validated, with the draft model counted in the VRAM guard; and `benchmarks/bench_speed.py`, a speed sweep over KV type, context length and speculation. **No speedup has been measured yet** (the GPU was busy); speculation stays off by default.
 ### Added (agent safety and context)
 - Workspace `permissions: allow/deny` rules (`tool` or `tool(glob)`; deny wins and applies in `auto`; paths normalised so `..` and backslashes cannot dodge a pattern).
 - Staged context compaction: the transcript stays inside `context_chars`; earlier turns become a deterministic digest, no model call.
