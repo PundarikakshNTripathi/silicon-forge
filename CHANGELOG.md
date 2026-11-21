@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (flow)
+- `flow lock`, `flow lock --check` and `flow run --locked`: pin the installed Verilator, Yosys and LibreLane versions and the PDK name in `flow.lock`, and refuse to run when they differ. `docs/flow.md`.
 ### Added (agent)
 - Opt-in saved conversations: `chat --save`, `chat --resume [ID]`, `siliconforge sessions`. Stored as JSON lines under `.siliconforge/sessions/`; ids are validated, a torn last line is skipped. Not saved unless asked, because the file holds prompts and tool output in clear text. `docs/workspaces.md`.
 ### Fixed (evals)

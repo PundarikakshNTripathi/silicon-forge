@@ -69,6 +69,19 @@ Each report records the runner (`native`, `wsl` or `docker`), the version of Ver
 the sources, constraints and settings, and a hash of the exact LibreLane configuration. `flow diff` says whether two reports
 used the same inputs, which tools changed, and what moved in area, power, slack and the individual gates.
 
+### Pinning tools with `flow.lock`
+
+```bash
+siliconforge flow lock .              # writes flow.lock with the installed Verilator, Yosys and LibreLane versions and the PDK name
+siliconforge flow lock . --check      # exit 3 and list the differences if anything installed has changed
+siliconforge flow run . --locked      # refuse to start (exit 3, nothing run) when an installed tool differs from the lock
+```
+
+Commit `flow.lock` with the project. A tool that is missing never matches, and a lock cannot be written while a tool is missing.
+The lock pins tools and the PDK *name*; it does not pin the RTL (the report's fingerprint identifies that) or the PDK revision,
+which is installed outside these tools. Checked on the reference machine: `lock` then `lock --check` passes, and a lock edited to
+a different Yosys version makes `run --locked` refuse.
+
 ## A worked result
 
 `pio16` (a 16-bit programmable pin engine: two source files and an include directory) on sky130A with a 20 ns clock, through
