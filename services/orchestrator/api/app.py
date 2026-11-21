@@ -16,12 +16,14 @@ from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from services.orchestrator.api import system
+from services.orchestrator.api import routes_workspace, system
+from services.orchestrator.api.agent_manager import AgentManager
 from services.orchestrator.api.manager import RunManager, RunRequest
 from services.orchestrator.api.store import TERMINAL, Store
 from services.orchestrator.config import load_flow_config
 from services.orchestrator.inference.catalog import load_catalog
 from services.orchestrator.inference.estimate import estimate_profile_cost
+from services.orchestrator.inference.gpu import GpuBusyError, foreign_servers
 from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, ServerConfig, gpu_info
 from services.orchestrator.inference.secrets import delete_secret, set_secret
 from services.orchestrator.paths import data_root
@@ -44,7 +46,9 @@ class SecretBody(BaseModel):
 
 
 class ServerBody(BaseModel):
-    model: str
+    model: str = ""  # a file in SiliconForge's model folder, or...
+    path: str | None = None  # ...any GGUF on disk (e.g. the Hugging Face cache), used in place
+    cpu: bool = False
     ctx: int | None = None
     kv: str | None = None
     port: int = 8189
@@ -80,6 +84,8 @@ class LocalModels:
                        "model": self.server.cfg.model_path.name if self.server else None,
                        "props": self.server.props() if self.server and self.server.is_healthy() else {}},
             "gpu": gpu_info(),
+            "discovered": self.lc.discover_models(),
+            "other_servers": [x for x in foreign_servers(own_port=8189) if not x["ours"]],
             "pulls": self.pulls,
         }
 
@@ -87,16 +93,18 @@ class LocalModels:
         exe = self.lc.server_exe
         if exe is None:
             raise HTTPException(400, "llama-server is not installed")
-        path = self.lc.home / "gguf" / body.model
-        if not path.exists():
-            raise HTTPException(404, f"model '{body.model}' not found")
+        path = Path(body.path) if body.path else self.lc.home / "gguf" / body.model
+        if not path.is_file() or path.suffix != ".gguf":
+            raise HTTPException(404, f"model '{body.path or body.model}' not found")
         if self.server:
             self.server.stop()
         cfg = ServerConfig(model_path=path, ctx=body.ctx or defaults["llama_ctx"], kv_type=body.kv or defaults["llama_kv"],
-                           port=body.port)
+                           port=body.port, gpu_layers=0 if body.cpu else 99)
         self.server = LlamaServer(exe, cfg)
         try:
             self.server.start()
+        except GpuBusyError as exc:
+            raise HTTPException(409, str(exc)) from exc
         except (RuntimeError, TimeoutError) as exc:
             raise HTTPException(500, str(exc)) from exc
 
@@ -133,12 +141,14 @@ class LocalModels:
         return pid
 
 
-def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_root: Path | None = None) -> FastAPI:
+def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_root: Path | None = None,
+               agents: AgentManager | None = None) -> FastAPI:
     app = FastAPI(title="SiliconForge API", version="0.3.0")
     runs_root = Path(runs_root) if runs_root else data_root() / "runs"
     store = Store(db_path or runs_root / "siliconforge.db")
     manager = RunManager(store, REPO_ROOT, runs_root=runs_root)
     local = LocalModels()
+    agents = agents or AgentManager()
     token = os.getenv("SILICONFORGE_API_TOKEN", "")
 
     app.add_middleware(
@@ -286,6 +296,8 @@ def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_ro
     @app.get("/api/cost/summary", dependencies=[api])
     def cost_summary() -> dict[str, Any]:
         return store.cost_rollup()
+
+    routes_workspace.register(app, api, agents)
 
     # --- providers / secrets -------------------------------------------------------------------------
 
