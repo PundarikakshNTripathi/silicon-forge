@@ -60,8 +60,10 @@ def versions() -> dict[str, str]:
 
 def add_parser(sub) -> None:
     p = sub.add_parser("agentbench", help="Benchmark agent loops (ours and framework-built) on the same tasks, tools and model")
-    p.add_argument("action", choices=["list", "run", "report"])
-    p.add_argument("files", nargs="*", help="report: result files")
+    p.add_argument("action", choices=["list", "run", "report", "compare"])
+    p.add_argument("files", nargs="*", help="report: result files; compare: the earlier file, then the later one")
+    p.add_argument("--max-drop", type=float, default=0.10, help="compare: a drop this large (0.10 = 10 points) can be a regression")
+    p.add_argument("--gate", action="store_true", help="compare: exit 1 if any arm regressed (for CI and scheduled canaries)")
     p.add_argument("--arms", default=",".join(ARMS), help=f"comma-separated: {', '.join(ARMS)}; add +guards to a framework arm")
     p.add_argument("--tasks", default="", help="comma-separated task ids (default: all)")
     p.add_argument("--trials", type=int, default=3)
@@ -103,6 +105,14 @@ def cmd_agentbench(args: argparse.Namespace) -> int:
             doc = json.loads(Path(f).read_text(encoding="utf-8"))
             print(json.dumps(doc["summary"], indent=2) if args.json else report.render(doc))
         return 0 if args.files else 2
+    if args.action == "compare":
+        if len(args.files) != 2:
+            print("compare needs exactly two result files: the earlier one, then the later one", file=sys.stderr)
+            return 2
+        before, after = (json.loads(Path(f).read_text(encoding="utf-8")) for f in args.files)
+        c = report.compare_docs(before, after, args.max_drop)
+        print(json.dumps(c, indent=2) if args.json else report.render_compare(c))
+        return 1 if (args.gate and c["regressions"]) else 0
     return _run(args)
 
 
