@@ -63,6 +63,40 @@ subscription OAuth, and whether driving their CLI from another program is allowe
 Check your plan's current terms before enabling this. Usage is billed to your subscription, so cost is recorded as
 $0 and token counts are estimates.
 
+### Gemini 3.8 Flash through Antigravity (`agy`)
+
+If your Google AI plan includes Antigravity, `cli_agy` drives its official CLI in print mode. Profiles: `gemini-agy`
+(everything on Gemini), `dev` (local model first, Gemini for the hard tiers) and `competition` (Gemini only). The reasoning
+effort follows the tier: `gemini-3.8-flash-low`, `-medium`, `-high`.
+
+How it behaves, measured on `agy` 1.5.13:
+
+- The prompt travels as one JSON line on stdin, so there is no command-line length limit; the schema is applied to the
+  final answer (`--json-schema`), which is what the contract and property stages need.
+- `agy` is a full tool-using agent. Each call therefore runs in an empty temporary folder with a "no tools" instruction
+  (verified: a request to create a file is refused and nothing is written) and is cleaned up afterwards.
+- Usage is real, not estimated: every call reports its token counts, and carries roughly 10k tokens of agent overhead,
+  so a trivial call takes about 13 s. Parallelism is capped (`max_concurrency`, default 2) so episodes cannot flood it.
+- Rate-limit and quota errors are classified as transient, so the router falls back to the next target in the chain.
+
+Same compliance note as above: it launches the vendor's CLI, never touches its credentials, and is off until you opt in.
+
+## Sharing the GPU with other projects
+
+SiliconForge starts its own `llama-server` (port 8189) and never touches anyone else's. Before loading a model it checks
+the VRAM that is actually free and refuses, with options, when the model will not fit (`siliconforge models start` exits
+with code 3). It will not stop or evict another program. `siliconforge models detect` lists local models already on the
+machine (including your Hugging Face cache, used in place rather than copied) and other model servers it found, labelled
+as belonging to another program. If another tool already serves the model you want, point `providers.llamacpp.base_url`
+at it instead of loading a second copy.
+
+## Model policy and the AI-usage ledger
+
+A workspace can restrict which models may be called, for example only Gemini 3.8 Flash for a contest entry. The router
+enforces this by dropping every other target from the profile's chain; an empty chain is an error, never a silent
+fallback. Every call is recorded (metadata and a prompt hash, never prompt text) in `.siliconforge/ai-usage.jsonl`, and
+`siliconforge report ai-usage` turns that into a disclosure document. See [workspaces](workspaces.md).
+
 ## Cost control
 
 - **Pre-run estimate** on the New run screen (`GET /api/estimate`), from typical per-stage token volumes.

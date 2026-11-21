@@ -4,6 +4,12 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 
 ## [Unreleased]
 ### Added
+- **Workspaces and a tool-using agent**: open any folder, run `siliconforge chat` / `agent` in it, or use the new API endpoints; permission modes (ask, accept-edits, auto, plan), sandboxed file tools, an allowlisted `eda` tool with provenance, undo, and instruction files (`SILICONFORGE.md` / `AGENTS.md`). See `docs/workspaces.md`.
+- **Enforced model policy**: a workspace can restrict the models the router may call (`policy.allowed_models`); an empty chain is an error, not a fallback.
+- **AI-usage ledger** and `siliconforge report ai-usage`: metadata-only record of every model call and a disclosure report.
+- **Gemini 3.8 Flash via the Antigravity CLI** (`cli_agy`; profiles `gemini-agy`, `dev`, `competition`), opt-in like the other CLI bridges.
+- **GPU guard**: checks free VRAM before starting a local server and refuses (with options) instead of evicting another program; `siliconforge models detect`; model discovery that reuses GGUF files already on disk.
+- Native folder dialog bridge in the desktop shell (`pickFolder`).
 - **Real EDA backends** (`native` / `wsl` / `docker`) running Yosys, SymbiYosys (BMC + PDR + cover), Verilator and LibreLane (OpenROAD) behind one interface; every result carries `mode` provenance and missing tools raise instead of silently mocking.
 - Real LibreLane place-and-route with real GDSII, multi-corner PPA from `metrics.json`, EDA result cache, parallel RL episodes with early stopping.
 - Typed property IR: `MUTUAL_EXCLUSION`, `COMBINATIONAL_EQUIVALENCE`, `LATENCY_BOUND`; pydantic schemas validating all structured LLM output with feedback-and-retry.

@@ -3,7 +3,7 @@
 // then shows the web UI (served by that backend) in a native window.
 "use strict";
 
-const { app, BrowserWindow, Menu, Tray, shell, dialog, nativeImage } = require("electron");
+const { app, BrowserWindow, Menu, Tray, shell, dialog, nativeImage, ipcMain } = require("electron");
 const { spawn } = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
@@ -105,6 +105,16 @@ function errorPage(text) {
   const logPath = path.join(app.getPath("userData"), "siliconforge.log");
   return `<body style="font-family:system-ui;padding:40px;color:#14202e"><h2>SiliconForge could not start</h2><p>${text}</p><p>Log: <code>${logPath}</code></p></body>`;
 }
+
+// The native folder dialog for "choose a working directory". Only the chosen path crosses back to the UI.
+ipcMain.handle("sf:pick-folder", async (_event, defaultPath) => {
+  const res = await dialog.showOpenDialog(win, {
+    title: "Choose a workspace folder",
+    defaultPath: typeof defaultPath === "string" && defaultPath ? defaultPath : undefined,
+    properties: ["openDirectory", "createDirectory"],
+  });
+  return res.canceled || res.filePaths.length === 0 ? null : res.filePaths[0];
+});
 
 function createWindow() {
   win = new BrowserWindow({
