@@ -8,6 +8,10 @@ updates:
     directory: /services/dashboard
     schedule: {interval: weekly}
     open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /apps/desktop
+    schedule: {interval: weekly}
+    open-pull-requests-limit: 3
   - package-ecosystem: github-actions
     directory: /
     schedule: {interval: weekly}

@@ -3,6 +3,12 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Changed
+- **License: AGPL-3.0-or-later** (was Apache-2.0 up to 0.3.0), with a commercial license available. SPDX headers on all source files, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md`, `COMMERCIAL.md`, a contributor grant in `CONTRIBUTING.md`, and a "Source" link in the cockpit (AGPL section 13). CI checks headers and dependency licenses.
+- Version 0.4.0 across the Python package and the desktop shell.
+- **Installable wheel**: configs, example designs and the built web UI are bundled (`services/_resources`) and resolved through `paths.RESOURCE_ROOT`, so `pip install` works outside a source checkout.
+### Fixed
+- `llama-server` was started with a relative model path while running from its own directory, so the model could not be found; the path is now made absolute (this made the first GPU benchmark attempt fail).
 ### Added
 - **Tiny Tapeout (IHP SG13CMOS5L) mode**: `siliconforge tt scaffold|check|synth|gls|pack|doctor|harden`; info.yaml and port validation, tile budget from real post-synthesis area (Yosys against the IHP liberty), and gate-level simulation of your cocotb tests with the PDK cell models. `docs/tiny-tapeout.md`.
 ### Fixed
