@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Download, GitCompare, Repeat, Square } from "lucide-react";
+import { Download, GitCompare, Play, Repeat, Square } from "lucide-react";
 import { api, artifactUrl, post, type PPA, type RunDetail as Run } from "../api";
 import { deriveView, type FormalIter, type LlmCall, type RunView, type StageKey } from "../derive";
 import { Bars, ParetoChart, RewardChart, Waveform } from "../charts";
@@ -21,7 +21,25 @@ export default function RunDetail() {
     queryKey: ["run", id], queryFn: () => api<Run>(`/runs/${id}`),
     refetchInterval: (q) => (q.state.data && (q.state.data.status === "running" || q.state.data.status === "queued") ? 3000 : false),
   });
-  const events = useRunEvents(id, run.data, () => qc.invalidateQueries({ queryKey: ["run", id] }));
+  const allEvents = useRunEvents(id, run.data, () => qc.invalidateQueries({ queryKey: ["run", id] }));
+  // replay: step through the stored event stream to see how the run unfolded
+  const [replay, setReplay] = useState<number | null>(null);
+  const query = useRef(new URLSearchParams(window.location.search));
+  const autoplay = useRef(query.current.has("replay") || query.current.has("replayAt"));
+  const frozen = useRef(query.current.has("replayAt")); // ?replayAt=N shows the run as of event N (deterministic docs and screenshots)
+  useEffect(() => {
+    if (autoplay.current && allEvents.length && run.data && !["running", "queued"].includes(run.data.status)) {
+      autoplay.current = false;
+      setReplay(frozen.current ? Math.min(allEvents.length, Number(query.current.get("replayAt"))) : 0);
+    }
+  }, [allEvents.length, run.data]);
+  useEffect(() => {
+    if (replay == null || frozen.current) return;
+    if (replay >= allEvents.length) { setReplay(null); return; }
+    const t = setTimeout(() => setReplay(replay + 1), allEvents[replay]?.stage === "LLM" ? 120 : 420);
+    return () => clearTimeout(t);
+  }, [replay, allEvents]);
+  const events = replay == null ? allEvents : allEvents.slice(0, replay);
   const view = useMemo(() => deriveView(events), [events]);
   const cancel = useMutation({ mutationFn: () => post(`/runs/${id}/cancel`), onSuccess: () => toast("Cancelling after the current step…") });
   const rerun = useMutation({
@@ -38,7 +56,9 @@ export default function RunDetail() {
   const live = r.status === "running" || r.status === "queued";
   const mode = view.mode !== "simulated" || events.length ? view.mode : r.backend;
   const mod = view.contract?.module_name ?? r.module;
-  const best: PPA | null = (r.state?.best_ppa as PPA | null) ?? (view.episodes.length ? view.episodes.reduce((a, b) => (b.reward > a.reward ? b : a)) : null);
+  const fromEvents: PPA | null = view.episodes.length ? view.episodes.reduce((a, b) => (b.reward > a.reward ? b : a)) : null;
+  // while replaying, show only what had happened by that event
+  const best: PPA | null = replay != null ? fromEvents : ((r.state?.best_ppa as PPA | null) ?? fromEvents);
   const failedVerify = view.formal.some((f) => !f.passed) && !view.formal.at(-1)?.passed;
   const elapsed = r.duration_s ?? (live ? Date.now() / 1000 - r.created : null);
 
@@ -50,6 +70,9 @@ export default function RunDetail() {
         <StatusBadge status={r.status} />
         <Prov mode={mode} />
         <span className="grow" />
+        {replay != null && <span className="badge info">Replaying {replay} of {allEvents.length}</span>}
+        {replay != null ? <button className="btn" onClick={() => setReplay(null)}><Square size={14} /> Stop replay</button>
+          : !live && allEvents.length > 0 && <button className="btn" onClick={() => setReplay(0)}><Play size={14} /> Replay</button>}
         {live && <button className="btn" onClick={() => cancel.mutate()}><Square size={14} /> Cancel</button>}
         {!live && r.request && <button className="btn" onClick={() => rerun.mutate()} disabled={rerun.isPending}><Repeat size={14} /> Run again</button>}
         <a className="btn" href={artifactUrl(r.id, "signoff_report.json")} download><Download size={14} /> Report</a>

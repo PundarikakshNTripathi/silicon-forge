@@ -32,12 +32,19 @@ verification = [
 tui = [
     "textual>=0.80",
 ]
+mcp = [
+    "mcp>=2.0",
+]
+plots = [
+    "matplotlib>=3.8",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
     "ruff>=0.5",
     "mypy>=1.10",
     "types-PyYAML",
+    "pillow>=10",
 ]
 
 [project.scripts]

@@ -1,0 +1,37 @@
+name: Release
+# Builds the Windows desktop installer when a version tag is pushed and attaches it to a GitHub Release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: pnpm/action-setup@v4
+        with: {package_json_file: services/dashboard/package.json}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Python environment
+        run: |
+          uv venv --python 3.12
+          uv pip install -e ".[api,providers]" pyinstaller
+      - name: Build desktop app
+        run: uv run python scripts/build_desktop.py
+      - name: Smoke test the unpacked app
+        run: apps/desktop/dist/win-unpacked/SiliconForge.exe --smoke-test
+      - name: Publish release assets
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            apps/desktop/dist/*.exe
+            apps/desktop/dist/latest.yml
+          generate_release_notes: true

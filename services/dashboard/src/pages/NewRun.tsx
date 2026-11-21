@@ -60,6 +60,7 @@ export default function NewRun() {
   const [injectBug, setInjectBug] = useState(true);
   const [verifyOnly, setVerifyOnly] = useState(false);
   const [parallel, setParallel] = useState(1);
+  const [episodes, setEpisodes] = useState(6);
   const [relax, setRelax] = useState(false);
   const [budget, setBudget] = useState(15);
 
@@ -68,7 +69,7 @@ export default function NewRun() {
     mutationFn: () => post<{ run_id: string }>("/runs", {
       spec_text: spec, profile, backend, pdk, inject_bug: profile === "replay" && injectBug,
       clock_period_ns: clock, max_area_um2: area, max_power_mw: power, max_budget_usd: budget,
-      stop_after: verifyOnly ? "lec" : null, parallel_episodes: parallel, allow_clock_relax: relax,
+      stop_after: verifyOnly ? "lec" : null, parallel_episodes: parallel, max_pnr_episodes: episodes, allow_clock_relax: relax,
     }),
     onSuccess: (r) => nav(`/runs/${r.run_id}`),
     onError: (e: Error) => toast(`Could not start the run: ${e.message}`),
@@ -169,6 +170,9 @@ export default function NewRun() {
                     <span>Verify only: stop after formal proof and equivalence check</span></label>
                   <label className="row"><input type="checkbox" checked={relax} onChange={(e) => setRelax(e.target.checked)} />
                     <span>Let the optimizer try slower clocks and report the fastest that closes</span></label>
+                  <Field label="Layout episodes" hint="How many layout recipes the optimizer may try. It stops early once one closes signoff.">
+                    <input type="number" min={1} max={40} value={episodes} onChange={(e) => setEpisodes(+e.target.value)} />
+                  </Field>
                   <Field label="Parallel layout episodes" hint="Each episode takes minutes on real tools. Use more on a many-core machine.">
                     <input type="number" min={1} max={8} value={parallel} onChange={(e) => setParallel(+e.target.value)} />
                   </Field>

@@ -1,0 +1,380 @@
+{
+  "run_id": "real_axi_pareto",
+  "exported": "2026-11-21",
+  "eda_mode": "wsl",
+  "module": "axi_lite_alu",
+  "stage": "SIGNOFF",
+  "signoff_passed": true,
+  "error": null,
+  "elapsed_sec": 417.53,
+  "cost": {
+    "total_cost_usd": 0.0,
+    "total_tokens": 5518
+  },
+  "formal": [
+    {
+      "mode": "wsl",
+      "task_status": {
+        "bmc": "FAIL",
+        "prove": "FAIL",
+        "cover": "PASS"
+      },
+      "elapsed_sec": 1.41,
+      "witnesses": [
+        {
+          "property_id": "P_ZERO_FLAG_CONSISTENT",
+          "cycle": 3,
+          "failing_signal": "zero_o",
+          "stimulus": {
+            "a_i": 0,
+            "b_i": 0,
+            "clk": 1,
+            "op_i": 0,
+            "rst_n": 1,
+            "valid_i": 0
+          }
+        }
+      ]
+    },
+    {
+      "mode": "wsl",
+      "task_status": {
+        "bmc": "PASS",
+        "prove": "PASS",
+        "cover": "PASS"
+      },
+      "elapsed_sec": 1.398,
+      "witnesses": []
+    }
+  ],
+  "lec": {
+    "passed": true,
+    "mode": "wsl",
+    "cell_count": 616,
+    "elapsed_sec": 0.622
+  },
+  "episodes": [
+    {
+      "wns_ns": -1.5881207909362278,
+      "tns_ns": -8.3480380526732,
+      "area_um2": 8036.46,
+      "total_power_mw": 0.9249694412574172,
+      "cell_count": 896,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 101.52,
+      "knobs": {
+        "SYNTH_STRATEGY": "AREA 0",
+        "FP_CORE_UTIL": 45,
+        "PL_TARGET_DENSITY_PCT": 60,
+        "GRT_ADJUSTMENT": 0.3,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -16.9744,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 2.9912033696602016,
+        "nom_ss_100C_1v60": -1.515312362922147,
+        "nom_ff_n40C_1v95": 4.781479347797245,
+        "min_tt_025C_1v80": 3.032771453145423,
+        "min_ss_100C_1v60": -1.4313706181022536,
+        "min_ff_n40C_1v95": 4.809439205240164,
+        "max_tt_025C_1v80": 2.9552205963252285,
+        "max_ss_100C_1v60": -1.5881207909362278,
+        "max_ff_n40C_1v95": 4.7549068250851345
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -3.244268057139628,
+      "tns_ns": -23.650273520103198,
+      "area_um2": 7933.86,
+      "total_power_mw": 0.9603998041711748,
+      "cell_count": 848,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 111.95,
+      "knobs": {
+        "SYNTH_STRATEGY": "AREA 2",
+        "FP_CORE_UTIL": 52,
+        "PL_TARGET_DENSITY_PCT": 65,
+        "GRT_ADJUSTMENT": 0.3,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -37.9307,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 2.2008244738458647,
+        "nom_ss_100C_1v60": -3.191448085026211,
+        "nom_ff_n40C_1v95": 4.328113989709786,
+        "min_tt_025C_1v80": 2.2304763112261647,
+        "min_ss_100C_1v60": -3.1410555046024853,
+        "min_ff_n40C_1v95": 4.34703352285211,
+        "max_tt_025C_1v80": 2.1692293020282998,
+        "max_ss_100C_1v60": -3.244268057139628,
+        "max_ff_n40C_1v95": 4.304777101072154
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -1.4397772270824705,
+      "tns_ns": -6.049701355549045,
+      "area_um2": 10846.7,
+      "total_power_mw": 1.0469851549714804,
+      "cell_count": 1250,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 128.56,
+      "knobs": {
+        "SYNTH_STRATEGY": "DELAY 0",
+        "FP_CORE_UTIL": 45,
+        "PL_TARGET_DENSITY_PCT": 58,
+        "GRT_ADJUSTMENT": 0.3,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -14.8884,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 3.104594003085754,
+        "nom_ss_100C_1v60": -1.1863355078532183,
+        "nom_ff_n40C_1v95": 4.915561874451758,
+        "min_tt_025C_1v80": 3.232017855939455,
+        "min_ss_100C_1v60": -0.9605330136483051,
+        "min_ff_n40C_1v95": 4.997171262675556,
+        "max_tt_025C_1v80": 2.967833174330888,
+        "max_ss_100C_1v60": -1.4397772270824705,
+        "max_ff_n40C_1v95": 4.827868463880947
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -2.723184421705349,
+      "tns_ns": -14.603979772180008,
+      "area_um2": 11419.7,
+      "total_power_mw": 1.1492352932691574,
+      "cell_count": 1427,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 135.62,
+      "knobs": {
+        "SYNTH_STRATEGY": "DELAY 4",
+        "FP_CORE_UTIL": 42,
+        "PL_TARGET_DENSITY_PCT": 55,
+        "GRT_ADJUSTMENT": 0.35,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -31.0095,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 2.3757378958763984,
+        "nom_ss_100C_1v60": -2.6265266260909748,
+        "nom_ff_n40C_1v95": 4.513437307202827,
+        "min_tt_025C_1v80": 2.4627767189333776,
+        "min_ss_100C_1v60": -2.5767957386086398,
+        "min_ff_n40C_1v95": 4.569950769379027,
+        "max_tt_025C_1v80": 2.301387590082111,
+        "max_ss_100C_1v60": -2.723184421705349,
+        "max_ff_n40C_1v95": 4.464836182702303
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -2.930007430722914,
+      "tns_ns": -13.541436799608846,
+      "area_um2": 11250.8,
+      "total_power_mw": 1.1283830972388387,
+      "cell_count": 1373,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 142.47,
+      "knobs": {
+        "SYNTH_STRATEGY": "DELAY 4",
+        "FP_CORE_UTIL": 50,
+        "PL_TARGET_DENSITY_PCT": 62,
+        "GRT_ADJUSTMENT": 0.3,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -32.6766,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 2.3275124708580326,
+        "nom_ss_100C_1v60": -2.796527533143211,
+        "nom_ff_n40C_1v95": 4.424718494617472,
+        "min_tt_025C_1v80": 2.414059243056582,
+        "min_ss_100C_1v60": -2.6696441368731834,
+        "min_ff_n40C_1v95": 4.481318110102819,
+        "max_tt_025C_1v80": 2.241837001713851,
+        "max_ss_100C_1v60": -2.930007430722914,
+        "max_ff_n40C_1v95": 4.36952397743183
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -1.3352350714134327,
+      "tns_ns": -11.45506566469776,
+      "area_um2": 9733.08,
+      "total_power_mw": 0.9738258086144924,
+      "cell_count": 1196,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 124.0,
+      "knobs": {
+        "SYNTH_STRATEGY": "DELAY 2",
+        "FP_CORE_UTIL": 38,
+        "PL_TARGET_DENSITY_PCT": 52,
+        "GRT_ADJUSTMENT": 0.35,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -15.7721,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 3.1709298306832125,
+        "nom_ss_100C_1v60": -1.109091516685709,
+        "nom_ff_n40C_1v95": 4.856300388167287,
+        "min_tt_025C_1v80": 3.279633546455452,
+        "min_ss_100C_1v60": -0.8806733369608021,
+        "min_ff_n40C_1v95": 4.931458048167915,
+        "max_tt_025C_1v80": 3.0530214775980857,
+        "max_ss_100C_1v60": -1.3352350714134327,
+        "max_ff_n40C_1v95": 4.777622876989839
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": 1.128559500017708,
+      "tns_ns": 0.0,
+      "area_um2": 8682.08,
+      "total_power_mw": 0.9307213476859033,
+      "cell_count": 1162,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 101.2,
+      "knobs": {
+        "SYNTH_STRATEGY": "AREA 3",
+        "FP_CORE_UTIL": 65,
+        "PL_TARGET_DENSITY_PCT": 75,
+        "GRT_ADJUSTMENT": 0.2,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": 4.2546,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 4.44318372448527,
+        "nom_ss_100C_1v60": 1.209693712773527,
+        "nom_ff_n40C_1v95": 5.6582948816829735,
+        "min_tt_025C_1v80": 4.5006617484525435,
+        "min_ss_100C_1v60": 1.2845049831806759,
+        "min_ff_n40C_1v95": 5.693213173151831,
+        "max_tt_025C_1v80": 4.327749836547411,
+        "max_ss_100C_1v60": 1.128559500017708,
+        "max_ff_n40C_1v95": 5.580848385830046
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -3.1825867286822462,
+      "tns_ns": -16.41050008998358,
+      "area_um2": 11203.2,
+      "total_power_mw": 1.13588385283947,
+      "cell_count": 1379,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 138.17,
+      "knobs": {
+        "SYNTH_STRATEGY": "DELAY 4",
+        "FP_CORE_UTIL": 48,
+        "PL_TARGET_DENSITY_PCT": 56,
+        "GRT_ADJUSTMENT": 0.32,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": -36.2691,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 2.3469067353791115,
+        "nom_ss_100C_1v60": -3.040108695278077,
+        "nom_ff_n40C_1v95": 4.45630123193681,
+        "min_tt_025C_1v80": 2.440155702122269,
+        "min_ss_100C_1v60": -2.903136480053344,
+        "min_ff_n40C_1v95": 4.514063917095648,
+        "max_tt_025C_1v80": 2.2584894593757725,
+        "max_ss_100C_1v60": -3.1825867286822462,
+        "max_ff_n40C_1v95": 4.40166004992229
+      },
+      "cached": false
+    },
+    {
+      "wns_ns": -1.496877331121473,
+      "tns_ns": -8.988129606107293,
+      "area_um2": 10540.1,
+      "total_power_mw": 0.8933423669077456,
+      "cell_count": 1241,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 136.68,
+      "knobs": {
+        "SYNTH_STRATEGY": "DELAY 0",
+        "FP_CORE_UTIL": 45,
+        "PL_TARGET_DENSITY_PCT": 58,
+        "GRT_ADJUSTMENT": 0.3,
+        "CLOCK_PERIOD": 11.5
+      },
+      "reward": -16.5131,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 3.6849733196746293,
+        "nom_ss_100C_1v60": -1.2454340133930648,
+        "nom_ff_n40C_1v95": 5.72375496533384,
+        "min_tt_025C_1v80": 3.819944468863184,
+        "min_ss_100C_1v60": -1.0021610491785515,
+        "min_ff_n40C_1v95": 5.804578759723195,
+        "max_tt_025C_1v80": 3.5451553807126945,
+        "max_ss_100C_1v60": -1.496877331121473,
+        "max_ff_n40C_1v95": 5.634652903749545
+      },
+      "cached": false
+    }
+  ],
+  "best_index": 6,
+  "signoff_checks": [
+    {
+      "name": "Timing (WNS >= 0.00 ns @ 10.00 ns clock)",
+      "passed": true,
+      "detail": "WNS 1.129 ns @ 10.00 ns clock"
+    },
+    {
+      "name": "DRC clean",
+      "passed": true,
+      "detail": "0 violation(s)"
+    },
+    {
+      "name": "LVS clean",
+      "passed": true,
+      "detail": "clean"
+    },
+    {
+      "name": "RTL == netlist (LEC)",
+      "passed": true,
+      "detail": "passed"
+    },
+    {
+      "name": "Formal proofs non-vacuous",
+      "passed": true,
+      "detail": "BMC + prove + cover"
+    },
+    {
+      "name": "Flow variables on PDK allowlist",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Area budget",
+      "passed": true,
+      "detail": "8682 um\u00b2 (max 25000.0)"
+    },
+    {
+      "name": "Power budget",
+      "passed": true,
+      "detail": "0.931 mW (max 5.0)"
+    }
+  ]
+}

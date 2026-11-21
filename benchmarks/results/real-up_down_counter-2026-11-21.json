@@ -1,0 +1,132 @@
+{
+  "run_id": "real_counter_1",
+  "exported": "2026-11-21",
+  "eda_mode": "wsl",
+  "module": "up_down_counter",
+  "stage": "SIGNOFF",
+  "signoff_passed": true,
+  "error": null,
+  "elapsed_sec": 64.15,
+  "cost": {
+    "total_cost_usd": 0.012901,
+    "total_tokens": 5062
+  },
+  "formal": [
+    {
+      "mode": "wsl",
+      "task_status": {
+        "bmc": "FAIL",
+        "prove": "ERROR",
+        "cover": "PASS"
+      },
+      "elapsed_sec": 1.348,
+      "witnesses": [
+        {
+          "property_id": "P_WRAP_NEEDS_COUNT_STEP",
+          "cycle": 3,
+          "failing_signal": "wrap_o",
+          "stimulus": {
+            "clk": 1,
+            "en_i": 0,
+            "load_i": 0,
+            "load_val_i": 0,
+            "rst_n": 1,
+            "up_i": 0
+          }
+        }
+      ]
+    },
+    {
+      "mode": "wsl",
+      "task_status": {
+        "bmc": "PASS",
+        "prove": "PASS",
+        "cover": "PASS"
+      },
+      "elapsed_sec": 1.312,
+      "witnesses": []
+    }
+  ],
+  "lec": {
+    "passed": true,
+    "mode": "wsl",
+    "cell_count": 78,
+    "elapsed_sec": 0.32
+  },
+  "episodes": [
+    {
+      "wns_ns": 3.348412752954609,
+      "tns_ns": 0.0,
+      "area_um2": 1166.12,
+      "total_power_mw": 0.22687656746711582,
+      "cell_count": 123,
+      "drc_violations": 0,
+      "lvs_clean": true,
+      "runtime_sec": 56.51,
+      "knobs": {
+        "SYNTH_STRATEGY": "AREA 0",
+        "FP_CORE_UTIL": 45,
+        "PL_TARGET_DENSITY_PCT": 60,
+        "GRT_ADJUSTMENT": 0.3,
+        "CLOCK_PERIOD": 10.0
+      },
+      "reward": 8.7489,
+      "mode": "wsl",
+      "corner_wns": {
+        "nom_tt_025C_1v80": 5.502105593536903,
+        "nom_ss_100C_1v60": 3.3954013894885637,
+        "nom_ff_n40C_1v95": 6.309573930808012,
+        "min_tt_025C_1v80": 5.5258816864155,
+        "min_ss_100C_1v60": 3.44097693411681,
+        "min_ff_n40C_1v95": 6.325191660581719,
+        "max_tt_025C_1v80": 5.4773169772312125,
+        "max_ss_100C_1v60": 3.348412752954609,
+        "max_ff_n40C_1v95": 6.293195476196318
+      },
+      "cached": false
+    }
+  ],
+  "best_index": 0,
+  "signoff_checks": [
+    {
+      "name": "Timing (WNS >= 0.00 ns @ 10.00 ns clock)",
+      "passed": true,
+      "detail": "WNS 3.348 ns @ 10.00 ns clock"
+    },
+    {
+      "name": "DRC clean",
+      "passed": true,
+      "detail": "0 violation(s)"
+    },
+    {
+      "name": "LVS clean",
+      "passed": true,
+      "detail": "clean"
+    },
+    {
+      "name": "RTL == netlist (LEC)",
+      "passed": true,
+      "detail": "passed"
+    },
+    {
+      "name": "Formal proofs non-vacuous",
+      "passed": true,
+      "detail": "BMC + prove + cover"
+    },
+    {
+      "name": "Flow variables on PDK allowlist",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Area budget",
+      "passed": true,
+      "detail": "1166 um\u00b2 (max 25000.0)"
+    },
+    {
+      "name": "Power budget",
+      "passed": true,
+      "detail": "0.227 mW (max 5.0)"
+    }
+  ]
+}

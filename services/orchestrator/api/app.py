@@ -24,6 +24,7 @@ from services.orchestrator.inference.catalog import load_catalog
 from services.orchestrator.inference.estimate import estimate_profile_cost
 from services.orchestrator.inference.llamacpp import LlamaCpp, LlamaServer, ServerConfig, gpu_info
 from services.orchestrator.inference.secrets import delete_secret, set_secret
+from services.orchestrator.paths import data_root
 from services.orchestrator.skills.registry import SkillRegistry
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -67,7 +68,7 @@ class LocalModels:
     """In-process control of the llama.cpp server and model downloads."""
 
     def __init__(self) -> None:
-        self.lc = LlamaCpp(home=REPO_ROOT / "models")
+        self.lc = LlamaCpp(home=data_root() / "models")
         self.server: LlamaServer | None = None
         self.pulls: dict[str, dict[str, Any]] = {}
 
@@ -134,7 +135,7 @@ class LocalModels:
 
 def create_app(db_path: str | Path | None = None, serve_ui: bool = True, runs_root: Path | None = None) -> FastAPI:
     app = FastAPI(title="SiliconForge API", version="0.3.0")
-    runs_root = Path(runs_root) if runs_root else REPO_ROOT / "runs"
+    runs_root = Path(runs_root) if runs_root else data_root() / "runs"
     store = Store(db_path or runs_root / "siliconforge.db")
     manager = RunManager(store, REPO_ROOT, runs_root=runs_root)
     local = LocalModels()

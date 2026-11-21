@@ -12,7 +12,7 @@ Thanks for helping! This project follows a standard team workflow so it stays he
 ## Dev setup
 ```bash
 uv venv --python 3.12 .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-uv pip install -e ".[api,providers,dev]"
+uv pip install -e ".[api,providers,tui,mcp,dev]"
 python scripts/dev.py build-cpp     # CMake build of sf-telemetry (MSVC on Windows)
 python scripts/dev.py test          # C++ ctest + Python pytest
 python scripts/dev.py lint

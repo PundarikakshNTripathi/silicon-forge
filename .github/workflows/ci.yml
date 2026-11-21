@@ -20,7 +20,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: uv venv --python ${{ matrix.python }}
       - name: Install
-        run: uv pip install -e ".[api,providers,dev]"
+        run: uv pip install -e ".[api,providers,tui,mcp,dev]"
       - name: Lint
         run: uv run ruff check services tests scripts
       - name: Test

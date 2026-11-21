@@ -285,8 +285,8 @@ table.t td.num, table.t th.num { text-align: right; }
 .palette li[aria-selected="true"] { background: var(--blue-soft); }
 .toasts { position: fixed; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 60; }
 .toast { background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: var(--r-ctl); max-width: 380px; }
-.layout-img { background: #000; border-radius: var(--r-panel); overflow: hidden; position: relative; height: 520px; cursor: grab; }
-.layout-img img { position: absolute; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; max-width: none; }
+.layout-img { background: #000; border-radius: var(--r-panel); overflow: hidden; position: relative; height: 520px; cursor: grab; display: flex; justify-content: center; }
+.layout-img img { transform-origin: 50% 50%; user-select: none; -webkit-user-drag: none; max-width: none; }
 .skeleton { background: var(--sunken); border-radius: 4px; min-height: 14px; }
 details.adv > summary { cursor: pointer; color: var(--ink-2); font-weight: 500; padding: 4px 0; }
 .sticky-bar { position: sticky; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding: 12px 24px; display: flex; align-items: center; gap: 14px; z-index: 4; }

@@ -57,3 +57,8 @@ Thumbs.db
 # Playwright / screenshot scratch
 .playwright-mcp/
 /ui-*.png
+
+# Desktop build outputs
+apps/desktop/dist/
+apps/desktop/backend-dist/
+build/

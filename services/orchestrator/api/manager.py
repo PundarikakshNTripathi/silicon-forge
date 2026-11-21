@@ -32,6 +32,7 @@ class RunRequest(BaseModel):
     max_budget_usd: float | None = Field(default=None, gt=0)
     stop_after: str | None = Field(default=None, pattern="^(formal|lec)$")
     parallel_episodes: int | None = Field(default=None, ge=1, le=8)
+    max_pnr_episodes: int | None = Field(default=None, ge=1, le=40)
     allow_clock_relax: bool | None = None
     config_path: str = "configs/flow_default.yaml"
 
@@ -50,6 +51,8 @@ class RunManager:
         cfg.eda_mode = normalize_mode(req.backend)
         cfg.inference.profile = req.profile
         cfg.workspace_root = self.runs_root
+        if cfg.inference.cache_path:
+            cfg.inference.cache_path = str(self.runs_root / "_cache" / "llm.sqlite")
         if req.pdk:
             cfg.pdk = req.pdk
         if req.clock_period_ns:
@@ -64,6 +67,8 @@ class RunManager:
             cfg.pipeline["stop_after"] = req.stop_after
         if req.parallel_episodes:
             cfg.rl_optimizer["parallel_episodes"] = req.parallel_episodes
+        if req.max_pnr_episodes:
+            cfg.pipeline["max_pnr_rl_episodes"] = req.max_pnr_episodes
         if req.allow_clock_relax is not None:
             cfg.rl_optimizer["allow_clock_relax"] = req.allow_clock_relax
         settings = settings or {}
