@@ -3,6 +3,12 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Fixed (agent loop, from the AgentBench findings)
+- `edit_file` applies a unique whitespace-insensitive match (and says so), names the closest text with line numbers when nothing matches, and asks for more context on an ambiguous snippet. 0 of 63 calls failed in the re-run, against 11 of 34.
+- A requested final line (`... a line of the form \`ANSWER: <number>\``) is checked by the session: if the final reply lacks it the model is asked once more, with the exact JSON to produce. The prompt also asks to verify a change before reporting success.
+- Four new AgentBench tasks (`--tasks h_depth_answer,h_rename_signal,h_wrong_dir,h_edge_flip`), written after the first results and kept out of the default suite. With the fixes the loop scored 92.3% on the original 13 tasks and 100% on the new 4: **contaminated**, see `docs/agent-benchmark.md`.
+### Measured
+- Qwen3.5-9B VerilogEval, thinking on, 16,000-token budget, 40 problems: 30.0% pass@1; 23 of 40 answers still hit the cap (`docs/evals.md`).
 ### Added (flow, verification, PDKs)
 - **`gf180mcuD` and `ihp-sg13g2`** PDK specs, each validated by running one small design through the project flow on real tools: both signoff clean (`flow-up_down_counter-*.json`, `docs/flow.md#pdks`). LibreLane is now given `--pdk` explicitly (it ignores `PDK` in `config.json`) and an optional per-PDK `--pdk-root` (`SILICONFORGE_PDK_ROOTS` or `eda.pdk_roots`), because `ciel` keeps one active PDK per root. The cell-allowlist guardrail now recognises IHP `sg13g2_` cells (it did not see them as cells at all before).
 - **`siliconforge verify cdc`**: a heuristic structural clock-domain-crossing check on RTL text (unsynchronized, single-flop and two-flop-synchronized crossings; bus skew note; says what it cannot see). Not CDC sign-off.

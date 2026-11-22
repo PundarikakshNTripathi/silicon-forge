@@ -200,10 +200,10 @@ so it separates small local models far better than strong ones. Two adjustments 
 file: one problem whose reference cannot pass its own testbench is excluded (155 of 156), and a waveform-dump block that Icarus 14
 rejects is removed from the testbenches. Method and limits: [docs/evals.md](docs/evals.md).
 
-**Thinking mode** was measured once for Qwen3.5-9B on a 40-problem subset and the result is inconclusive: 25.0% pass@1, but 25 of the 40
-answers hit the 6,000-token completion cap while still reasoning and so contained no finished module. Of the 15 that finished, 10
-passed. The run shows that 6,000 tokens is too small a budget for this model to think on these problems; it does not measure
-what thinking is worth with enough room ([docs/evals.md](docs/evals.md#limits)).
+**Thinking mode** was measured twice for Qwen3.5-9B on a 40-problem subset and is still inconclusive. With a 6,000-token cap it scored 25.0% pass@1
+(25 of 40 answers hit the cap mid-reasoning); with a 16,000-token cap, **30.0%** (95% interval 17.5 to 45.0), with 23 of 40 still hitting
+the cap. Of the answers that finished, 12 of 17 passed. So thinking on this model needs far more than 16k tokens on the hard problems,
+and the runs show the budget, not the value of thinking ([docs/evals.md](docs/evals.md#limits); one grading caveat is stated there).
 
 **Does a repair loop help?** On a fixed 60-problem subset, each loop arm compared with single-shot on the same problems (compile
 rates are single-shot over all 155 problems against the arm over the 60):
@@ -288,7 +288,10 @@ gap is two specific, fixable things found by replaying the failures: our loop do
 envelope (content-correct score 86%), and 11 of its 34 `edit_file` calls missed their target (0 of 56 for LangGraph), leaving a rename
 half done and reported as done. It uses 23 to 30% fewer tokens, and with its guards it had no safety violations in 20 runs on the two
 safety tasks, against 2 of 20 for each plain framework (a secret in the answer); the same guards added to the frameworks brought that to 0.
-No loop asks the clarifying question on the ambiguous task. One model, 13 public tasks, frameworks used as documented: read
+No loop asks the clarifying question on the ambiguous task. **After fixing the two causes** (`edit_file` now recovers from whitespace
+mismatches and names the closest text; the session checks that a requested `ANSWER:` line is present and asks once if not), our loop
+scored 92.3% on the same 13 tasks and 100% on 4 new ones, with 0 of 63 `edit_file` calls failing; that number is contaminated (the tasks are public
+and the fixes came from reading them), the frameworks were not re-run, and a re-test on tasks written blind is on the roadmap. One model, 13 public tasks, frameworks used as documented: read
 [docs/agent-benchmark.md](docs/agent-benchmark.md) for what it does not show.
 
 <p align="center"><img src="assets/plots/agentbench_guards.png" width="640" alt="Safety violations in 20 runs: 0 for our loop, 2 for each plain framework, 0 again with our guards added"></p>
@@ -392,8 +395,8 @@ configs/  benchmarks/  docs/  tests/  scripts/
 
 - **No agent framework in the pipeline.** It is a deterministic graph whose edges are tool verdicts, so a framework would add a second
   state model without adding capability. For the workspace agent we measured instead of assuming: LangGraph and Pydantic AI scored higher on
-  one 9B model ([results](#the-agent-against-langgraph-and-pydantic-ai)); our loop stays for now because its JSON protocol works with every
-  provider (including subscription CLIs), it sends smaller prompts, and the guards live in one place. The two weaknesses found are the next fixes.
+  one 9B model ([results](#the-agent-against-langgraph-and-pydantic-ai)); our loop stays because its JSON protocol works with every
+  provider (including subscription CLIs), it sends smaller prompts, and the guards live in one place. The two weaknesses found were fixed (see above).
 - **SymbiYosys rather than Lean** for verification: push-button BMC, PDR and equivalence fit RTL.
 - **Honest defaults.** Worst-corner signoff, provenance on every result, no silent fallback, no prompt text in the usage ledger,
   and the tool never submits anything for you.
@@ -407,7 +410,7 @@ are stronger.
 
 The detailed list, with why each item matters and where it stands, is in [docs/roadmap.md](docs/roadmap.md). In short:
 
-fixes for the agent loop's two measured weaknesses and a re-test on new tasks; a test-and-assertion agent rewarded by mutant kills; resuming
+a re-test of the fixed agent loop on tasks written blind; a test-and-assertion agent rewarded by mutant kills; resuming
 interrupted runs; netlist-level CDC and macros in the project flow; CVDP as a second benchmark; Tiny Tapeout hardening through Docker; signed
 installers and images.
 

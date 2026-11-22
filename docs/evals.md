@@ -154,6 +154,16 @@ Adapters are not committed; they derive from a model with its own license. The r
   server flag as if it were the setting, and a run labelled "thinking on" was in fact another non-thinking run; it was found because
   its outputs were identical to the non-thinking run's, and was replaced.) Use `--thinking on` to switch thinking on for a
   comparison. Latency numbers are for one request at a time on one 8 GB GPU.
+- **Thinking on with a 16,000-token budget: the budget is still the limit.** The same 40 problems with `--max-tokens 16000` and a
+  20k context (`evals run ... --thinking on --max-tokens 16000 --ctx 20480`, `eval-...-single-thinking-on-16k-*.json`): **30.0% pass@1
+  (95% interval 17.5 to 45.0)**, against 25.0% at a 6,000-token cap and 47.7% over all 155 problems with thinking off (a different, larger
+  set). **23 of the 40 answers still ran to the 16,000-token limit while reasoning** (6,000: 25 of 40), so they contain no module. Of the 17
+  that finished, 12 passed. The run produced 430,598 completion tokens in 179 minutes, about 14 times the non-thinking run's tokens per problem (10,765 against 751).
+  What this says: on this model and these problems, thinking spends far more than 16k tokens on the hard problems, and the finished answers
+  are good (12 of 17) but few; a larger budget or a more efficient reasoner would be needed to know what thinking is worth, and the 8 GB
+  card does not fit a much larger context. Caveat: WSL, which grades the answers, was unavailable for part of this run (the disk had
+  filled), so some finished answers may have been graded as failures that would have passed; the 23 budget hits do not depend on grading.
+  It does not show that thinking helps or hurts.
 - **Thinking on, measured once, inconclusive.** Qwen3.5-9B with `--thinking on` on the 40-problem seed-0 subset scored 25.0%
   pass@1 (95% interval 12.5 to 40.0) with a 27.5% compile rate, against 47.7% over all 155 problems with thinking off
   (`eval-...-single-subset40-thinking-on-*.json`). The cause is the token budget, not the model: the catalog caps completions at

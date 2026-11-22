@@ -174,7 +174,7 @@ def test_simulated_backend_refuses_to_fake_eda_results(env):
 def test_edit_requires_a_unique_match_and_undo_restores(env):
     ws, _ = env
     tb = ToolBox(ws)
-    with pytest.raises(ToolError, match="matched 0 times"):
+    with pytest.raises(ToolError, match="was not found"):
         tb.call("edit_file", {"path": "rtl/cnt.sv", "old": "nonexistent", "new": "x"})
     tb.call("edit_file", {"path": "rtl/cnt.sv", "old": "input logic clk", "new": "input logic clk, rst_n"})
     assert "rst_n" in (ws.root / "rtl" / "cnt.sv").read_text()

@@ -34,6 +34,42 @@ class ToolError(Exception):
     """A tool refused or failed; the message goes back to the model so it can adjust."""
 
 
+
+def _unique_whitespace_insensitive_match(text: str, old: str) -> tuple[int, int] | None:
+    """Character span of the one place in `text` whose lines equal the lines of `old` apart from surrounding whitespace, else None."""
+    want = [ln.strip() for ln in old.strip("\n").splitlines()]
+    if not want or not any(want):
+        return None
+    lines = text.splitlines(keepends=True)
+    offsets, pos = [], 0
+    for ln in lines:
+        offsets.append(pos)
+        pos += len(ln)
+    hits = [i for i in range(len(lines) - len(want) + 1) if all(lines[i + k].strip() == want[k] for k in range(len(want)))]
+    if len(hits) != 1:
+        return None
+    i = hits[0]
+    end = offsets[i + len(want) - 1] + len(lines[i + len(want) - 1].rstrip("\r\n"))
+    return offsets[i], end
+
+
+def _closest(text: str, old: str) -> str:
+    """Where the model probably meant: the file's lines most like the first line of `old`, with line numbers, for the next attempt."""
+    import difflib
+
+    first = next((ln.strip() for ln in old.splitlines() if ln.strip()), "")
+    lines = text.splitlines()
+    if not first or not lines:
+        return "Read the file again and copy the text exactly."
+    near = difflib.get_close_matches(first, [ln.strip() for ln in lines], n=2, cutoff=0.5)
+    if not near:
+        return "Nothing in the file looks like it; read the file again and copy the text exactly."
+    shown = []
+    for cand in near:
+        i = next(k for k, ln in enumerate(lines) if ln.strip() == cand)
+        shown.append(f"lines {i + 1}-{min(len(lines), i + 3)}:\n" + "\n".join(lines[i:i + 3]))
+    return "Closest text in the file (copy it exactly, including indentation):\n" + "\n---\n".join(shown)
+
 @dataclass
 class ToolSpec:
     name: str
@@ -298,8 +334,16 @@ class ToolBox:
             raise ToolError(f"'{path}' is not a file")
         text = p.read_text(encoding="utf-8")
         n = text.count(old)
-        if n != 1:
-            raise ToolError(f"'old' must match exactly once in {path}; it matched {n} times")
+        if n == 0:
+            fuzzy = _unique_whitespace_insensitive_match(text, old)
+            if fuzzy is not None:  # same lines, different indentation or trailing spaces: unambiguous, so apply it and say so
+                start, end = fuzzy
+                self._remember(p)
+                p.write_text(text[:start] + new + text[end:], encoding="utf-8", newline="\n")
+                return {"path": path, "replaced": 1, "note": "matched ignoring leading and trailing whitespace on each line"}
+            raise ToolError(f"'old' was not found in {path}. {_closest(text, old)}")
+        if n > 1:
+            raise ToolError(f"'old' matched {n} times in {path}; include more of the surrounding lines so it matches exactly once")
         self._remember(p)
         p.write_text(text.replace(old, new, 1), encoding="utf-8", newline="\n")
         return {"path": path, "replaced": 1}
