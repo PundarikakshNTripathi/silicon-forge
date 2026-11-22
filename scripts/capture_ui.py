@@ -29,7 +29,9 @@ def shots(run: str) -> list[tuple[str, str, int, int]]:
         ("layout", f"/runs/{run}?tab=layout&theme=light", 1440, 1500),
         ("agent-loops", "/evals?tab=agents&theme=light", 1440, 1560),
         ("insights", "/cost?theme=light", 1440, 1000),
-        ("new-run", "/?theme=light", 1440, 900),
+        ("new-run", "/new?theme=light", 1440, 900),
+        ("runs", "/runs?theme=light", 1440, 700),
+        ("runs-dark", "/runs?theme=dark", 1440, 700),
         ("run-overview-phone", f"/runs/{run}?theme=light", 390, 1500),
     ]
 

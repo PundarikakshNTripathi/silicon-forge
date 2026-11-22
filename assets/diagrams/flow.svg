@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 400" role="img" aria-labelledby="t d"><title id="t">SiliconForge flow</title><desc id="d">Spec to contract, RTL, guardrails, formal, synthesis and equivalence, layout, signoff, with repair loops back to RTL.</desc>
 <style>
-  :root { --paper:#f7f5f0; --card:#fffefb; --ink:#0b1b33; --ink2:#37435c; --ink3:#5b6680; --rule:#ddd8cb; --amber:#f2a900; --wash:#e3ebfb; --l-contract:#5b4bd6; --l-rtl:#d9482b; --l-guardrails:#b07d00; --l-formal:#1f6feb; --l-lec:#0f9d74; --l-pnr:#b4309a; --l-signoff:#0b1b33; }
-  @media (prefers-color-scheme: dark) { :root { --paper:#0a1424; --card:#101c30; --ink:#e6ecf7; --ink2:#b3c0d6; --ink3:#8496b3; --rule:#1f3050; --amber:#ffb81c; --wash:#13284d; --l-contract:#8d82ff; --l-rtl:#ff7a5c; --l-guardrails:#f0b429; --l-formal:#5aa2ff; --l-lec:#3ddc9b; --l-pnr:#e870cf; --l-signoff:#dbe4f3; } }
-  text { font-family: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }
+  :root { --paper:#fcfbf9; --card:#ffffff; --ink:#1b2130; --ink2:#434b5d; --ink3:#656d7c; --rule:#e6e2d9; --amber:#f2a900; --wash:#eceef6; --l-contract:#5b4bd6; --l-rtl:#d9482b; --l-guardrails:#b07d00; --l-formal:#1f6feb; --l-lec:#0f9d74; --l-pnr:#b4309a; --l-signoff:#1b2130; }
+  @media (prefers-color-scheme: dark) { :root { --paper:#0c1220; --card:#111a2e; --ink:#e8ecf6; --ink2:#b6c1d6; --ink3:#8a99b5; --rule:#1e2942; --amber:#ffb81c; --wash:#18223f; --l-contract:#8d82ff; --l-rtl:#ff7a5c; --l-guardrails:#f0b429; --l-formal:#5aa2ff; --l-lec:#3ddc9b; --l-pnr:#e870cf; --l-signoff:#dbe4f3; } }
+  text { font-family: "Geist Variable", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }
   .bg { fill: var(--paper); }
   .box { fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }
   .box.quiet { stroke: var(--rule); stroke-width: 1.2; }

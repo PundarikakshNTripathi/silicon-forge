@@ -83,7 +83,7 @@ def render(py, node) -> str:
         "SiliconForge itself is AGPL-3.0-or-later; every license below can be combined with it.\n\n"
         f"## Python\n\n| Package | License |\n| --- | --- |\n{table(py)}\n\n"
         f"## JavaScript (dashboard and desktop shell)\n\n| Package | License |\n| --- | --- |\n{table(node)}\n\n"
-        "The two bundled typefaces (Atkinson Hyperlegible Next, Commit Mono) come from the `@fontsource` packages above and are\n"
+        "The three bundled typefaces (Geist, Geist Mono, Newsreader) come from the `@fontsource-variable` packages above and are\n"
         "licensed under the SIL Open Font License 1.1, which permits bundling with software.\n\n"
         f"## External tools\n\n{EXTERNAL_TOOLS}\n"
     )

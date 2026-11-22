@@ -2,6 +2,14 @@
 
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
+## [Unreleased]
+### Changed (design: web, terminal, logo, README)
+- **Light and dark are both ordinary**: the sidebar follows the theme (it was dark in the light theme). New neutrals (warm paper, ink navy), ink-coloured buttons and links so colour stays reserved for data, softer corners, quieter rules.
+- **Typography**: Geist for the interface, Geist Mono for code and identifiers, Newsreader (a serif) for page titles, design names and big numbers; tabular figures kept. Replaces Atkinson Hyperlegible Next and Commit Mono.
+- **App flow**: navigation grouped as Work, Evidence and Setup; a "Jump to..." search entry (Ctrl K) at the top; the landing page is Runs once you have runs, New run before that (`/new` is always New run); the agent page is labelled "Agent".
+- **New logo**: five rounded bars in five layer colours stacked into an S. Legible at 16 px, no container needed. The terminal splash deposits the same five layers; the status line carries the mark in miniature.
+- **README hero is now a GIF of a whole session** (`assets/gifs/web-tour.gif`): pick an example, a real run on real tools, every page, the dark theme. Recorded by `scripts/web_demo.cjs` (Playwright, nothing mocked) and assembled by `scripts/web_gif.py`; all screenshots and the terminal recording were regenerated.
+
 ## [0.5.0] - 2026-11-22
 The first release since 0.3.0: the 0.4.0 work below was never shipped as its own release, so it is part of this one. The headline changes:
 a measured agent (spans and four metrics for any agent loop, and a head-to-head of our loop against LangGraph and Pydantic AI on the same

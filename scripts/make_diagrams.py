@@ -30,7 +30,7 @@ STYLE = f"""
 <style>
   :root {{ {_vars("light")} }}
   @media (prefers-color-scheme: dark) {{ :root {{ {_vars("dark")} }} }}
-  text {{ font-family: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }}
+  text {{ font-family: "Geist Variable", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }}
   .bg {{ fill: var(--paper); }}
   .box {{ fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }}
   .box.quiet {{ stroke: var(--rule); stroke-width: 1.2; }}

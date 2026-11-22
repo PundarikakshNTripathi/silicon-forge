@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.svg" width="96" alt="SiliconForge logo: one conductor routed through five metal layers, drawn as an S, from an open pad to a solid one">
+<img src="assets/logo.svg" width="88" alt="SiliconForge logo: five rounded bars in five colours stacked into the letter S, one bar per layer of the flow">
 
 # SiliconForge
 
@@ -13,9 +13,9 @@
 
 <br>
 
-<img src="assets/screenshots/run-overview.png" width="900" alt="A run in the web cockpit: a title block with a real-tools stamp, results against the contract's limits, and the flow drawn as seven coloured layers over real time. The amber diamond on Formal marks a counterexample that sent the design back for repair.">
+<img src="assets/gifs/web-tour.gif" width="900" alt="A whole session in the web cockpit: pick an example, run the real flow, watch each stage fill in its own colour, then walk the design, verification, performance, layout, agent log, runs, evals, insights and agent pages, and finish in the dark theme">
 
-<sub>A run on real tools (WSL2: Yosys, SymbiYosys, OpenROAD). Each pipeline stage has its own colour; the amber diamond is the moment formal verification sent the design back for repair.</sub>
+<sub>One real run, start to finish, on real tools (a replayed model driving Yosys, SymbiYosys and OpenROAD in WSL2), then every page of the cockpit. Each pipeline stage has its own colour; the amber diamond is the moment formal verification sent the design back for repair.</sub>
 
 [Status](#status) · [Quick start](#quick-start) · [A look around](#a-look-around) · [What is in it](#what-is-in-it) · [Results](#results) · [Limits](#limits) · [Architecture](#architecture) · [Reference](#reference) · [Licence](#licence)
 
@@ -107,7 +107,10 @@ app (`python scripts/build_desktop.py`), the terminal UI (`siliconforge tui`) an
 **The web cockpit** (`siliconforge serve`). A run opens with what was run and what produced the evidence, then the results against the
 contract's own limits, then the flow. Dark theme and a bottom bar on phones come with it.
 
-<p align="center"><img src="assets/screenshots/run-overview-dark.png" width="760" alt="The same run in the dark theme"></p>
+| <img src="assets/screenshots/run-overview.png" alt="A finished run in the light theme: title block, results against the contract, the seven-layer flow"> | <img src="assets/screenshots/run-overview-dark.png" alt="The same run in the dark theme"> |
+| :--- | :--- |
+| **Light.** The sidebar, like the page, follows the theme. | **Dark.** Same layout, same stage colours, tuned for contrast. |
+
 
 | | |
 | :--- | :--- |
@@ -122,9 +125,7 @@ contract's own limits, then the flow. Dark theme and a bottom bar on phones come
 
 <p align="center"><img src="assets/gifs/tui.gif" width="820" alt="The terminal UI: an animated splash, then a request to add a reset to a counter, with tool cards, a diff approval and the final answer"></p>
 
-**The design language** is one palette for the web UI, the terminal and the plots (`configs/design/tokens.json`): a hue per pipeline stage
-(contract violet, RTL vermilion, guardrails ochre, formal cobalt, synthesis green, layout magenta, signoff navy), amber only for "sent back
-for repair", and shape (solid or hatched), never colour alone, for real or simulated.
+**The design language** is one palette for the web UI, the terminal, the plots and the diagrams (`configs/design/tokens.json`): warm paper and ink navy for the neutrals, Geist for the interface with a serif (Newsreader) for titles, and a hue per pipeline stage (contract violet, RTL vermilion, guardrails ochre, formal cobalt, synthesis green, layout magenta, signoff ink). Colour is reserved for data: buttons and links are ink, amber means only "sent back for repair", and shape (solid or hatched), never colour alone, says whether the evidence is real or simulated. The mark is five of those layers stacked into an S.
 
 ## What is in it
 

@@ -1,17 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SiliconForge">
   <title>SiliconForge</title>
   <style>
-    :root { --c1: #5b4bd6; --c2: #d9482b; --c3: #1f6feb; --c4: #0f9d74; --c5: #b4309a; --ink: #0b1b33; --paper: #f7f5f0; }
-    @media (prefers-color-scheme: dark) { :root { --c1: #8d82ff; --c2: #ff7a5c; --c3: #5aa2ff; --c4: #3ddc9b; --c5: #e870cf; --ink: #dbe4f3; --paper: #0a1424; } }
-    .s { fill: none; stroke-width: 9; stroke-linecap: butt; }
+    :root { --c1: #5b4bd6; --c2: #d9482b; --c3: #1f6feb; --c4: #0f9d74; --c5: #b4309a; }
+    @media (prefers-color-scheme: dark) { :root { --c1: #8d82ff; --c2: #ff7a5c; --c3: #5aa2ff; --c4: #3ddc9b; --c5: #e870cf; } }
   </style>
-  <!-- one conductor routed through five metal layers: the S is the flow -->
-  <path class="s" style="stroke: var(--c1)" d="M46 13H13.5"/>
-  <path class="s" style="stroke: var(--c2)" d="M18 8.5V36.5"/>
-  <path class="s" style="stroke: var(--c3)" d="M13.5 32H50.5"/>
-  <path class="s" style="stroke: var(--c4)" d="M46 27.5V56.5"/>
-  <path class="s" style="stroke: var(--c5)" d="M50.5 51H18"/>
-  <!-- the route starts at an open pad (the spec) and ends on a solid one (signoff) -->
-  <rect x="41" y="8" width="10" height="10" style="fill: var(--paper); stroke: var(--c1)" stroke-width="3"/>
-  <rect x="8" y="46" width="12" height="12" style="fill: var(--ink)"/>
+  <!-- five metal layers stacked into an S: contract, RTL, formal, synthesis, place and route -->
+  <rect x="7" y="5" width="50" height="9" rx="4.5" style="fill: var(--c1)"/>
+  <rect x="7" y="17" width="22" height="9" rx="4.5" style="fill: var(--c2)"/>
+  <rect x="7" y="29" width="50" height="9" rx="4.5" style="fill: var(--c3)"/>
+  <rect x="35" y="41" width="22" height="9" rx="4.5" style="fill: var(--c4)"/>
+  <rect x="7" y="53" width="50" height="9" rx="4.5" style="fill: var(--c5)"/>
 </svg>

@@ -184,14 +184,14 @@ def test_input_is_refused_while_the_agent_is_working(tmp_path):
     run(scenario())
 
 
-def test_splash_draws_the_route_progressively_in_layer_hues():
+def test_splash_deposits_the_five_layers_progressively_in_their_own_hues():
     first, last = art.splash(0.0), art.splash(1.0)
-    assert "━" not in first.plain and "SiliconForge" not in first.plain
-    assert "SiliconForge" in last.plain and "┏" in last.plain and "■" in last.plain
-    count = lambda t: t.plain.count("━") + t.plain.count("┃")  # noqa: E731
+    assert "█" not in first.plain and "SiliconForge" not in first.plain
+    assert "SiliconForge" in last.plain and last.plain.count("█") == sum(n for _, _, n, _ in art.BARS)
+    count = lambda t: t.plain.count("█")  # noqa: E731
     assert 0 < count(art.splash(0.3)) < count(last)  # progress is monotonic
-    colours = {str(span.style) for span in last.spans if "━" in last.plain[span.start:span.end] or "┃" in last.plain[span.start:span.end]}
-    assert len(colours) >= 4  # the metal layers are drawn in distinct colours
+    colours = {str(span.style) for span in last.spans if "█" in last.plain[span.start:span.end]}
+    assert len(colours) >= 5  # five layers, five distinct colours
 
 
 def test_stage_strip_marks_real_versus_simulated_and_repair():

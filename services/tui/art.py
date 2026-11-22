@@ -10,20 +10,14 @@ from rich.text import Text
 
 from services.tui.theme import palette
 
-# The route, in drawing order. Each cell is (x, y, glyph, layer). Same geometry as assets/logo.svg: a top bar (contract), down the
-# left (RTL), across the middle (formal), down the right (synthesis), and the bottom bar back (place and route).
-W, H = 29, 9
+# The mark, in drawing order: five metal layers stacked into an S (same drawing as assets/logo.svg), one row each with a blank row
+# between. Each cell is (x, y, glyph, layer). Bars draw left to right, top to bottom, like a layer being deposited.
+W, H = 26, 9
+BARS = [(0, 0, 26, "contract"), (0, 2, 11, "rtl"), (0, 4, 26, "formal"), (15, 6, 11, "lec"), (0, 8, 26, "pnr")]
 
 
 def _route() -> list[tuple[int, int, str, str]]:
-    cells: list[tuple[int, int, str, str]] = [(26, 0, "□", "contract")]
-    cells += [(x, 0, "━", "contract") for x in range(25, 6, -1)]
-    cells += [(6, 0, "┏", "rtl")] + [(6, y, "┃", "rtl") for y in range(1, 4)]
-    cells += [(6, 4, "┗", "formal")] + [(x, 4, "━", "formal") for x in range(7, 24)]
-    cells += [(24, 4, "┓", "lec")] + [(24, y, "┃", "lec") for y in range(5, 8)]
-    cells += [(24, 8, "┛", "pnr")] + [(x, 8, "━", "pnr") for x in range(23, 6, -1)]
-    cells += [(5, 8, "■", "signoff")]
-    return cells
+    return [(x0 + i, y, "█", layer) for x0, y, n, layer in BARS for i in range(n)]
 
 
 ROUTE = _route()
@@ -34,7 +28,7 @@ def splash(progress: float, mode: str = "dark", *, width: int = 60) -> Text:
     """One frame of the splash. progress 0..1: the conductor draws itself cell by cell, then the name and tagline appear."""
     pal = palette(mode)
     n = len(ROUTE)
-    drawn = min(n, int(progress * 1.15 * n))  # the route finishes a little before the text
+    drawn = min(n, int(progress * 1.15 * n))  # the mark finishes a little before the text
     grid = [[(" ", "")] * W for _ in range(H)]
     for i, (x, y, ch, layer) in enumerate(ROUTE[:drawn]):
         style = f"bold {pal['chrome-ink'] if i == drawn - 1 and drawn < n else pal['layer-' + layer]}"
