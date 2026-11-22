@@ -2,7 +2,14 @@
 
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [0.5.0] - 2026-11-22
+The first release since 0.3.0: the 0.4.0 work below was never shipped as its own release, so it is part of this one. The headline changes:
+a measured agent (spans and four metrics for any agent loop, and a head-to-head of our loop against LangGraph and Pydantic AI on the same
+tasks, with the two weaknesses it found fixed), a redesigned web cockpit and a chat-first terminal UI sharing one palette, project memory and
+a read-only investigator for the agent, the `vllm` provider, hardened containers with CI that builds them, two more validated PDKs
+(gf180mcuD, ihp-sg13g2), a heuristic CDC check, and a README that shows what it describes. What is deliberately not here is in
+`docs/roadmap.md`.
+
 ### Fixed (agent loop, from the AgentBench findings)
 - `edit_file` applies a unique whitespace-insensitive match (and says so), names the closest text with line numbers when nothing matches, and asks for more context on an ambiguous snippet. 0 of 63 calls failed in the re-run, against 11 of 34.
 - A requested final line (`... a line of the form \`ANSWER: <number>\``) is checked by the session: if the final reply lacks it the model is asked once more, with the exact JSON to produce. The prompt also asks to verify a change before reporting success.
@@ -46,7 +53,7 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - `chat --trace` / `agent --trace`, `siliconforge trace summary`; the API server records agent sessions into SQLite and serves `GET /api/insights/agent` and a Prometheus `GET /api/metrics`.
 - Optional OpenTelemetry export (`pip install "siliconforge[otel]"`) in the GenAI semantic conventions, with original timestamps. A test caught parents being exported after children when spans shared a start time; fixed.
 
-## [0.4.0] - 2026-11-21
+## Earlier work, first labelled 0.4.0 (2026-11-21; never released on its own, included in 0.5.0)
 First release under **AGPL-3.0-or-later** (a commercial license is available; see `COMMERCIAL.md`). The headline changes: an
 evaluation harness with confidence intervals, a project flow for your own RTL, a debug-context loop for repair, an agent with
 permission rules, hooks, an MCP client and context management, and a first measured fine-tuning result. The measured results,
