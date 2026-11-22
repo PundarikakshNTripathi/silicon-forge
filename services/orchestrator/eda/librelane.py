@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -43,7 +44,12 @@ class LibreLaneFlow:
         command: list[str] | None = None,
         timing_corner: str = "worst",
         keep_steps: bool = False,
+        pdk_roots: dict[str, str] | None = None,
     ) -> None:
+        # ciel keeps ONE active PDK family per root, so a machine with several PDKs needs one root each:
+        # {"gf180mcuD": "$HOME/pdk-roots/gf180mcuD"}. Also read from SILICONFORGE_PDK_ROOTS (a JSON object).
+        env_roots = os.environ.get("SILICONFORGE_PDK_ROOTS")
+        self.pdk_roots = {**(json.loads(env_roots) if env_roots else {}), **(pdk_roots or {})}
         self.timing_corner = timing_corner
         self.keep_steps = keep_steps
         self.runner = runner
@@ -55,6 +61,13 @@ class LibreLaneFlow:
             res = self.runner.run([*self.command, "--version"], Path.cwd(), timeout=180, isolate=True)
             self._available = res.ok
         return self._available
+
+    def _pdk_args(self, cfg: dict[str, Any]) -> list[str]:
+        """LibreLane takes the PDK from its command line (default sky130A), not from config.json, so name it; add its root if one is set."""
+        pdk = cfg.get("PDK")
+        if not pdk:
+            return []
+        return ["--pdk", str(pdk), *(["--pdk-root", self.pdk_roots[pdk]] if pdk in self.pdk_roots else [])]
 
     def build_config(
         self, contract: DesignContract, rtl_filename: str, knobs: dict[str, Any], pdk: str
@@ -95,7 +108,8 @@ class LibreLaneFlow:
 
         work = self.runner.push(pnr_dir)
         res = self.runner.run(
-            [*self.command, "--run-tag", "sf", "--overwrite", "config.json"], work, timeout=timeout, isolate=True
+            [*self.command, *self._pdk_args(cfg), "--run-tag", "sf", "--overwrite", "config.json"],
+            work, timeout=timeout, isolate=True
         )
         (pnr_dir / "librelane.log").write_text(res.log, encoding="utf-8")
         self.runner.pull(work, pnr_dir)

@@ -62,6 +62,24 @@ The decoders see only edges on wires, never any RTL, so a design cannot agree wi
 UART reports framing errors, parity errors and `max_edge_error` (how far the real edges sit from the ideal bit grid, in bit
 times), which is how bit-banged timing bugs appear. Reference encoders for each protocol let you test the decoders themselves.
 
+## Clock-domain crossings (a heuristic)
+
+```bash
+siliconforge verify cdc --file rtl/top.sv --file rtl/rx.sv     # exit 1 on an unsynchronized or single-flop crossing
+```
+
+A **structural check on RTL text**, not a CDC sign-off tool. It reads each `always_ff` block's clock, finds every register written in one
+clock domain and used in another, and classifies the crossing: `synchronized` (the receiving domain copies it into a flop whose only use is
+the next flop of a chain: a two-flop synchronizer), `single_stage` (one capture flop that is then used for logic) or `unsynchronized`
+(read directly in the other domain's logic). A multi-bit signal behind a two-flop synchronizer is reported as synchronized with a
+note, because a synchronizer does not keep bits together: use Gray code, a handshake or an asynchronous FIFO.
+
+What it does not do, and says so in its output where it can: parse SystemVerilog (it uses regular expressions, one module at a time),
+follow signals through submodule ports, `assign` statements or generate blocks, find asynchronous *inputs*, check reset-deassertion
+synchronizers, reconvergence or handshake protocols. A register written in two clock domains is reported as not analysed. A clean
+report is therefore not a proof, and a finding is a lead worth reading. Tested on crafted crossings (`tests/test_cdc.py`); not measured
+against a commercial tool or a real multi-clock design.
+
 ## Regression triage
 
 ```bash
