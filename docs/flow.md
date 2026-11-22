@@ -94,6 +94,31 @@ WSL, tools Verilator 5.055, Yosys 0.71 and LibreLane 3.0.17. Result in `benchmar
 A second run on identical inputs gave identical area, cell count, power, slack and gate outcomes (`flow diff` lists no
 change), so on this design and machine the flow was repeatable. That is two runs, not a guarantee.
 
+## PDKs
+
+| PDK | What backs it |
+| :--- | :--- |
+| `sky130A` | The reference PDK: every other result in this page and the README. |
+| `gf180mcuD` | One small design (`up_down_counter`, 20 ns clock) through lint, synthesis with equivalence, and place and route on WSL: **signoff clean**. Worst-corner setup slack +7.10 ns, hold +0.39 ns, 3,194 um², 154 cells, 1.9 mW, DRC (Magic and the router) 0, LVS clean, 141 s (`flow-up_down_counter-gf180mcuD-*.json`). LibreLane skips KLayout DRC for this PDK (no runset), so DRC here is Magic and router only. |
+| `ihp-sg13g2` | The same design (10 ns clock): **signoff clean**, setup +5.03 ns, hold +0.12 ns, 1,658 um², 117 cells, 0.15 mW, DRC (Magic, KLayout, router) 0, LVS clean, 107 s (`flow-up_down_counter-ihp-sg13g2-*.json`). |
+| `asap7` | An allowlist spec only; no design has been run on it. |
+
+That is **one tiny design per PDK**: it shows the PDK installs, the spec's cell and corner facts match the real libraries, and the flow's
+gates read the right metrics. It says nothing about larger designs, clock-tree or congestion behaviour, or whether a design that closes
+on one PDK closes on another. Each spec in `configs/pdks/` names its evidence.
+
+**Several PDKs on one machine.** `ciel` keeps one *active* PDK per root, so enabling a second one into the same root silently disables the
+first. Give each PDK its own root and tell the flow:
+
+```bash
+ciel enable --pdk-root ~/pdk-roots/gf180mcuD --pdk-family gf180mcu <version>
+export SILICONFORGE_PDK_ROOTS='{"gf180mcuD": "$HOME/pdk-roots/gf180mcuD"}'   # or eda.pdk_roots in the flow config
+siliconforge flow init . --top my_core --sources "rtl/*.sv" --pdk gf180mcuD --period 20
+```
+
+LibreLane takes the PDK from its command line, not from `config.json`, so the flow now passes `--pdk` (and `--pdk-root` when one is
+configured) explicitly. A PDK is ~1 GB; check your disk first.
+
 ## In CI: the GitHub Action
 
 `.github/actions/flow` runs the flow on every push and uploads the report, failing the job when a signoff gate fails. It runs
@@ -128,7 +153,8 @@ which a test checks (`tests/test_github_action.py`).
   LibreLane produces. It catches synthesis and flattening problems, not a defect in the PDK mapping step.
 - The signoff gates are only as complete as the metrics a run emits. Antenna, slew and similar gates read `not reported`
   until the flow steps that produce them have run.
-- No clock-domain-crossing analysis, no hierarchical (macro) hardening and no SRAM macro integration yet. Multi-corner timing is
+- Clock-domain crossings: only the structural, regex-level heuristic `siliconforge verify cdc` ([docs/verification.md](verification.md)); no
+  netlist-level analysis. No hierarchical (macro) hardening and no SRAM macro integration yet. Multi-corner timing is
   whatever LibreLane's PDK configuration provides.
 - These are open tools. This page makes no claim of parity with commercial signoff tools; the measured results are in
   `benchmarks/results/`.
