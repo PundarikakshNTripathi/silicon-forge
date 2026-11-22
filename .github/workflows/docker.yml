@@ -1,0 +1,49 @@
+name: Docker
+
+# Builds the orchestrator image, checks that it runs as a non-root user and answers its health check, and writes an SBOM.
+# Runs when the Docker files or dependencies change, on release tags, and on demand. It does not push anything.
+on:
+  pull_request:
+    paths:
+      - "docker/**"
+      - ".dockerignore"
+      - "pyproject.toml"
+      - "services/dashboard/package.json"
+      - "services/dashboard/pnpm-lock.yaml"
+      - ".github/workflows/docker.yml"
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  orchestrator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -f docker/Dockerfile.orchestrator -t siliconforge-orchestrator:ci .
+
+      - name: It runs unprivileged and answers its health check
+        run: |
+          cid=$(docker run -d -p 127.0.0.1:8000:8000 siliconforge-orchestrator:ci)
+          trap 'docker logs "$cid" | tail -30; docker rm -f "$cid" > /dev/null' EXIT
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8000/api/health && break
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8000/api/health | grep -q '"status":"ok"'
+          uid=$(docker exec "$cid" id -u)
+          test "$uid" != "0"
+          echo "running as uid $uid"
+          curl -fsS http://127.0.0.1:8000/ | grep -qi "<title>SiliconForge"
+
+      - name: Software bill of materials
+        uses: anchore/sbom-action@v0
+        with:
+          image: siliconforge-orchestrator:ci
+          format: spdx-json
+          artifact-name: siliconforge-orchestrator.spdx.json

@@ -77,8 +77,10 @@ def add_parser(sub) -> None:
     ls.add_argument("--dir", default=None)
 
     c = es.add_parser("compare", help="Paired comparison of two result files on their common problems")
-    c.add_argument("a")
-    c.add_argument("b")
+    c.add_argument("a", help="the baseline result file")
+    c.add_argument("b", help="the candidate result file")
+    c.add_argument("--gate", action="store_true", help="exit 1 if B is proven worse than A by at least --max-drop (for CI and canaries)")
+    c.add_argument("--max-drop", type=float, default=0.05, help="smallest pass-rate drop (0.05 = 5 points) that counts as a regression")
 
     e.set_defaults(func=cmd_evals)
 
@@ -161,7 +163,7 @@ def cmd_evals(args: argparse.Namespace) -> int:
     if args.evals_cmd == "selfcheck":
         return _selfcheck(args)
     if args.evals_cmd == "compare":
-        return _compare(Path(args.a), Path(args.b))
+        return _compare(Path(args.a), Path(args.b), gate=args.gate, max_drop=args.max_drop)
     return _run(args)
 
 
@@ -198,7 +200,7 @@ def _selfcheck(args: argparse.Namespace) -> int:
     return 0 if not bad else 1
 
 
-def _compare(a_path: Path, b_path: Path) -> int:
+def _compare(a_path: Path, b_path: Path, gate: bool = False, max_drop: float = 0.05) -> int:
     a, b = load_result(a_path), load_result(b_path)
     ka = next(k for k in a if k.startswith("pass_at_"))
     if ka != next(k for k in b if k.startswith("pass_at_")):
@@ -217,7 +219,13 @@ def _compare(a_path: Path, b_path: Path) -> int:
     verdict = "the intervals separate them" if d["separated"] else "the data do not separate them"
     print(f"A: {a['model']} / {a['arm']['arm']}\nB: {b['model']} / {b['arm']['arm']}\n"
           f"common problems: {len(common)}\nA - B ({ka}): {d['mean']:+.3f}  95% CI [{d['ci95'][0]:+.3f}, {d['ci95'][1]:+.3f}]  -> {verdict}")
-    return 0
+    # a regression needs both a large enough drop and an interval that excludes zero, so a noisy subset cannot raise an alarm alone
+    regression = d["mean"] >= max_drop and d["ci95"][0] > 0
+    if regression:
+        print(f"REGRESSION: B is worse than A by {d['mean'] * 100:.1f} points and the interval excludes zero")
+    elif d["mean"] >= max_drop:
+        print(f"drop of {d['mean'] * 100:.1f} points, but the interval includes zero: not proven")
+    return 1 if (gate and regression) else 0
 
 
 def _run(args: argparse.Namespace) -> int:

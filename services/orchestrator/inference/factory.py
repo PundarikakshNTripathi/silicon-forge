@@ -2,6 +2,7 @@
 """Builds provider instances from catalog definitions (lazily, so missing keys only matter when used)."""
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from services.orchestrator.inference.catalog import Catalog
@@ -22,7 +23,7 @@ def build_provider(name: str, catalog: Catalog, cli_bridge_enabled: bool = False
         from services.orchestrator.inference.providers.openai_compat import OpenAICompatibleProvider
 
         return OpenAICompatibleProvider(
-            base_url=cfg.get("base_url"),
+            base_url=(os.getenv(str(cfg["base_url_env"])) if cfg.get("base_url_env") else None) or cfg.get("base_url"),  # env var wins: a server elsewhere
             api_key=get_secret(cfg.get("api_key_env")) or "",
             name=name,
             local=bool(cfg.get("local", False)),

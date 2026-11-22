@@ -328,6 +328,9 @@ an exception. [docs/ppa-search.md](docs/ppa-search.md)
 
 <p align="center"><img src="assets/diagrams/system.svg" width="900" alt="Surfaces feed the core, which uses the model router, EDA runners and the verification toolkit"></p>
 
+What runs where, and which infrastructure ideas were left out (TensorRT, Triton, a vector database, Postgres, Kubernetes) and why:
+[docs/infrastructure.md](docs/infrastructure.md).
+
 Guardrail gates, in order: port contract, static lint (C++ `sf-telemetry`, Python fallback, Verilator), PDK cell allowlist, flow
 variable allowlist, formal grounding and vacuity, equivalence.
 

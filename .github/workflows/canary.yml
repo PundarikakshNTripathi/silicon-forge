@@ -1,0 +1,64 @@
+name: Canary
+
+# A model canary: run a fixed subset of VerilogEval against a provider and compare it with a baseline result, so a cloud model that
+# changed under you (or a prompt or config change that hurt) shows up as a proven drop, not a feeling. It spends YOUR provider's tokens,
+# so it only runs when you start it, or when you uncomment the schedule. Tests in this repository never call a live model.
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Routing profile from configs/models.yaml (needs its API key as a repository secret: OPENAI_API_KEY, GEMINI_API_KEY or ANTHROPIC_API_KEY)"
+        required: true
+        default: gemini
+      problems:
+        description: "Size of the seeded random subset (the run costs about this many model calls)"
+        default: "30"
+      baseline:
+        description: "A committed eval result to compare against, e.g. benchmarks/results/eval-...json. Empty: just record this run."
+        default: ""
+      max_drop:
+        description: "Smallest drop in pass@1 that counts as a regression (0.08 = 8 points)"
+        default: "0.08"
+  # schedule:
+  #   - cron: "0 6 * * 1"   # weekly, if you want the canary to run unattended; needs the inputs above as defaults
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: YosysHQ/setup-oss-cad-suite@v3   # Icarus Verilog 14, the version the baselines were graded with
+      - name: Install
+        run: python -m pip install -e ".[providers]"
+      - name: Fetch the benchmark
+        run: siliconforge evals fetch verilogeval
+      - name: Run the canary
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SF_PROFILE: ${{ inputs.profile }}
+          SF_PROBLEMS: ${{ inputs.problems }}
+        run: |
+          siliconforge evals run verilogeval --profile "$SF_PROFILE" --backend native --arm single \
+            --problems "$SF_PROBLEMS" --seed 0 --tag canary --out canary-results
+      - name: Compare with the baseline
+        if: ${{ inputs.baseline != '' }}
+        env:
+          SF_BASELINE: ${{ inputs.baseline }}
+          SF_MAX_DROP: ${{ inputs.max_drop }}
+        run: |
+          latest=$(ls -t canary-results/eval-*.json | head -1)
+          siliconforge evals compare "$SF_BASELINE" "$latest" --gate --max-drop "$SF_MAX_DROP"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: canary-results
+          path: canary-results/
