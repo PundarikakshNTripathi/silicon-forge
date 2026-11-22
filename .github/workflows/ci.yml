@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
       - run: uv venv --python ${{ matrix.python }}
       - name: Install
         run: uv pip install -e ".[api,providers,tui,mcp,otel,dev]"
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
       - run: uv venv --python 3.12
       - name: Install (frameworks included)
         run: uv pip install -e ".[api,providers,bench,dev]"
