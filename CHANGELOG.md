@@ -3,6 +3,11 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (infrastructure)
+- **`vllm` provider and profile**: any OpenAI-compatible server (vLLM, SGLang, TGI), URL from `SILICONFORGE_VLLM_URL`, optional `VLLM_API_KEY`, JSON-schema constrained output, cached-token accounting. Tested against a stub server, not a real vLLM process. Providers can take a `base_url_env` in `configs/models.yaml`.
+- **`docs/infrastructure.md`**: what was left out and why (TensorRT, Triton, a distributed vector database, Postgres and pgvector, Kubernetes), what is in use, and what would change the answers.
+- `evals compare A B --gate --max-drop N`: exit 1 only on a proven drop (large enough and the paired interval excludes zero). A manually started **Canary** workflow uses it against a provider you name.
+- **Hardened container**: a two-stage image (UI built from the lockfile) that runs as an unprivileged user with a health check; compose publishes on loopback only, drops capabilities and sets `no-new-privileges`; a **Docker** workflow builds it, checks the health check and non-root user, and writes an SBOM. The obsolete compose `version:` key, the stale `mock` mode and the npm-based dashboard service are gone; five stray design-review PNGs were removed from the repository root.
 ### Measured (speculative decoding and correctness)
 - `evals run --spec-type` (recorded in the result file). Qwen3.5-9B on all 155 VerilogEval problems with `ngram-mod` speculation: 49.0% pass@1 against 47.7% without it, paired difference +1.3 points (95% interval -1.3 to +3.9), not separated; 4 of 155 problems changed outcome (3 up, 1 down), so output is not identical but there is no detectable harm; 3% less wall time on fresh generation. One run per arm (`docs/providers.md`).
 ### Added (agent)

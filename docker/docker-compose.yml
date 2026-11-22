@@ -1,17 +1,27 @@
-version: "3.9"
+# SiliconForge in containers.
+#   docker compose -f docker/docker-compose.yml up --build            # API and web UI at http://127.0.0.1:8000
+#   docker compose -f docker/docker-compose.yml --profile eda build   # the EDA worker image (Yosys, SymbiYosys, Verilator)
+# The port is published on the loopback interface only. To reach it from another machine, put a reverse proxy with TLS in front and set
+# SILICONFORGE_API_TOKEN; the API refuses requests without the token when it is set.
 
 services:
   orchestrator:
     build:
       context: ..
       dockerfile: docker/Dockerfile.orchestrator
+    image: siliconforge:local
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
-      - SILICONFORGE_EDA_MODE=${SILICONFORGE_EDA_MODE:-mock}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      SILICONFORGE_API_TOKEN: ${SILICONFORGE_API_TOKEN:-}
+      SILICONFORGE_VLLM_URL: ${SILICONFORGE_VLLM_URL:-}   # an OpenAI-compatible server for the `vllm` profile
     volumes:
-      - ../runs:/app/runs
+      - sf-data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
 
   eda-worker:
     build:
@@ -20,15 +30,9 @@ services:
     image: siliconforge-eda:latest
     profiles: ["eda"]
     volumes:
-      - ../runs:/work
+      - sf-data:/work
+    security_opt:
+      - no-new-privileges:true
 
-  dashboard:
-    image: node:20-alpine
-    working_dir: /ui
-    volumes:
-      - ../services/dashboard:/ui
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    ports:
-      - "5173:5173"
-    depends_on:
-      - orchestrator
+volumes:
+  sf-data:
