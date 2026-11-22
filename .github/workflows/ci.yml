@@ -16,7 +16,7 @@ jobs:
         python: ["3.11", "3.12"]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v5
       - run: uv venv --python ${{ matrix.python }}
       - name: Install
@@ -34,7 +34,7 @@ jobs:
   agentbench:  # the harness against the real LangGraph and Pydantic AI, so a breaking framework release is noticed here
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v5
       - run: uv venv --python 3.12
       - name: Install (frameworks included)
@@ -49,7 +49,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
       - name: Configure and build
@@ -64,7 +64,7 @@ jobs:
   ui:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
         with: {package_json_file: services/dashboard/package.json}
       - uses: actions/setup-node@v7
@@ -78,6 +78,6 @@ jobs:
   harness:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Agent harness files point at AGENTS.md
         run: python scripts/check_harness.py
