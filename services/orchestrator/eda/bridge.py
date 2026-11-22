@@ -51,6 +51,7 @@ def make_backend(mode: str, config: FlowConfig) -> EDABackend:
             pnr_timeout_sec=float(eda_cfg.get("pnr_timeout_sec", 3600)),
             librelane_cmd=wsl.get("librelane_cmd"),
             timing_corner=str(config.pipeline.get("timing_corner", "worst")),
+            pdk_roots=eda_cfg.get("pdk_roots"),
         )
     if mode == "docker":
         docker = eda_cfg.get("docker", {})

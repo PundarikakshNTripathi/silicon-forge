@@ -8,7 +8,7 @@ project_name: "siliconforge"
 #   docker    - the tools inside a container
 # CLI override: --backend wsl
 eda_mode: "simulated"
-pdk: "sky130A"   # "sky130A" | "asap7"
+pdk: "sky130A"   # "sky130A" (validated), "gf180mcuD" (one design validated), "ihp-sg13g2" (allowlist only), "asap7"
 workspace_root: "runs"
 telemetry_binary: "services/telemetry_engine/build/sf-telemetry"
 

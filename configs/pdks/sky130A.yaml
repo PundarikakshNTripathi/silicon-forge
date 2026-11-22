@@ -1,4 +1,5 @@
 # SkyWater 130nm (sky130A) PDK Grounding & Guardrail Spec
+# Validated: the reference PDK. Real results on it are in benchmarks/results (real-*.json, flow-pio16-sky130A-*.json).
 pdk_name: "sky130A"
 node_nm: 130
 stdcell_library: "sky130_fd_sc_hd"

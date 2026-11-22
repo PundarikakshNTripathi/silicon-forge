@@ -1,0 +1,38 @@
+# GlobalFoundries 180 nm MCU (gf180mcuD) PDK grounding and guardrail spec.
+# Facts read from the installed PDK's own LibreLane config (libs.tech/librelane/config.tcl) and cell library:
+# default library gf180mcu_fd_sc_mcu7t5v0 (7 track, 5 V), STA corners tt_025C_5v00 / ff_n40C_5v50 / ss_125C_4v50, site GF018hv5v_mcu_sc7.
+# Validated: one small design (up_down_counter) was run through the project flow on this PDK; see docs/flow.md.
+pdk_name: "gf180mcuD"
+node_nm: 180
+stdcell_library: "gf180mcu_fd_sc_mcu7t5v0"
+nominal_voltage_v: 5.0
+typical_corner: "tt_025C_5v00"
+signoff_corners:
+  - "ss_125C_4v50"
+  - "ff_n40C_5v50"
+  - "tt_025C_5v00"
+metal_layers: ["Metal1", "Metal2", "Metal3", "Metal4", "Metal5"]
+min_clock_period_ns: 10.0   # a conservative guard chosen here, not a PDK limit: a 5 V 180 nm library is slow
+default_site: "GF018hv5v_mcu_sc7"
+
+allowed_cell_prefixes:
+  - "gf180mcu_fd_sc_mcu7t5v0__"
+  - "gf180mcu_fd_sc_mcu9t5v0__"
+  - "gf180mcu_fd_io__"
+  - "gf180mcu_fd_ip_sram__"
+
+# LibreLane variables are the same across PDKs
+allowed_flow_vars:
+  - "DESIGN_NAME"
+  - "VERILOG_FILES"
+  - "CLOCK_PORT"
+  - "CLOCK_PERIOD"
+  - "FP_CORE_UTIL"
+  - "PL_TARGET_DENSITY_PCT"
+  - "SYNTH_STRATEGY"
+  - "CTS_CLK_MAX_WIRE_LENGTH"
+  - "GRT_ALLOW_CONGESTION"
+  - "GRT_ADJUSTMENT"
+  - "RUN_KLAYOUT_DRC"
+  - "RUN_MAGIC_DRC"
+  - "RUN_LVS"
