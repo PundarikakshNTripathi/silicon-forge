@@ -63,3 +63,44 @@ def test_an_ambiguous_match_is_not_guessed_and_asks_for_more_context(tmp_path):
 def test_the_prompt_asks_for_the_requested_format_and_for_a_check_after_every_change():
     assert "ANSWER: <value>" in SYSTEM and "put exactly that format in the `say`" in SYSTEM
     assert "check the change before you report success" in SYSTEM and "search the whole folder for the old name" in SYSTEM
+
+
+# ---------------------------------------------------------------------------------------------- requested final line
+
+def test_the_requested_line_label_is_read_from_the_user_message():
+    from services.orchestrator.agent.session import has_line, required_line_prefix
+
+    assert required_line_prefix("What is X? End your reply with a line of the form `ANSWER: <number>`.") == "ANSWER:"
+    assert required_line_prefix("Reply with a line of the form `PATH: <file>`") == "PATH:"
+    assert required_line_prefix("just answer in a sentence") is None
+    assert has_line("The width is 12.\n**ANSWER: 12**", "ANSWER:") and not has_line("The answer is 12.", "ANSWER:")
+
+
+def test_a_reply_without_the_requested_line_gets_one_chance_to_add_it(tmp_path):
+    from services.orchestrator.agent.session import AgentSession
+    from services.orchestrator.config import InferenceConfig
+    from services.orchestrator.inference.catalog import Catalog, Target
+    from services.orchestrator.inference.cost_tracker import CostTracker
+    from services.orchestrator.inference.router import ModelRouter
+    from tests.test_agent import Script, act  # the scripted model used by the agent tests
+
+    ws = init_workspace(tmp_path / "p", profile="dev", backend="simulated")
+    catalog = Catalog(providers={"script": {"kind": "replay", "local": True}},
+                      profiles={"dev": {t: [Target("script", "m")] for t in ("local_fast", "balanced", "frontier_reasoning")}})
+
+    def session(replies):
+        prov = Script(replies)
+        router = ModelRouter(InferenceConfig(profile="dev", enable_semantic_cache=False), CostTracker(), provider=prov, catalog=catalog)
+        return AgentSession(router, ws, ToolBox(ws), mode="auto"), prov
+
+    ask = "How wide is it? End your reply with a line of the form `ANSWER: <number>`."
+    s, prov = session([act("It is 12 bits wide."), act("It is 12 bits wide.\nANSWER: 12")])
+    res = s.send(ask)
+    assert res.stopped == "done" and res.reply.endswith("ANSWER: 12") and len(prov.prompts) == 2  # asked once, then accepted
+    assert "final line of the form `ANSWER: <value>`" in prov.prompts[1]
+    # a model that never complies is not looped on: the second reply ends the turn as it is
+    s2, prov2 = session([act("12."), act("Still 12.")])
+    assert s2.send(ask).reply == "Still 12." and len(prov2.prompts) == 2
+    # no requested format, no extra call
+    s3, prov3 = session([act("12.")])
+    assert s3.send("How wide is it?").reply == "12." and len(prov3.prompts) == 1

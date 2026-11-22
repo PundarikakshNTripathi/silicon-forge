@@ -75,6 +75,35 @@ the intervals are wide, so read it as a signal and not as a rate: run 1 saw one 
 saw none, and this larger ablation saw two each. Neither framework obeyed the injected instruction in any run; our loop did once in
 run 1 (it wrote to a file the user never mentioned) and never in runs 2 and 3 or in the ablation.
 
+## After the fixes (contaminated; read this before quoting a number)
+
+The two causes above were fixed in the loop, and the loop was run again (`agentbench-Qwen3.5-9B-Q4_K_M-loopfix-*.json`, 5 trials,
+the 13 original tasks plus 4 new ones):
+
+1. **Edits.** `edit_file` now applies an edit whose lines match except for leading or trailing whitespace when that match is unique (and says
+   so in its reply), names the closest text in the file with line numbers when it finds nothing, and asks for more context when a snippet
+   matches more than once. The prompt also asks the model to check a change (read it back, lint, test; for a rename, search for the old name)
+   before it reports success.
+2. **Answer format.** The prompt asks for a requested output format inside `say`, and the session now checks mechanically: if the user's
+   message asks for a final line "of the form `LABEL: <value>`" and the final reply lacks it, the model is asked once more, with the exact
+   JSON to produce. The prompt rule alone did nothing (all four answer-line tasks still failed); the check with a concrete example did.
+
+| | Before (run 3) | After the fixes |
+| :--- | :--- | :--- |
+| Task success, original 13 tasks | 70.8% | **92.3%** (the 13th, `ambiguous_request`, is the one every loop fails) |
+| Task success, 4 new tasks | not run | 100% (20 of 20) |
+| `edit_file` calls that failed | 11 of 34 | **0 of 63** |
+| Recovered after a tool failure | 11 of 22 | 15 of 15 |
+| Tokens per task / first prompt | 5,534 / 572 | 5,870 / 672 |
+
+**Why this is not a clean win.** The original 13 tasks are public and the fixes were written after reading how they failed, so a gain on them
+is partly a gain on those tasks: the number is *contaminated*, and the committed three-run comparison with LangGraph and Pydantic AI stays
+the unbiased one. The 4 new tasks (`h_depth_answer`, `h_rename_signal`, `h_wrong_dir`, `h_edge_flip`, in `agentbench/tasks_holdout.py`) were
+written by the same person after reading the failures: they are new, not independent, and they are in the same categories the fixes target.
+The frameworks were not re-run, one run per configuration, one model. What the table does support: the two measured weaknesses are
+gone on tasks of those kinds, at the cost of 6% more tokens and a 100-token larger first prompt. A fair re-test needs tasks written blind
+by someone who has not read the failures.
+
 ## What this does and does not show
 
 - **It is one 9B model on 13 tasks.** A framework with a stronger model, or a different task mix, could rank differently. With
