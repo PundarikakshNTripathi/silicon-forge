@@ -12,13 +12,19 @@ SiliconForge itself is AGPL-3.0-or-later; every license below can be combined wi
 | fastapi | MIT |
 | httpx | BSD-3-Clause |
 | keyring | MIT |
+| langchain | MIT |
+| langchain-openai | MIT |
+| langgraph | MIT |
 | matplotlib | Python Software Foundation License |
 | mcp | MIT |
 | mypy | MIT |
 | numpy | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 |
 | openai | Apache-2.0 |
+| opentelemetry-exporter-otlp-proto-http | Apache-2.0 |
+| opentelemetry-sdk | Apache-2.0 |
 | pillow | MIT-CMU |
 | pydantic | MIT |
+| pydantic-ai-slim | MIT |
 | pytest | MIT |
 | pytest-asyncio | Apache-2.0 |
 | pyyaml | MIT |
@@ -31,8 +37,9 @@ SiliconForge itself is AGPL-3.0-or-later; every license below can be combined wi
 
 | Package | License |
 | --- | --- |
-| @fontsource/atkinson-hyperlegible-next | OFL-1.1 |
-| @fontsource/commit-mono | OFL-1.1 |
+| @fontsource-variable/geist | OFL-1.1 |
+| @fontsource-variable/geist-mono | OFL-1.1 |
+| @fontsource-variable/newsreader | OFL-1.1 |
 | @tanstack/react-query | MIT |
 | @types/diff | MIT |
 | @types/react | MIT |
@@ -45,11 +52,12 @@ SiliconForge itself is AGPL-3.0-or-later; every license below can be combined wi
 | react-router-dom | MIT |
 | typescript | Apache-2.0 |
 | vite | MIT |
-| electron | MIT |
-| electron-builder | MIT |
-| electron-updater | MIT |
+| vitest | MIT |
+| electron | not installed here |
+| electron-builder | not installed here |
+| electron-updater | not installed here |
 
-The two bundled typefaces (Atkinson Hyperlegible Next, Commit Mono) come from the `@fontsource` packages above and are
+The three bundled typefaces (Geist, Geist Mono, Newsreader) come from the `@fontsource-variable` packages above and are
 licensed under the SIL Open Font License 1.1, which permits bundling with software.
 
 ## External tools

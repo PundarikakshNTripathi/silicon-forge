@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { Mark, StackBar } from "./Mark";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Code, Coins, Cpu, FlaskConical, FolderTree, ListChecks, Moon, Play, Sun, Wrench } from "lucide-react";
+import { BookOpen, Code, Coins, Cpu, FlaskConical, FolderTree, ListChecks, Moon, Play, Search, Sun, Wrench } from "lucide-react";
 
 // AGPL-3.0 section 13: users of a modified network-served version must be offered its source. A fork sets VITE_SOURCE_URL.
 const SOURCE_URL = (import.meta as { env?: Record<string, string> }).env?.VITE_SOURCE_URL ?? "https://github.com/PundarikakshNTripathi/silicon-forge";
@@ -19,15 +19,22 @@ import { KnowledgePage, SystemPage } from "./pages/Admin";
 import WorkspacePage from "./pages/Workspace";
 import { Empty } from "./ui";
 
-const NAV = [
-  { to: "/", label: "New run", icon: Play, end: true },
-  { to: "/runs", label: "Runs", icon: ListChecks },
-  { to: "/workspace", label: "Workspace", icon: FolderTree },
-  { to: "/models", label: "Models", icon: Cpu },
-  { to: "/cost", label: "Insights", icon: Coins },
-  { to: "/evals", label: "Evals", icon: FlaskConical },
-  { to: "/knowledge", label: "Knowledge", icon: BookOpen },
+const GROUPS = [
+  { label: "Work", items: [
+    { to: "/new", label: "New run", icon: Play },
+    { to: "/runs", label: "Runs", icon: ListChecks },
+    { to: "/workspace", label: "Agent", icon: FolderTree },
+  ] },
+  { label: "Evidence", items: [
+    { to: "/evals", label: "Evals", icon: FlaskConical },
+    { to: "/cost", label: "Insights", icon: Coins },
+  ] },
+  { label: "Setup", items: [
+    { to: "/models", label: "Models", icon: Cpu },
+    { to: "/knowledge", label: "Knowledge", icon: BookOpen },
+  ] },
 ];
+const NAV = GROUPS.flatMap((g) => g.items.map((i) => ({ ...i, end: false })));
 
 function Palette({ onClose }: { onClose: () => void }) {
   const nav = useNavigate();
@@ -64,6 +71,13 @@ function Palette({ onClose }: { onClose: () => void }) {
   );
 }
 
+/** First visit: start a run. After that, the place you come back to is your runs. */
+function Landing() {
+  const runs = useQuery({ queryKey: ["runs"], queryFn: () => api<RunSummary[]>("/runs") });
+  if (runs.isLoading) return <div className="page"><div className="skeleton" style={{ height: 120 }} /></div>;
+  return (runs.data?.length ?? 0) > 0 ? <Navigate to="/runs" replace /> : <NewRun />;
+}
+
 export default function App() {
   const [theme, setTheme] = useTheme();
   const [palette, setPalette] = useState(false);
@@ -75,9 +89,14 @@ export default function App() {
       <nav className="rail" aria-label="Main">
         <div className="brandline"><Mark /><div><b>SiliconForge</b><small>spec to GDSII, verified</small></div></div>
         <StackBar />
-        <div className="index-label">Sheets</div>
-        {NAV.map(({ to, label, icon: Icon, end }) => (
-          <NavLink key={to} to={to} end={end} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
+        <button className="search" onClick={() => setPalette(true)} aria-label="Search and jump (Ctrl K)"><Search size={15} /><span>Jump to…</span><kbd>Ctrl K</kbd></button>
+        {GROUPS.map((g) => (
+          <div className="group" key={g.label}>
+            <div className="index-label">{g.label}</div>
+            {g.items.map(({ to, label, icon: Icon }) => (
+              <NavLink key={to} to={to} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
+            ))}
+          </div>
         ))}
         <span className="spacer" />
         <div className="foot">
@@ -88,7 +107,8 @@ export default function App() {
       </nav>
       <main className="main">
         <Routes>
-          <Route path="/" element={<NewRun />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/new" element={<NewRun />} />
           <Route path="/runs" element={<Runs />} />
           <Route path="/runs/:id" element={<RunDetail />} />
           <Route path="/workspace" element={<WorkspacePage />} />

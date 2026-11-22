@@ -235,7 +235,11 @@ class ChatApp(App):
         if s is not None:
             tk = s.router.cost_tracker
             tok, cost, stage = tk.total_tokens, tk.total_cost_usd, s.compaction_stage
-        line = Text.assemble((f" {mode} ", mode_style(mode, pal)), "  ", (getattr(self.ws, "profile", "") or "", pal["ink-2"]), "  ",
+        mark = Text()  # the logo in miniature: five layers, one per hue
+        for key in ("contract", "rtl", "formal", "lec", "pnr"):
+            mark.append("▰", style=pal["layer-" + key])
+        line = Text.assemble(" ", mark, (" SiliconForge  ", f"bold {pal['chrome-ink']}"), (f" {mode} ", mode_style(mode, pal)), "  ",
+                             (getattr(self.ws, "profile", "") or "", pal["ink-2"]), "  ",
                              (stamp, f"bold {pal['ink']}"), "  ", (f"{tok:,} tok", pal["ink-3"]), "  ", (f"${cost:.4f}", pal["ink-3"]),
                              "  ", (f"context: {stage}", pal["ink-3"]))
         if self.busy:

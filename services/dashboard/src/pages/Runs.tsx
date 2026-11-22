@@ -28,7 +28,7 @@ export default function Runs() {
       <div className="topbar">
         <span className="title">Runs</span>
         <span className="grow" />
-        <Link to="/" className="btn primary" style={{ textDecoration: "none" }}><Plus size={15} /> New run</Link>
+        <Link to="/new" className="btn primary" style={{ textDecoration: "none" }}><Plus size={15} /> New run</Link>
       </div>
       <div className="page stack">
         <div className="row wrap">
@@ -42,7 +42,7 @@ export default function Runs() {
         </div>
         <Panel flush>
           {rows.length === 0 ? (
-            <Empty title={q.data?.length ? "No runs match" : "No runs yet"} action={!q.data?.length && <Link to="/" className="btn primary" style={{ textDecoration: "none" }}>Start your first run</Link>}>
+            <Empty title={q.data?.length ? "No runs match" : "No runs yet"} action={!q.data?.length && <Link to="/new" className="btn primary" style={{ textDecoration: "none" }}>Start your first run</Link>}>
               {q.data?.length ? "Try a different search or status." : "Pick a bundled example and watch the agent prove it."}
             </Empty>
           ) : (

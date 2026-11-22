@@ -31,7 +31,7 @@ interface, not a model's ability.
   Workspace `allow` and `deny` rules in `siliconforge.yaml` apply exactly as in `siliconforge chat`.
 - **Status line.** Permission mode, routing profile, a **real** or **simulated** stamp for the workspace's EDA backend, tokens, cost,
   and the context stage (how far the transcript has been compacted). The side panel shows the folder, turns, tool calls and tool success.
-- **Splash.** The logo's conductor draws itself through five layers. Any key skips it; `--no-anim` removes it.
+- **Splash.** The logo's five layers are deposited one after another. Any key skips it; `--no-anim` removes it.
 
 ## Keys and commands
 

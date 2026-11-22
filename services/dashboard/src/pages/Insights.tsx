@@ -72,7 +72,7 @@ export function CostPage() {
           <Stat label="Passed signoff" value={`${r?.by_profile.reduce((a, b) => a + b.signoff_passed, 0) ?? 0}`} sub="across all profiles" />
         </div>
         {!r || r.runs === 0 ? (
-          <Panel><Empty title="No spending yet" action={<Link to="/" className="btn primary" style={{ textDecoration: "none" }}>Start a run</Link>}>Costs appear here once runs use a paid model. Local and bundled-example runs are free.</Empty></Panel>
+          <Panel><Empty title="No spending yet" action={<Link to="/new" className="btn primary" style={{ textDecoration: "none" }}>Start a run</Link>}>Costs appear here once runs use a paid model. Local and bundled-example runs are free.</Empty></Panel>
         ) : (
           <div className="grid2" style={{ alignItems: "start" }}>
             <Panel title="Spend by model profile"><Bars items={r.by_profile.map((p) => ({ label: p.profile, value: p.usd, sub: `${p.runs} runs` }))} fmt={usd} /></Panel>

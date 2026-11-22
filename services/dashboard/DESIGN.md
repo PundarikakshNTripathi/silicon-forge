@@ -35,7 +35,8 @@ Guardrails ochre is `#b07d00` (not a brighter yellow) so it stays apart from amb
 
 ## Type
 
-Atkinson Hyperlegible Next for everything, Commit Mono for code, RTL and logs. Fixed scale (13, 15, 18, 26 px). Self-hosted through
+Geist for the interface, Geist Mono for code, RTL, logs and identifiers, Newsreader (a serif) for page titles, the design name and the big numbers: a quiet
+sans interface under a human voice. Fixed scale (12.5, 14.5, 20, 22, 28, 34 px). Self-hosted through
 `@fontsource`; the app makes no network requests for fonts.
 
 ## Components
@@ -43,16 +44,17 @@ Atkinson Hyperlegible Next for everything, Commit Mono for code, RTL and logs. F
 - Sidebar: deep navy, a seven-segment stack bar under the wordmark, the active row a lighter navy with a bar on the edge. Below 760 px it
   becomes a bottom bar.
 - Sections: `.panel` with a heavy top rule, hairline under its caption; `data-layer` gives it the stage hue.
-- Controls: cobalt primary button with a soft lift; secondary buttons outlined; every control has hover, focus-visible (2 px cobalt), disabled and active states.
+- Controls: ink primary button (navy in light, pale periwinkle in dark) with a soft lift; secondary buttons outlined; every control has hover, focus-visible (2 px cobalt), disabled and active states.
 - Choices (`.choice`): ruled list rows, selected by a cobalt outline on a cobalt wash.
 - Stamps: `.prov.real`, `.prov.sim`, and `.badge.*` for state.
 - Motion only on state change (a running run pulses, hover and press feedback); `prefers-reduced-motion` removes all of it.
 
 ## Brand mark
 
-One conductor routed through five metal layers, drawn as an S: top bar contract, then RTL, formal, synthesis and place and route, each in
-its own layer hue. It starts at an open pad (the spec) and ends on a solid one (signoff). `assets/logo.svg`, `src/Mark.tsx` and
-`public/logo.svg` (the favicon) are the same drawing; it follows the page theme.
+Five rounded bars stacked into an S, one bar per layer of the flow: contract, RTL, formal, synthesis and place and route, each in its own
+hue. It reads at 16 px (a favicon), needs no container, and says the product's idea: a design is a stack of layers, each checked by a
+different tool. `assets/logo.svg`, `src/Mark.tsx` and `public/logo.svg` are the same drawing; it follows the page theme. The terminal
+splash deposits the same five layers one after another.
 
 ## What not to add
 

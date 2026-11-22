@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { STAGES } from "./derive";
 
-/** One conductor routed through five metal layers: the S is the flow. Same drawing as assets/logo.svg, themed by the layer tokens. */
+/** Five metal layers stacked into an S: contract, RTL, formal, synthesis, place and route. Same drawing as assets/logo.svg. */
 export function Mark({ size = 36 }: { size?: number }) {
-  const s = { fill: "none", strokeWidth: 9 } as const;
   return (
     <svg className="brand" width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="SiliconForge">
-      <path {...s} stroke="var(--layer-contract)" d="M46 13H13.5" />
-      <path {...s} stroke="var(--layer-rtl)" d="M18 8.5V36.5" />
-      <path {...s} stroke="var(--layer-formal)" d="M13.5 32H50.5" />
-      <path {...s} stroke="var(--layer-lec)" d="M46 27.5V56.5" />
-      <path {...s} stroke="var(--layer-pnr)" d="M50.5 51H18" />
-      <rect x="41" y="8" width="10" height="10" fill="var(--chrome)" stroke="var(--layer-contract)" strokeWidth="3" />
-      <rect x="8" y="46" width="12" height="12" fill="var(--chrome-ink)" />
+      <rect x="7" y="5" width="50" height="9" rx="4.5" fill="var(--layer-contract)" />
+      <rect x="7" y="17" width="22" height="9" rx="4.5" fill="var(--layer-rtl)" />
+      <rect x="7" y="29" width="50" height="9" rx="4.5" fill="var(--layer-formal)" />
+      <rect x="35" y="41" width="22" height="9" rx="4.5" fill="var(--layer-lec)" />
+      <rect x="7" y="53" width="50" height="9" rx="4.5" fill="var(--layer-pnr)" />
     </svg>
   );
 }
