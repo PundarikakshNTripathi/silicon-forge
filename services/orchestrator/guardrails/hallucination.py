@@ -241,7 +241,7 @@ class HallucinationGuardrail:
     def _check_pdk_cells(self, rtl_source: str) -> list[GuardrailViolation]:
         violations: list[GuardrailViolation] = []
         # Detect explicit stdcell instantiations like sky130_... or gf180mcu_... or asap7...
-        cell_refs = re.findall(r"\b((?:sky130|gf180mcu|tsmc|nangate|asap7)[a-zA-Z0-9_]+)\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(", rtl_source)
+        cell_refs = re.findall(r"\b((?:sky130|gf180mcu|sg13g2|tsmc|nangate|asap7)[a-zA-Z0-9_]+)\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(", rtl_source)
         for cell in cell_refs:
             if not any(cell.startswith(pref) for pref in self.pdk_spec.allowed_cell_prefixes):
                 violations.append(

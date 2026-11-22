@@ -113,8 +113,9 @@ def _flow(project: Project, args: argparse.Namespace, out: Path, **kw) -> Projec
     from services.orchestrator.config import load_flow_config
     from services.orchestrator.eda.bridge import make_backend
 
-    runner = make_backend(args.backend, load_flow_config()).runner  # type: ignore[attr-defined]
-    return ProjectFlow(project, runner, out, **kw)
+    backend = make_backend(args.backend, load_flow_config())
+    runner = backend.runner  # type: ignore[attr-defined]
+    return ProjectFlow(project, runner, out, librelane=getattr(backend, "librelane", None), **kw)  # the configured LibreLane command and PDK roots
 
 
 def _lock(project: Project, args: argparse.Namespace) -> int:

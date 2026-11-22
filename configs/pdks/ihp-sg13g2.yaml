@@ -1,0 +1,34 @@
+# IHP SG13G2 130 nm BiCMOS (ihp-sg13g2) PDK grounding and guardrail spec.
+# Facts read from the installed PDK: default library sg13g2_stdcell, corners typ_1p20V_25C / slow_1p08V_125C / fast_1p32V_m40C
+# (LibreLane DEFAULT_CORNER nom_typ_1p20V_25C), site CoreSite, cells named sg13g2_<function>_<drive>.
+# Validated: one small design (up_down_counter) was run through the project flow on this PDK, signoff clean; see docs/flow.md.
+pdk_name: "ihp-sg13g2"
+node_nm: 130
+stdcell_library: "sg13g2_stdcell"
+nominal_voltage_v: 1.2
+typical_corner: "typ_1p20V_25C"
+signoff_corners:
+  - "slow_1p08V_125C"
+  - "fast_1p32V_m40C"
+  - "typ_1p20V_25C"
+metal_layers: ["Metal1", "Metal2", "Metal3", "Metal4", "Metal5", "TopMetal1", "TopMetal2"]
+min_clock_period_ns: 5.0   # a conservative guard chosen here, not a PDK limit
+default_site: "CoreSite"
+
+allowed_cell_prefixes:
+  - "sg13g2_"
+
+allowed_flow_vars:
+  - "DESIGN_NAME"
+  - "VERILOG_FILES"
+  - "CLOCK_PORT"
+  - "CLOCK_PERIOD"
+  - "FP_CORE_UTIL"
+  - "PL_TARGET_DENSITY_PCT"
+  - "SYNTH_STRATEGY"
+  - "CTS_CLK_MAX_WIRE_LENGTH"
+  - "GRT_ALLOW_CONGESTION"
+  - "GRT_ADJUSTMENT"
+  - "RUN_KLAYOUT_DRC"
+  - "RUN_MAGIC_DRC"
+  - "RUN_LVS"

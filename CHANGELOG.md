@@ -3,6 +3,11 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (flow, verification, PDKs)
+- **`gf180mcuD` and `ihp-sg13g2`** PDK specs, each validated by running one small design through the project flow on real tools: both signoff clean (`flow-up_down_counter-*.json`, `docs/flow.md#pdks`). LibreLane is now given `--pdk` explicitly (it ignores `PDK` in `config.json`) and an optional per-PDK `--pdk-root` (`SILICONFORGE_PDK_ROOTS` or `eda.pdk_roots`), because `ciel` keeps one active PDK per root. The cell-allowlist guardrail now recognises IHP `sg13g2_` cells (it did not see them as cells at all before).
+- **`siliconforge verify cdc`**: a heuristic structural clock-domain-crossing check on RTL text (unsynchronized, single-flop and two-flop-synchronized crossings; bus skew note; says what it cannot see). Not CDC sign-off.
+- The **Docker** workflow gains an `eda-backend` job that runs lint, synthesis and the equivalence proof through `flow run --backend docker` on every change to the Docker files.
+- `docs/roadmap.md`: what is deliberately not in this release and why.
 ### Changed (README, docs, assets)
 - README restructured around what a reader does first: a hero run screenshot, then a visual tour (web cockpit light and dark, verification, performance, layout, agent loops, the terminal UI as a recording), the agent-against-frameworks results with the benchmark's design diagram, the plots and the limits. New diagrams for the agent loop and the benchmark design; the flow diagram uses the stage hues. Screenshots are regenerated from a real WSL run by `scripts/capture_ui.py`, with the tab and theme chosen by URL (`?tab=`, `?theme=`).
 - `tests/test_readme_assets.py`: every README image exists, has alt text and a size budget; every result file it cites exists; relative links resolve.

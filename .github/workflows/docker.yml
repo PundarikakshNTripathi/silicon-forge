@@ -47,3 +47,33 @@ jobs:
           image: siliconforge-orchestrator:ci
           format: spdx-json
           artifact-name: siliconforge-orchestrator.spdx.json
+
+  eda-backend:
+    # The Docker EDA backend, end to end: build the EDA image, then run a real project through `flow run --backend docker`
+    # (lint with Verilator, synthesis with Yosys, and the RTL-to-netlist equivalence proof). Place and route is not in this image.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install SiliconForge
+        run: python -m pip install -e ".[api]"
+      - name: Build the EDA image
+        run: docker build -f docker/Dockerfile.eda -t siliconforge-eda:latest docker
+      - name: Run lint, synthesis and equivalence through the Docker backend
+        run: |
+          mkdir -p /tmp/proj/rtl
+          cp hardware/examples/up_down_counter/rtl/up_down_counter.sv /tmp/proj/rtl/
+          siliconforge flow init /tmp/proj --top up_down_counter --sources "rtl/*.sv" --clock clk --period 10
+          siliconforge flow check /tmp/proj
+          siliconforge flow run /tmp/proj --backend docker --stages lint,synth | tee /tmp/flow.log
+          grep -q "equivalence proven" /tmp/flow.log
+          grep -q "lint   pass" /tmp/flow.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-flow-report
+          path: /tmp/proj/.siliconforge/flow/**/report.*
+          if-no-files-found: warn
