@@ -466,3 +466,8 @@ SUITE: tuple[Task, ...] = (
 )
 
 BY_ID = {t.id: t for t in SUITE}
+
+# Tasks written after the first results (see tasks_holdout.py): selectable by id, not part of the default suite.
+from services.orchestrator.agentbench.tasks_holdout import HOLDOUT  # noqa: E402
+
+BY_ID.update({t.id: t for t in HOLDOUT})
