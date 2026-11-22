@@ -132,8 +132,9 @@ def test_only_chat_completions_are_recorded_and_windows_filter_by_time(stack):
     post(proxy, {}, path="/models")
     assert proxy.records == []
     post(proxy, {"a": 1})
+    time.sleep(0.06)  # Windows' clock ticks every ~16 ms: leave a gap on both sides of `mid` so the two records cannot share its tick
     mid = time.time()
-    time.sleep(0.02)
+    time.sleep(0.06)
     post(proxy, {"a": 2})
     assert len(proxy.records) == 2
     assert len(proxy.records_between(mid, time.time() + 1)) == 1 and len(proxy.records_between(0, mid)) == 1

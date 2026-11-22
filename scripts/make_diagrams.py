@@ -10,31 +10,43 @@ stamps and hatched outlines mean real and simulated, as in the app.
 """
 from __future__ import annotations
 
+import json
 from html import escape
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "diagrams"
 
-STYLE = """
+TOKENS = json.loads((Path(__file__).resolve().parents[1] / "configs" / "design" / "tokens.json").read_text(encoding="utf-8"))
+
+
+def _vars(mode: str) -> str:
+    m = TOKENS[mode]
+    base = (f"--paper:{m['paper']}; --card:{m['paper-2']}; --ink:{m['ink']}; --ink2:{m['ink-2']}; --ink3:{m['ink-3']}; "
+            f"--rule:{m['rule']}; --amber:{m['repair']}; --wash:{m['accent-wash']};")
+    return base + " " + " ".join(f"--l-{k}:{v[mode]};" for k, v in TOKENS["layers"].items())
+
+
+STYLE = f"""
 <style>
-  :root { --paper:#f5f6f8; --card:#ffffff; --ink:#0e1520; --ink2:#3c4657; --ink3:#626c7b; --rule:#c9cfd8; --amber:#f2a900; --wash:#fbeec7; }
-  @media (prefers-color-scheme: dark) { :root { --paper:#0f151d; --card:#141c26; --ink:#e8edf4; --ink2:#b2bccb; --ink3:#8593a6; --rule:#33415a; --amber:#ffb81c; --wash:#2e2410; } }
-  text { font-family: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }
-  .bg { fill: var(--paper); }
-  .box { fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }
-  .box.quiet { stroke: var(--rule); stroke-width: 1.2; }
-  .box.hot { fill: var(--wash); stroke: var(--ink); stroke-width: 1.6; }
-  .box.stamp { fill: var(--ink); }
-  .frame { fill: none; stroke: var(--rule); stroke-width: 1.2; stroke-dasharray: 5 4; }
-  .t { font-size: 15px; font-weight: 700; } .s { font-size: 12.5px; fill: var(--ink2); } .c { font-size: 12.5px; font-weight: 700; fill: var(--ink3); }
-  .tw { fill: var(--paper); }
-  .ln { stroke: var(--ink); stroke-width: 1.6; fill: none; } .ln.q { stroke: var(--ink3); stroke-width: 1.2; }
-  .loop { stroke: var(--amber); stroke-width: 3; fill: none; } .arrowhead { fill: var(--ink); }
-  .redo { fill: var(--amber); stroke: var(--ink); stroke-width: 1.4; }
-  .hatch { fill: url(#h); stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  :root {{ {_vars("light")} }}
+  @media (prefers-color-scheme: dark) {{ :root {{ {_vars("dark")} }} }}
+  text {{ font-family: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, -apple-system, sans-serif; fill: var(--ink); }}
+  .bg {{ fill: var(--paper); }}
+  .box {{ fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }}
+  .box.quiet {{ stroke: var(--rule); stroke-width: 1.2; }}
+  .box.hot {{ fill: var(--wash); stroke: var(--ink); stroke-width: 1.6; }}
+  .box.stamp {{ fill: var(--ink); }}
+  .frame {{ fill: none; stroke: var(--rule); stroke-width: 1.2; stroke-dasharray: 5 4; }}
+  .t {{ font-size: 15px; font-weight: 700; }} .s {{ font-size: 12.5px; fill: var(--ink2); }} .c {{ font-size: 12.5px; font-weight: 700; fill: var(--ink3); }}
+  .tw {{ fill: var(--paper); }}
+  .ln {{ stroke: var(--ink); stroke-width: 1.6; fill: none; }} .ln.q {{ stroke: var(--ink3); stroke-width: 1.2; }}
+  .loop {{ stroke: var(--amber); stroke-width: 3; fill: none; }} .arrowhead {{ fill: var(--ink); }}
+  .redo {{ fill: var(--amber); stroke: var(--ink); stroke-width: 1.4; }}
+  .hatch {{ fill: url(#h); stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 4 3; }}
+  .band {{ stroke: none; }}
 </style>
 <defs>
-  <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.5"/></pattern>
+  <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--card)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.6"/></pattern>
   <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrowhead"/></marker>
   <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--amber)"/></marker>
 </defs>
@@ -81,6 +93,9 @@ class Svg:
         print("wrote", OUT / name)
 
 
+LAYER_OF = {"Contract": "contract", "RTL": "rtl", "Guardrails": "guardrails", "Formal": "formal", "Synthesis": "lec", "Layout": "pnr", "Signoff": "signoff"}
+
+
 def flow() -> None:
     s = Svg(1100, 400, "SiliconForge flow", "Spec to contract, RTL, guardrails, formal, synthesis and equivalence, layout, signoff, with repair loops back to RTL.")
     stages = [("Contract", "ports, clocks,\nbudgets, typed IR"), ("RTL", "SystemVerilog\nfrom any model"), ("Guardrails", "6 gates: ports, lint,\nPDK cells, flow vars,\nvacuity, LEC"),
@@ -90,7 +105,8 @@ def flow() -> None:
     s.text(x0 + 330, 56, "Tool verdicts decide every edge below. The model proposes; formal tools, equivalence checks and layout reports dispose.", "s")
     for i, (t, sub) in enumerate(stages):
         x = x0 + i * (w + gap)
-        s.box(x, y, w, h, t, sub, kind="hot" if t == "Formal" else "")
+        s.box(x, y, w, h, t, sub, kind="")
+        s.raw(f'<rect class="band" x="{x}" y="{y}" width="{w}" height="7" fill="var(--l-{LAYER_OF[t]})"/>')
         if i:
             s.line([(x - gap + 2, y + h / 2), (x - 2, y + h / 2)])
     s.line([(x0 + 64, 72), (x0 + 64, y - 2)])
@@ -178,6 +194,61 @@ def contest() -> None:
     s.save("competition.svg")
 
 
+def agent() -> None:
+    s = Svg(1100, 520, "The agent loop", "A request becomes a prompt, the model answers with one JSON action, permission rules and your approval gate it, the tool runs in a sandbox, "
+            "its output is redacted and fenced, and every step is recorded as metadata-only spans.")
+    s.text(24, 28, "One turn, repeated until the model answers without a tool call (or a budget, the loop guard or you stops it).", "s")
+    steps = [("Prompt", "instructions, project memory,\ntool list, transcript\n(older turns compacted)"), ("Model", "one JSON action:\nsay, tool, args\n(constrained decoding)"),
+             ("Permission", "deny rules, then mode,\nthen allow rules,\nthen you approve"), ("Tool", "path-confined sandbox,\nundo, pre and post\nhooks"),
+             ("Result", "keys redacted, wrapped\nas untrusted data,\nclipped")]
+    x0, w, gap, y, h = 24, 188, 28, 60, 112
+    for i, (t, sub) in enumerate(steps):
+        x = x0 + i * (w + gap)
+        s.box(x, y, w, h, t, sub, kind="hot" if t == "Permission" else "")
+        if i:
+            s.line([(x - gap + 2, y + h / 2), (x - 2, y + h / 2)])
+    s.line([(x0 + 4 * (w + gap) + w / 2, y + h + 2), (x0 + 4 * (w + gap) + w / 2, y + h + 34), (x0 + w / 2, y + h + 34), (x0 + w / 2, y + h + 4)], "q")
+    s.text(x0 + 2 * (w + gap) + 20, y + h + 28, "the result goes back into the transcript, and the model decides the next step", "s")
+    s.frame(24, 238, 1052, 92, "Guards inside the loop (tested with scripted models)")
+    guards = [("Loop guard", "a note at the third identical\ncall, a stop at the fifth"), ("Step budget", "per turn; a cost and token\nbudget per workspace"), ("Interrupt", "Esc stops the turn before\nthe next model call"),
+              ("Policy", "the router drops models the\nworkspace does not allow")]
+    for i, (t, sub) in enumerate(guards):
+        s.box(36 + i * 262, 252, 244, 66, t, sub, kind="quiet")
+    s.box(24, 366, 330, 62, "investigate", "a read-only helper with a fresh context;\nonly its short answer comes back", kind="quiet")
+    s.box(374, 366, 330, 62, "Project memory", "notes in .siliconforge/memory.md,\nsecret-masked, editable by you", kind="quiet")
+    s.text(24, 356, "Also part of the loop", "c")
+    s.box(724, 366, 352, 62, "Spans: metadata only", "run > step > model call | tool call: time, tokens,\nerror class. No prompts, arguments or output.", kind="quiet")
+    s.text(24, 462, "Every span feeds the same four measurements: where the time goes (model, tools, overhead), how often tools work, what a solved task costs, and whether the agent recovers.", "s")
+    s.text(24, 482, "They reach the Insights page, `siliconforge trace`, OTLP (Phoenix, Langfuse) and a Prometheus endpoint.", "s")
+    s.save("agent.svg")
+
+
+def agentbench() -> None:
+    s = Svg(1100, 470, "AgentBench-SF design", "Three agent loops get the same model, the same tools, the same sandbox and the same step budget. Model calls are timed at one proxy and tool "
+            "calls at one tool box; a hidden verifier judges each run.")
+    s.box(24, 50, 210, 130, "13 tasks", "a fixture folder, a step\nbudget, optional faults\nand a verifier the\nagent never sees", kind="quiet")
+    s.frame(284, 34, 270, 262, "The only thing that differs")
+    for i, (t, sub) in enumerate([("SiliconForge loop", "JSON actions, our guards"), ("LangGraph", "create_agent, native tool calls"), ("Pydantic AI", "typed tools, native tool calls")]):
+        s.box(298, 50 + i * 82, 242, 70, t, sub)
+        s.line([(234, 115), (262, 115), (262, 85 + i * 82), (296, 85 + i * 82)], "q")
+    s.box(640, 50, 200, 76, "Measuring proxy", "every model call:\ntime, tokens, status")
+    s.box(640, 196, 200, 76, "Instrumented tool box", "every tool call:\ntime, error class")
+    s.box(900, 50, 176, 76, "llama-server", "Qwen3.5-9B Q4_K_M\none GPU, thinking off", kind="stamp")
+    s.box(900, 196, 176, 76, "Sandbox tools", "read, edit, lint, grep,\nsimulate, formal", kind="quiet")
+    for y in (85, 167, 249):  # every loop reaches the model through the proxy and the tools through the tool box
+        s.line([(540, y), (590, y)], "q", arrow=False)
+    s.line([(590, 85), (590, 249)], "q", arrow=False)
+    s.line([(590, 88), (638, 88)])
+    s.line([(590, 234), (638, 234)])
+    s.line([(840, 88), (898, 88)])
+    s.line([(840, 234), (898, 234)])
+    s.box(24, 330, 520, 110, "A hidden verifier judges each run", "lint, or a simulation testbench, or an exact answer line; a safety\nviolation (a leaked secret, an obeyed injected instruction)\nfails the task whatever the answer. The task is the unit of analysis.", kind="hot")
+    s.box(580, 330, 496, 110, "The same four measurements for every loop", "time split (model / tools / overhead), tool success with failures by class,\ntokens per solved task, recovery after a failure. Intervals are\nbootstrap over tasks; the loops are compared paired.", kind="quiet")
+    s.line([(988, 274), (988, 300), (300, 300), (300, 328)], "q")
+    s.text(24, 462, "Arms are rotated per task so none always runs first; the server is warmed up first, and one 9B model is the only model.", "s")
+    s.save("agentbench.svg")
+
+
 if __name__ == "__main__":
-    for build in (flow, system, verification, contest):
+    for build in (flow, system, verification, contest, agent, agentbench):
         build()

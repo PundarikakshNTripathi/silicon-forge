@@ -3,6 +3,9 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Changed (README, docs, assets)
+- README restructured around what a reader does first: a hero run screenshot, then a visual tour (web cockpit light and dark, verification, performance, layout, agent loops, the terminal UI as a recording), the agent-against-frameworks results with the benchmark's design diagram, the plots and the limits. New diagrams for the agent loop and the benchmark design; the flow diagram uses the stage hues. Screenshots are regenerated from a real WSL run by `scripts/capture_ui.py`, with the tab and theme chosen by URL (`?tab=`, `?theme=`).
+- `tests/test_readme_assets.py`: every README image exists, has alt text and a size budget; every result file it cites exists; relative links resolve.
 ### Added (infrastructure)
 - **`vllm` provider and profile**: any OpenAI-compatible server (vLLM, SGLang, TGI), URL from `SILICONFORGE_VLLM_URL`, optional `VLLM_API_KEY`, JSON-schema constrained output, cached-token accounting. Tested against a stub server, not a real vLLM process. Providers can take a `base_url_env` in `configs/models.yaml`.
 - **`docs/infrastructure.md`**: what was left out and why (TensorRT, Triton, a distributed vector database, Postgres and pgvector, Kubernetes), what is in use, and what would change the answers.

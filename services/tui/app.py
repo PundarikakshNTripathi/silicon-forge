@@ -132,8 +132,8 @@ class SiliconForgeTUI(App):
             self.manager.cancel(self.run_id)
 
     def poll(self) -> None:
-        if not self.run_id:
-            return
+        if not self.run_id or not self.query("#strip"):
+            return  # the timer can fire while the app is mounting or closing, when its widgets are not there
         table = self.query_one("#log", DataTable)
         new = self.store.events_after(self.run_id, self.last_seq)
         for e in new:

@@ -1,23 +1,23 @@
 <div align="center">
 
-<img src="assets/logo.svg" width="96" alt="SiliconForge logo: a wafer with a flat edge and a routed S ending on two amber via pads">
+<img src="assets/logo.svg" width="96" alt="SiliconForge logo: one conductor routed through five metal layers, drawn as an S, from an open pad to a solid one">
 
 # SiliconForge
 
 **Verification-first RTL tooling on open-source EDA, with an agent that tools can overrule.**
 
 [![CI](https://github.com/PundarikakshNTripathi/silicon-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/PundarikakshNTripathi/silicon-forge/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-AGPL--3.0--or--later-0e1520)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.11%2B-0e1520)
-![EDA](https://img.shields.io/badge/EDA-Yosys%20%C2%B7%20SymbiYosys%20%C2%B7%20OpenROAD-0e1520)
+[![License](https://img.shields.io/badge/license-AGPL--3.0--or--later-0b1b33)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.11%2B-0b1b33)
+![EDA](https://img.shields.io/badge/EDA-Yosys%20%C2%B7%20SymbiYosys%20%C2%B7%20OpenROAD-0b1b33)
 
 <br>
 
-<img src="assets/screenshots/run-overview.png" width="900" alt="A run: title block, results against the contract, and the flow drawn as signal rows to real time scale. The amber square on Formal is a counterexample that sent the design back for repair.">
+<img src="assets/screenshots/run-overview.png" width="900" alt="A run in the web cockpit: a title block with a real-tools stamp, results against the contract's limits, and the flow drawn as seven coloured layers over real time. The amber diamond on Formal marks a counterexample that sent the design back for repair.">
 
-<sub>A run on real tools. The amber square marks the moment formal verification sent the design back for repair.</sub>
+<sub>A run on real tools (WSL2: Yosys, SymbiYosys, OpenROAD). Each pipeline stage has its own colour; the amber diamond is the moment formal verification sent the design back for repair.</sub>
 
-[Status](#status) · [Quick start](#quick-start) · [What is in it](#what-is-in-it) · [Results](#results) · [Limits](#limits) · [Architecture](#architecture) · [Reference](#reference) · [Licence](#licence)
+[Status](#status) · [Quick start](#quick-start) · [A look around](#a-look-around) · [What is in it](#what-is-in-it) · [Results](#results) · [Limits](#limits) · [Architecture](#architecture) · [Reference](#reference) · [Licence](#licence)
 
 </div>
 
@@ -50,6 +50,8 @@ outline means a surrogate did. In the command line and in result files the field
 | Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. Speculative decoding is implemented and off by default; see [docs/providers.md](docs/providers.md#speculative-decoding) for what was measured. |
 | Tiny Tapeout IHP: hardening, timing, DRC | **Not run locally.** Needs the official flow (Docker or the GitHub action). |
 | Fine-tuning a local model on verified samples | One round measured on a 1.5B model ([results](#fine-tuning-on-verified-answers)); no larger model, no second round. |
+| Web cockpit, terminal UI | Run in a browser and in a terminal; the web views are screenshots of real runs below. |
+| Agent measurement (latency split, tool success, cost per task, recovery) | Built and measured on one local model against LangGraph and Pydantic AI ([results](#the-agent-against-langgraph-and-pydantic-ai)). |
 | Docker backend, subscription CLI bridges | Wiring is unit-tested; not run end to end on the reference machine. |
 | Clock-domain-crossing analysis, hierarchical macros, SRAM macros | **Absent.** |
 | `simulated` backend | Surrogate models, always labelled. For demos and CI. |
@@ -98,6 +100,30 @@ Other routes: cloud keys on the Models page (OS keychain), the Gemini 3.8 Flash 
 app (`python scripts/build_desktop.py`), the terminal UI (`siliconforge tui`) and an MCP server
 (`claude mcp add siliconforge -- python -m services.orchestrator.mcp_server`).
 
+## A look around
+
+**The web cockpit** (`siliconforge serve`). A run opens with what was run and what produced the evidence, then the results against the
+contract's own limits, then the flow. Dark theme and a bottom bar on phones come with it.
+
+<p align="center"><img src="assets/screenshots/run-overview-dark.png" width="760" alt="The same run in the dark theme"></p>
+
+| | |
+| :--- | :--- |
+| <img src="assets/screenshots/verification.png" alt="Verification tab: a formal counterexample with its waveform, then the repaired design proven"> | <img src="assets/screenshots/performance.png" alt="Performance tab: area and timing across layout episodes and the optimizer's reward"> |
+| **Verification.** The first formal run found a counterexample (the red tags); the repaired design is proven. The waveform window is the one the model was shown. | **Performance.** Nine layout episodes; the green point met timing. The optimizer's best-so-far is the blue line. |
+| <img src="assets/screenshots/layout.png" alt="Layout tab: the GDSII rendered, zoomable"> | <img src="assets/screenshots/agent-loops.png" alt="Evals page, Agent loops tab: task success with intervals, a metrics table and a per-task matrix"> |
+| **Layout.** The real GDSII from the run, zoomable. | **Agent loops.** The head-to-head against LangGraph and Pydantic AI, from the committed result files. |
+
+**The terminal UI** (`siliconforge tui`). A chat with the agent in your folder: tool calls are cards, edits arrive as diffs you approve,
+`Shift+Tab` cycles the permission mode, `Esc` interrupts. The recording below uses a scripted model with the real tools
+([how it is made](docs/tui.md)).
+
+<p align="center"><img src="assets/gifs/tui.gif" width="820" alt="The terminal UI: an animated splash, then a request to add a reset to a counter, with tool cards, a diff approval and the final answer"></p>
+
+**The design language** is one palette for the web UI, the terminal and the plots (`configs/design/tokens.json`): a hue per pipeline stage
+(contract violet, RTL vermilion, guardrails ochre, formal cobalt, synthesis green, layout magenta, signoff navy), amber only for "sent back
+for repair", and shape (solid or hatched), never colour alone, for real or simulated.
+
 ## What is in it
 
 **The pipeline.** Spec, design contract, RTL, guardrails, formal, equivalence, layout, signoff. A failed check sends only the
@@ -126,8 +152,16 @@ workspace can restrict which models may be called; the router enforces it. The m
 tool and path, hooks that run your commands before or after a tool call, and external MCP servers whose tools join the agent's
 own. Inside the loop: a context budget (older turns become a digest built by code, no extra model call), a repeated-call
 guard, tool output fenced as untrusted data, and redaction of keys and tokens in tool output and saved sessions. Conversations
-can be saved and resumed (opt-in). These guards are tested with scripted models; they lower risk and do not replace the
+can be saved and resumed (opt-in), the agent can keep project notes between sessions (`memory: true`) and hand a read-only question to a helper with its own fresh context (`investigate`). These guards are tested with scripted models; they lower risk and do not replace the
 permission modes, and the MCP client has been run against a test server, not yet against third-party EDA servers.
+
+**Agent measurement** ([docs/telemetry.md](docs/telemetry.md), [docs/agent-benchmark.md](docs/agent-benchmark.md)). Every agent step is a
+metadata-only span (no prompts, arguments or output), from which four things are computed the same way for any agent loop: where the time
+goes (model, tools, overhead), how often tools work and why they fail, what a solved task costs, and whether the agent recovers from a
+failure. They show on the Insights page, in `siliconforge trace`, through OTLP, and as Prometheus text. `siliconforge agentbench` runs the
+same tasks, tools and model through our loop, LangGraph and Pydantic AI.
+
+<p align="center"><img src="assets/diagrams/agent.svg" width="900" alt="The agent loop: prompt, model, permission check, tool, result, with the guards, the investigator helper, project memory and the spans it records"></p>
 
 **Evaluations** ([docs/evals.md](docs/evals.md)). VerilogEval with unbiased pass@k, bootstrap intervals, paired comparison,
 four ablation arms, a fixed train/test split and a Gymnasium-style environment. The grader is validated: every reference
@@ -232,6 +266,31 @@ problem ids of the two splits do not overlap, and a check for near-duplicate pro
 which do not drive the gain. This is one round, one training seed and a small model whose base score is low, so it shows the loop
 works end to end; it says nothing yet about larger models or further rounds ([docs/evals.md](docs/evals.md#fine-tuning-on-verified-samples-one-round-measured)).
 
+### The agent against LangGraph and Pydantic AI
+
+The same 13 sandboxed tasks, the same local model (Qwen3.5-9B Q4_K_M), the same tools, sandbox and step budget, five trials per task, three
+independent runs; the table is run 3 (`agentbench-Qwen3.5-9B-Q4_K_M-run3-*.json`; runs 1 and 2 are in the same folder and agree).
+
+<p align="center"><img src="assets/diagrams/agentbench.svg" width="900" alt="How the benchmark is built: tasks, three agent loops, one measuring proxy for model calls, one instrumented tool box, a hidden verifier"></p>
+
+<p align="center"><img src="assets/plots/agentbench_success.png" width="760" alt="Task success with 95% intervals: SiliconForge loop 70.8%, LangGraph 92.3%, Pydantic AI 92.3%"></p>
+
+| Loop | Task success (95% interval) | Median time | Tool success | Recovered after a failure | Tokens per task |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| SiliconForge loop | 70.8% (46 to 94) | 4.7 s | 91% | 11 of 22 | 5,534 |
+| LangGraph (`create_agent`) | 92.3% (77 to 100) | 3.9 s | 96% | 10 of 10 | 7,897 |
+| Pydantic AI | 92.3% (77 to 100) | 3.8 s | 95% | 10 of 11 | 7,169 |
+
+The frameworks scored higher, and the paired interval over 13 tasks touches zero, so this is a strong lead, not a ranking. Most of the
+gap is two specific, fixable things found by replaying the failures: our loop does not write a requested `ANSWER:` line inside its JSON
+envelope (content-correct score 86%), and 11 of its 34 `edit_file` calls missed their target (0 of 56 for LangGraph), leaving a rename
+half done and reported as done. It uses 23 to 30% fewer tokens, and with its guards it had no safety violations in 20 runs on the two
+safety tasks, against 2 of 20 for each plain framework (a secret in the answer); the same guards added to the frameworks brought that to 0.
+No loop asks the clarifying question on the ambiguous task. One model, 13 public tasks, frameworks used as documented: read
+[docs/agent-benchmark.md](docs/agent-benchmark.md) for what it does not show.
+
+<p align="center"><img src="assets/plots/agentbench_guards.png" width="640" alt="Safety violations in 20 runs: 0 for our loop, 2 for each plain framework, 0 again with our guards added"></p>
+
 ### Searching layout knobs
 
 A Gaussian-process optimizer was added and compared with random search, Latin hypercube and the original bandit on real runs
@@ -296,13 +355,14 @@ variable allowlist, formal grounding and vacuity, equivalence.
 siliconforge run     --spec FILE [--backend simulated|native|wsl|docker] [--profile P] [--workspace DIR]
 siliconforge flow    init|check|run|report|diff
 siliconforge evals   fetch|run|selfcheck|list|compare|export-sft
-siliconforge chat | agent "task"  [--workspace DIR] [--mode ask|accept-edits|auto|plan]
+siliconforge chat | agent "task" | tui  [--workspace DIR] [--mode ask|accept-edits|auto|plan]
+siliconforge agentbench list|run|report|compare      siliconforge trace  [files]      siliconforge memory show|add|clear
 siliconforge init    [DIR] [--profile P] [--allow-model GLOB]
 siliconforge isa     gen|asm|disasm|check|run isa.yaml [program.asm]
 siliconforge verify  sim|mutate|toggle ...
 siliconforge tt      scaffold|check|synth|gls|pack|doctor|harden
 siliconforge report  ai-usage        siliconforge models  detect|install|pull|start|status
-siliconforge eval | doctor | serve | tui | mcp
+siliconforge eval | doctor | serve | mcp
 python scripts/dev.py build-cpp|test|lint|doctor
 ```
 </details>
@@ -328,8 +388,10 @@ configs/  benchmarks/  docs/  tests/  scripts/
 <details>
 <summary>Design decisions</summary>
 
-- **No agent framework.** The pipeline is a deterministic graph whose edges are tool verdicts, so a framework would add a second
-  state model without adding capability.
+- **No agent framework in the pipeline.** It is a deterministic graph whose edges are tool verdicts, so a framework would add a second
+  state model without adding capability. For the workspace agent we measured instead of assuming: LangGraph and Pydantic AI scored higher on
+  one 9B model ([results](#the-agent-against-langgraph-and-pydantic-ai)); our loop stays for now because its JSON protocol works with every
+  provider (including subscription CLIs), it sends smaller prompts, and the guards live in one place. The two weaknesses found are the next fixes.
 - **SymbiYosys rather than Lean** for verification: push-button BMC, PDR and equivalence fit RTL.
 - **Honest defaults.** Worst-corner signoff, provenance on every result, no silent fallback, no prompt text in the usage ledger,
   and the tool never submits anything for you.
@@ -341,8 +403,8 @@ are stronger.
 
 ## Roadmap
 
-CVDP and a held-out design suite; further fine-tuning rounds on larger models; clock-domain-crossing checks, macros and more PDKs in the project flow;
-Tiny Tapeout hardening through Docker; signed installers.
+CVDP and a held-out design suite; fixes for the agent loop's two measured weaknesses, then a re-test on new tasks; further fine-tuning rounds on
+larger models; clock-domain-crossing checks, macros and more PDKs in the project flow; Tiny Tapeout hardening through Docker; signed installers.
 
 ## Licence
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AgentLoops } from "./AgentLoops";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api";
@@ -95,7 +96,9 @@ export function EvalsPage() {
   const tele = files.find((b) => b.file.startsWith("telemetry-"));
   const [open, setOpen] = useState<string | null>(null);
   const [pick, setPick] = useState<string[]>([]);
-  const [view, setView] = useState<"models" | "agents">("models");
+  const [sp, setSp] = useSearchParams();
+  const view: "models" | "agents" = sp.get("tab") === "agents" ? "agents" : "models";
+  const setView = (v: "models" | "agents") => setSp(v === "agents" ? { tab: "agents" } : {}, { replace: true });
   const byFile = new Map(results.map((r) => [r.file, r]));
   const models = [...new Set(results.map((r) => r.model))].sort();
   const toggle = (f: string) => setPick((p) => (p.includes(f) ? p.filter((x) => x !== f) : [...p.slice(-1), f]));
