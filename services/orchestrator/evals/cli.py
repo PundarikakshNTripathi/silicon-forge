@@ -28,11 +28,15 @@ def add_parser(sub) -> None:
     r.add_argument("--serve", default=None, metavar="GGUF", help="start a private llama-server for this model file (GPU guard applies)")
     r.add_argument("--ctx", type=int, default=16384)
     r.add_argument("--kv", default="q8_0")
+    r.add_argument("--spec-type", default="none", help="llama.cpp speculative decoding for --serve: none, ngram-mod, ngram-simple, ... "
+                                                       "(recorded in the result; see docs/providers.md)")
     r.add_argument("--reasoning", default="auto", choices=["auto", "on", "off"],
                    help="the server's thinking default. A per-request switch in the provider config overrides it (the local provider sets it off), so use --thinking to compare modes")
     r.add_argument("--port", type=int, default=8189)
     r.add_argument("--thinking", default="catalog", choices=["catalog", "on", "off"],
                    help="per-request thinking switch for a Qwen3-style model; catalog keeps configs/models.yaml (off for local)")
+    r.add_argument("--max-tokens", type=int, default=None, metavar="N",
+                   help="completion cap for the routed local model (default: configs/models.yaml, 6000); recorded in the result")
     r.add_argument("--hf", default=None, metavar="MODEL_ID",
                    help="evaluate a Hugging Face model in-process (needs torch, transformers, peft) instead of a routed one")
     r.add_argument("--adapter", default=None, metavar="DIR", help="LoRA adapter directory to merge into the --hf model")
@@ -98,7 +102,7 @@ def set_thinking(provider, mode: str) -> None:
     provider.extra_body["chat_template_kwargs"] = kw
 
 
-def make_llm(cfg, task_type: str, thinking: str = "catalog") -> tuple[LLM, str]:
+def make_llm(cfg, task_type: str, thinking: str = "catalog", max_tokens: int | None = None) -> tuple[LLM, str]:
     from services.orchestrator.inference.cost_tracker import CostTracker
     from services.orchestrator.inference.router import ModelRouter
 
@@ -109,7 +113,10 @@ def make_llm(cfg, task_type: str, thinking: str = "catalog") -> tuple[LLM, str]:
     router = ModelRouter(cfg.inference, tracker)
     tier = router.select_tier(task_type)
     target = router.chain(tier)[0]
-    set_thinking(router.provider_for(target.provider), thinking)
+    provider = router.provider_for(target.provider)
+    set_thinking(provider, thinking)
+    if max_tokens:
+        provider.max_tokens = max_tokens
 
     def llm(system: str, user: str, temperature: float) -> LLMReply:
         resp = router.complete(stage="EVAL", task_type=task_type, system_prompt=system, user_prompt=user,
@@ -245,7 +252,8 @@ def _run(args: argparse.Namespace) -> int:
                 print("llama-server not installed: siliconforge models install", file=sys.stderr)
                 return 2
             model = Path(args.serve).resolve()
-            server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port, reasoning=args.reasoning))
+            server = LlamaServer(exe, ServerConfig(model_path=model, ctx=args.ctx, kv_type=args.kv, port=args.port,
+                                                   reasoning=args.reasoning, spec_type=args.spec_type))
             server.start()
             label = label or model.stem
         extra_info: dict = {}
@@ -257,7 +265,7 @@ def _run(args: argparse.Namespace) -> int:
             label = label or routed
             extra_info = {"hf": args.hf, "adapter": Path(args.adapter).name if args.adapter else None}
         else:
-            llm, routed = make_llm(cfg, args.task_type, args.thinking)
+            llm, routed = make_llm(cfg, args.task_type, args.thinking, args.max_tokens)
         arm = build_arm(args.arm, args.rounds, args.candidates)
         result = run_verilogeval(
             arm, llm, runner, model=label or routed, n=args.n, k=args.k, temperature=args.temperature,
@@ -266,7 +274,7 @@ def _run(args: argparse.Namespace) -> int:
                         if args.save_trajectories is not None else None),
             on_progress=None if args.quiet else lambda s: print(s, flush=True),
             extra={"profile": args.profile, "routed": routed, "reasoning": args.reasoning if args.serve else "provider default", "thinking": args.thinking,
-                   **extra_info},
+                   "max_tokens": args.max_tokens or "catalog (6000)", "spec_type": args.spec_type if args.serve else "not managed by this run", **extra_info},
         )
     finally:
         if server is not None:
