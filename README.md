@@ -44,7 +44,7 @@ outline means a surrogate did. In the command line and in result files the field
 | Formal verification (BMC, PDR, cover) with counterexample repair | Real tools. All four example designs, good and buggy. |
 | Equivalence of RTL and synthesized netlist | Real (Yosys `equiv_*`); designs with a module hierarchy are flattened first. |
 | Place and route to GDSII, per-corner PPA | Real (LibreLane 3.0.17 on sky130A, through WSL2). |
-| `siliconforge flow` on your own multi-file RTL | Real. One design measured so far ([results](#results)). |
+| `siliconforge flow` on your own multi-file RTL | Real. `pio16` on sky130A ([results](#results)); one small design each on gf180mcuD and ihp-sg13g2, both signoff clean ([docs/flow.md](docs/flow.md#pdks)). |
 | Verification toolkit and ISA toolchain | Real tools; the worked example is `hardware/isa/pio16`. |
 | Evaluation harness (VerilogEval) | Real. One suite; Gemini and three local models measured. |
 | Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. Speculative decoding is implemented and off by default; see [docs/providers.md](docs/providers.md#speculative-decoding) for what was measured. |
@@ -52,8 +52,10 @@ outline means a surrogate did. In the command line and in result files the field
 | Fine-tuning a local model on verified samples | One round measured on a 1.5B model ([results](#fine-tuning-on-verified-answers)); no larger model, no second round. |
 | Web cockpit, terminal UI | Run in a browser and in a terminal; the web views are screenshots of real runs below. |
 | Agent measurement (latency split, tool success, cost per task, recovery) | Built and measured on one local model against LangGraph and Pydantic AI ([results](#the-agent-against-langgraph-and-pydantic-ai)). |
-| Docker backend, subscription CLI bridges | Wiring is unit-tested; not run end to end on the reference machine. |
-| Clock-domain-crossing analysis, hierarchical macros, SRAM macros | **Absent.** |
+| Docker backend | Lint, synthesis and the equivalence proof run through it in CI on every change to the Docker files (`.github/workflows/docker.yml`); place and route is not in that image. Not run on the reference machine. |
+| Subscription CLI bridges | Wiring is unit-tested; the Gemini route through `agy` is measured, the others are not run end to end. |
+| Clock-domain crossings | A **heuristic** structural check on RTL text (`siliconforge verify cdc`); not CDC sign-off ([docs/verification.md](docs/verification.md)). |
+| Hierarchical macros, SRAM macros | **Absent.** |
 | `simulated` backend | Surrogate models, always labelled. For demos and CI. |
 
 Free-form specs need a model. The bundled-examples profile fails on an unknown spec instead of returning another design.
@@ -403,8 +405,11 @@ are stronger.
 
 ## Roadmap
 
-CVDP and a held-out design suite; fixes for the agent loop's two measured weaknesses, then a re-test on new tasks; further fine-tuning rounds on
-larger models; clock-domain-crossing checks, macros and more PDKs in the project flow; Tiny Tapeout hardening through Docker; signed installers.
+The detailed list, with why each item matters and where it stands, is in [docs/roadmap.md](docs/roadmap.md). In short:
+
+fixes for the agent loop's two measured weaknesses and a re-test on new tasks; a test-and-assertion agent rewarded by mutant kills; resuming
+interrupted runs; netlist-level CDC and macros in the project flow; CVDP as a second benchmark; Tiny Tapeout hardening through Docker; signed
+installers and images.
 
 ## Licence
 

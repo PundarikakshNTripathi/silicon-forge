@@ -52,13 +52,14 @@ class RealBackend(EDABackend):
         pnr_timeout_sec: float = 3600.0,
         librelane_cmd: list[str] | None = None,
         timing_corner: str = "worst",
+        pdk_roots: dict[str, str] | None = None,
     ) -> None:
         self.runner = runner
         self.name = runner.name
         self.engines = {**DEFAULT_ENGINES, **(engines or {})}
         self.compiler = FormalIRCompiler()
         self.pnr_timeout_sec = pnr_timeout_sec
-        self.librelane = LibreLaneFlow(runner, command=librelane_cmd, timing_corner=timing_corner)
+        self.librelane = LibreLaneFlow(runner, command=librelane_cmd, timing_corner=timing_corner, pdk_roots=pdk_roots)
         self._tools_cache: dict[str, bool] | None = None
 
     def check_tools(self) -> dict[str, bool]:

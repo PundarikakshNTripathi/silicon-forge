@@ -407,10 +407,39 @@ def _workspace_runner(args: argparse.Namespace):
     return ws, EDABridge(cfg).backend.runner
 
 
+def _cmd_cdc(args: argparse.Namespace) -> int:
+    """Structural CDC check on RTL files (no EDA backend needed). Exit 1 when a crossing is unsynchronized or single-stage."""
+    import json as _json
+
+    from services.orchestrator.verify.cdc import analyze
+
+    files = list(args.file) + list(args.sources) + [f for f in getattr(args, "paths", [])]
+    if not files:
+        print("give RTL files with --file (repeatable)", file=sys.stderr)
+        return 2
+    worst = 0
+    for f in files:
+        rep = analyze(Path(f).read_text(encoding="utf-8", errors="replace"))
+        if args.json_out if hasattr(args, "json_out") else False:
+            print(_json.dumps({f: rep.to_dict()}, indent=2))
+        else:
+            print(f"{f}: heuristic structural check, not CDC sign-off; clocks: {', '.join(rep.clocks) or 'none found'}")
+            for c in rep.crossings:
+                print(f"  {c.status:<15} {c.signal} ({c.width} bit) {c.from_clock} -> {c.to_clock}: {c.note}")
+            for u in rep.unparsed:
+                print(f"  not analysed: {u}")
+            if not rep.crossings and not rep.unparsed:
+                print("  no crossings found between the clock domains it could see")
+        worst = max(worst, 1 if rep.problems else 0)
+    return worst
+
+
 def cmd_verify(args: argparse.Namespace) -> int:
-    """Verification toolkit: sim (cocotb), mutate, toggle, decode."""
+    """Verification toolkit: sim (cocotb), mutate, toggle, decode, cdc."""
     from services.orchestrator import verify
 
+    if args.action == "cdc":
+        return _cmd_cdc(args)
     ws, runner = _workspace_runner(args)
     try:
         if args.action == "sim":
@@ -730,8 +759,8 @@ def build_parser() -> argparse.ArgumentParser:
     isa.add_argument("--steps", type=int, default=64, help="run: instruction budget")
     isa.set_defaults(func=cmd_isa)
 
-    vf = sub.add_parser("verify", help="Verification toolkit: sim (cocotb), mutate, toggle")
-    vf.add_argument("action", choices=["sim", "mutate", "toggle"])
+    vf = sub.add_parser("verify", help="Verification toolkit: sim (cocotb), mutate, toggle, cdc (a heuristic clock-domain-crossing check)")
+    vf.add_argument("action", choices=["sim", "mutate", "toggle", "cdc"])
     vf.add_argument("--workspace", default=".")
     vf.add_argument("--config", default="configs/flow_default.yaml")
     vf.add_argument("--backend", choices=MODES, default=None)
