@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { Mark, StackBar } from "./Mark";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Code, Coins, Cpu, FlaskConical, FolderTree, ListChecks, Moon, Play, Search, Sun, Wrench } from "lucide-react";
+import { BookOpen, Code, Coins, Cpu, FlaskConical, FolderTree, HelpCircle, ListChecks, Moon, Play, Search, Sun, Wrench } from "lucide-react";
 
 // AGPL-3.0 section 13: users of a modified network-served version must be offered its source. A fork sets VITE_SOURCE_URL.
 const SOURCE_URL = (import.meta as { env?: Record<string, string> }).env?.VITE_SOURCE_URL ?? "https://github.com/PundarikakshNTripathi/silicon-forge";
@@ -23,21 +23,24 @@ import Overview from "./demo/Overview";
 import DemoAgent from "./demo/DemoAgent";
 import EngineeringNote from "./demo/EngineeringNote";
 import Tour from "./demo/Tour";
+import TourHost, { startTour, tourSeen } from "./tour/Tour";
+import HelpBar from "./tour/HelpBar";
+import { DEMO_TOUR, PAGE_TOURS, helpKey } from "./tour/steps";
 
 const GROUPS = [
-  ...(DEMO ? [{ label: "Demo", items: [{ to: "/", label: "Overview", icon: BookOpen }, { to: "/note", label: "Engineering note", icon: Code }] }] : []),
+  ...(DEMO ? [{ label: "Demo", items: [{ to: "/", label: "Overview", icon: BookOpen, desc: "Start here" }, { to: "/note", label: "Engineering note", icon: Code, desc: "A note from the author" }] }] : []),
   { label: "Work", items: [
-    { to: "/new", label: "New run", icon: Play },
-    { to: "/runs", label: "Runs", icon: ListChecks },
-    { to: "/workspace", label: "Agent", icon: FolderTree },
+    { to: "/new", label: "New run", icon: Play, desc: "Describe a chip block and start a run" },
+    { to: "/runs", label: "Runs", icon: ListChecks, desc: "Every run so far, and its results" },
+    { to: "/workspace", label: "Agent", icon: FolderTree, desc: "Chat with the agent inside a folder" },
   ] },
   { label: "Evidence", items: [
-    { to: "/evals", label: "Evals", icon: FlaskConical },
-    { to: "/cost", label: "Insights", icon: Coins },
+    { to: "/evals", label: "Evals", icon: FlaskConical, desc: "How good the models and agents are, measured" },
+    { to: "/cost", label: "Insights", icon: Coins, desc: "Cost, and how the agent behaves over time" },
   ] },
   { label: "Setup", items: [
-    { to: "/models", label: "Models", icon: Cpu },
-    { to: "/knowledge", label: "Knowledge", icon: BookOpen },
+    { to: "/models", label: "Models", icon: Cpu, desc: "Where the language models come from" },
+    { to: "/knowledge", label: "Knowledge", icon: BookOpen, desc: "Reference notes the agent can look up" },
   ] },
 ];
 const NAV = GROUPS.flatMap((g) => g.items.map((i) => ({ ...i, end: false })));
@@ -90,6 +93,13 @@ export default function App() {
   const [palette, setPalette] = useState(false);
   const toasts = useToasts();
   useHotkey("mod+k", () => setPalette((p) => !p));
+  const loc = useLocation();
+  // in the demo the full tour opens by itself on a first visit (it begins by asking, so it is easy to wave off); elsewhere it is on request
+  useEffect(() => { if (DEMO && !tourSeen() && loc.pathname === "/") startTour(DEMO_TOUR); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const takeTour = () => {
+    const k = helpKey(loc.pathname);
+    startTour(DEMO && !k ? DEMO_TOUR : (k && PAGE_TOURS[k]) || DEMO_TOUR);
+  };
   const dark = theme === "dark" || (theme === "system" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
   return (
     <div className="shell">
@@ -100,20 +110,22 @@ export default function App() {
         {GROUPS.map((g) => (
           <div className="group" key={g.label}>
             <div className="index-label">{g.label}</div>
-            {g.items.map(({ to, label, icon: Icon }) => (
-              <NavLink key={to} to={to} end={to === "/"} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
+            {g.items.map(({ to, label, icon: Icon, desc }) => (
+              <NavLink key={to} to={to} title={desc} end={to === "/"} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
             ))}
           </div>
         ))}
         <span className="spacer" />
         <div className="foot">
-          <NavLink to="/system" className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Wrench size={17} /><span>System</span></NavLink>
+          <button className="nav" onClick={takeTour} title="A short guided walk through this page, or the whole demo"><HelpCircle size={17} /><span>Take the tour</span></button>
+          <NavLink to="/system" title="Which tools are installed and ready" className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Wrench size={17} /><span>System</span></NavLink>
           <a className="nav" href={SOURCE_URL} target="_blank" rel="noreferrer"><Code size={17} /><span>Source (AGPL-3.0)</span></a>
           <button className="nav" onClick={() => setTheme(dark ? "light" : "dark")} aria-label="Toggle theme">{dark ? <Sun size={17} /> : <Moon size={17} />}<span>{dark ? "Light theme" : "Dark theme"}</span></button>
         </div>
       </nav>
       <main className="main">
         {DEMO && <Tour />}
+        <HelpBar />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/new" element={<NewRun />} />
@@ -130,6 +142,7 @@ export default function App() {
         </Routes>
       </main>
       {palette && <Palette onClose={() => setPalette(false)} />}
+      <TourHost />
       <div className="toasts" aria-live="polite">{toasts.map((t) => <div className="toast" key={t.id}>{t.text}</div>)}</div>
     </div>
   );

@@ -3,12 +3,15 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.6.0] - 2026-11-23
+A browser demo that needs no install, a guided tour, a redesigned look, and a plainer account of what has and has not been shown.
 ### Added (research roadmap)
 - **`services/orchestrator/evals/equiv.py`**: a pairwise RTL equivalence grader (Yosys `equiv_simple`, then `equiv_induct -seq 30`, the NotSoTiny recipe) with a self-check. No model, CPU only; verdicts are `equivalent`, `not_proven` or `error`.
 ### Added (static demo)
 - **A zero-backend copy of the cockpit** (`VITE_DEMO_MODE`), deployable to GitHub Pages (`.github/workflows/demo-pages.yml`): every read is served from `services/dashboard/public/demo-data/`, which `scripts/export_demo_bundle.py` builds from the committed results and from two recorded real runs through the real route code. Writes say they do nothing. A banner states that it is a recording.
 - **Agent replay with a real approval gate**, from a trace recorded off the real agent (`services/orchestrator/demo/record_trace.py`): real tools, permission code, transcript compaction and static linter; the model is a script and the page says so. Approving or requesting a revision follows the matching recording. A tab shows the terminal interface as captures.
-- A four-stop guided tour and an engineering-note view whose text the author writes; `docs/demo.md`. Tests keep the bundle current and free of local paths and user names; CI builds the demo.
+- A four-stop guided tour and an engineering-note view; `docs/demo.md`. Tests keep the bundle current and free of local paths and user names; CI builds the demo.
 ### Changed
 - `docs/landscape.md` adds what November 2026 changed (Harmonic Aristotle, the free waveform MCP servers, ChipMATE, NotSoTiny, Build-A-Chip-Bench, ChipAgents' benchmark audit) and states plainly where this project is weaker. `docs/roadmap.md` now starts with the one comparison that would show whether the tool-gated pipeline beats simpler setups, with a stop rule, and puts learning steps after it. README Limits and Roadmap follow.
 ### Fixed
@@ -20,6 +23,13 @@ All notable changes are documented here. Format: [Keep a Changelog](https://keep
 - **App flow**: navigation grouped as Work, Evidence and Setup; a "Jump to..." search entry (Ctrl K) at the top; the landing page is Runs once you have runs, New run before that (`/new` is always New run); the agent page is labelled "Agent".
 - **New logo**: five rounded bars in five layer colours stacked into an S. Legible at 16 px, no container needed. The terminal splash deposits the same five layers; the status line carries the mark in miniature.
 - **README hero is now a GIF of a whole session** (`assets/gifs/web-tour.gif`): pick an example, a real run on real tools, every page, the dark theme. Recorded by `scripts/web_demo.cjs` (Playwright, nothing mocked) and assembled by `scripts/web_gif.py`; all screenshots and the terminal recording were regenerated.
+
+### Added (guided tour and page help)
+- **A guided tour of the cockpit**: a spotlight and a card with an arrow for each part, walking across pages (about a minute), and a shorter "Show me around" for every page. Keyboard operable (arrows, Esc), works on phones, waits for data before pointing at it, and falls back to a centred card when a target is missing. It opens by itself on a first visit to the static demo, starting with a question, and is on request in the real app (sidebar: Take the tour).
+- **About this page**: a plain-language line under the top of every page saying what it is for, hideable per page. Sidebar entries have one-line tooltips.
+- The demo's engineering note now has text (a draft to edit).
+### Fixed
+- **The terminal splash is no longer cut short.** It was timed by frame count, so a slow start-up shortened it, and any key (including a command typed while the program launched) dismissed it. It is now timed by the clock (2.4 s of drawing and 1.1 s on the finished logo), ignores typing, can be skipped with Esc, Enter or Space after 0.6 s, and the workspace opens only after it is done. A test covers it.
 
 ## [0.5.0] - 2026-11-22
 The first release since 0.3.0: the 0.4.0 work below was never shipped as its own release, so it is part of this one. The headline changes:
