@@ -3,6 +3,9 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added
+- The guided tour has a step that points at the source-code link (and the demo overview has a visible link), so a visitor who arrives from a form link can find the repository. The tour now points at the first visible match, so a target hidden on phones no longer breaks a step.
+
 
 ## [0.6.0] - 2026-11-23
 A browser demo that needs no install, a guided tour, a redesigned look, and a plainer account of what has and has not been shown.

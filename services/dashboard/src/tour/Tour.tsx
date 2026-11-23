@@ -75,7 +75,7 @@ export default function TourHost() {
     let alive = true, tries = 0;
     const find = () => {
       if (!alive) return;
-      const el = step.target ? document.querySelector(step.target) : null;
+      const el = step.target ? [...document.querySelectorAll(step.target)].find((e) => e.getClientRects().length > 0) ?? null : null;
       if (el) {
         el.scrollIntoView({ block: "center", inline: "nearest", behavior: reduced() ? "auto" : "smooth" });
         setTarget(el); setReady(true);
