@@ -5,7 +5,7 @@ The dashboard in demo mode (`VITE_DEMO_MODE=true`) has no backend. Every number 
 file or a recorded run, never from code written for the demo. So:
 
 * the committed benchmark results are served by the real `/api/benchmarks` route;
-* the committed, sanitised real runs under `benchmarks/demo/runs/` go through the real `Store` and the real run routes;
+* the committed, sanitised real runs under `benchmarks/demo/recorded/` go through the real `Store` and the real run routes;
 * the agent-insights panel is the real `telemetry.aggregate` over the committed AgentBench run metrics;
 * the replay trace comes from `record_trace` (scripted model, real tools: see that module for what is and is not real);
 * anything that describes the machine it ran on (GPU, installed tools, local model files, secrets) is replaced by neutral
@@ -29,7 +29,7 @@ from services.orchestrator.demo.record_trace import record
 from services.orchestrator.paths import RESOURCE_ROOT
 from services.orchestrator.version import __version__
 
-DEMO_RUNS = RESOURCE_ROOT / "benchmarks" / "demo" / "runs"
+DEMO_RUNS = RESOURCE_ROOT / "benchmarks" / "demo" / "recorded"  # not "runs": .gitignore ignores any folder of that name
 DEFAULT_OUT = RESOURCE_ROOT / "services" / "dashboard" / "public" / "demo-data"
 DEFAULT_ASSETS = RESOURCE_ROOT / "services" / "dashboard" / "public" / "demo-assets"
 
@@ -70,8 +70,8 @@ def scrub(obj: Any) -> Any:
 def leftovers(text: str) -> list[str]:
     """Anything that still looks like a local path or a user name (the tests require this to be empty)."""
     found = set(m.group(0) for m in _LEFTOVER.finditer(text))
-    try:
-        me = getpass.getuser()
+    try:  # CI accounts ("runner") are ordinary words; this check is for a developer's own machine
+        me = "" if os.getenv("CI") else getpass.getuser()
     except Exception:  # noqa: BLE001 - no user name available (some containers); the patterns above still apply
         me = ""
     if len(me) >= 3 and me.lower() in text.lower():
@@ -80,7 +80,7 @@ def leftovers(text: str) -> list[str]:
 
 
 def capture_run(run_dir: Path, name: str) -> Path:
-    """Copy a finished real run into `benchmarks/demo/runs/<name>.json`, sanitised. Run after any flow change that you want shown."""
+    """Copy a finished real run into `benchmarks/demo/recorded/<name>.json`, sanitised. Run after any flow change that you want shown."""
     report = json.loads((run_dir / "signoff_report.json").read_text(encoding="utf-8"))
     st = report["state"]
     st.pop("gds_path", None)  # a path on the machine that ran it; the layout is shown as an image instead

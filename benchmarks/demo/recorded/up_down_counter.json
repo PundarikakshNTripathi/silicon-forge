@@ -1,0 +1,1437 @@
+{
+ "name": "up_down_counter",
+ "report": {
+  "cost": {
+   "by_stage": {
+    "ARCHITECT": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.004801,
+     "tokens": 1300
+    },
+    "FORMAL_VERIFY": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.003761,
+     "tokens": 1392
+    },
+    "RTL_GEN": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.000889,
+     "tokens": 1248
+    },
+    "RTL_REPAIR": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.00345,
+     "tokens": 1122
+    }
+   },
+   "cache_hit_rate": 0.0,
+   "total_cost_usd": 0.012901,
+   "total_tokens": 5062
+  },
+  "eda_mode": "wsl",
+  "elapsed_sec": 64.15,
+  "state": {
+   "best_ppa": {
+    "area_um2": 1166.12,
+    "cached": false,
+    "cell_count": 123,
+    "corner_wns": {
+     "max_ff_n40C_1v95": 6.293195476196318,
+     "max_ss_100C_1v60": 3.348412752954609,
+     "max_tt_025C_1v80": 5.4773169772312125,
+     "min_ff_n40C_1v95": 6.325191660581719,
+     "min_ss_100C_1v60": 3.44097693411681,
+     "min_tt_025C_1v80": 5.5258816864155,
+     "nom_ff_n40C_1v95": 6.309573930808012,
+     "nom_ss_100C_1v60": 3.3954013894885637,
+     "nom_tt_025C_1v80": 5.502105593536903
+    },
+    "drc_violations": 0,
+    "extra": {
+     "die_area_um2": 3375.99,
+     "hold_ws_ns": 0.11323220459545748,
+     "instance_area_um2": 1707.89,
+     "render_png": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\render\\up_down_counter.png",
+     "timing_corner": "worst"
+    },
+    "gds_path": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\gds\\up_down_counter.gds",
+    "knobs": {
+     "CLOCK_PERIOD": 10.0,
+     "FP_CORE_UTIL": 45,
+     "GRT_ADJUSTMENT": 0.3,
+     "PL_TARGET_DENSITY_PCT": 60,
+     "SYNTH_STRATEGY": "AREA 0"
+    },
+    "lvs_clean": true,
+    "mode": "wsl",
+    "reward": 8.7489,
+    "run_dir": "runs\\real_counter_1\\pnr_ep_01",
+    "runtime_sec": 56.51,
+    "tns_ns": 0.0,
+    "total_power_mw": 0.22687656746711582,
+    "wns_ns": 3.348412752954609
+   },
+   "contract": {
+    "clock_port": "clk",
+    "functional_requirements": [
+     "8-bit up/down counter with enable",
+     "Synchronous load has priority over counting",
+     "wrap_o pulses for one cycle after a wrap"
+    ],
+    "max_area_um2": 25000.0,
+    "max_power_mw": 5.0,
+    "module_name": "up_down_counter",
+    "pipeline_stages": 1,
+    "ports": [
+     {
+      "description": "System clock",
+      "direction": "input",
+      "name": "clk",
+      "width": 1
+     },
+     {
+      "description": "Active-low async reset",
+      "direction": "input",
+      "name": "rst_n",
+      "width": 1
+     },
+     {
+      "description": "Count enable",
+      "direction": "input",
+      "name": "en_i",
+      "width": 1
+     },
+     {
+      "description": "Synchronous load (priority over counting)",
+      "direction": "input",
+      "name": "load_i",
+      "width": 1
+     },
+     {
+      "description": "1=count up, 0=count down",
+      "direction": "input",
+      "name": "up_i",
+      "width": 1
+     },
+     {
+      "description": "Load value",
+      "direction": "input",
+      "name": "load_val_i",
+      "width": 8
+     },
+     {
+      "description": "Registered counter value",
+      "direction": "output",
+      "name": "count_o",
+      "width": 8
+     },
+     {
+      "description": "Registered wrap pulse",
+      "direction": "output",
+      "name": "wrap_o",
+      "width": 1
+     }
+    ],
+    "reset_active_low": true,
+    "reset_port": "rst_n",
+    "reset_sync": false,
+    "target_clock_ns": 10.0
+   },
+   "eda_mode": "wsl",
+   "error_message": null,
+   "events": [
+    {
+     "detail": "Run real_counter_1 started (EDA backend: wsl).",
+     "payload": {
+      "eda_mode": "wsl",
+      "pdk": "sky130A"
+     },
+     "seq": 0,
+     "stage": "INIT",
+     "status": "INFO",
+     "ts": 1795218086.651
+    },
+    {
+     "detail": "Synthesized DesignContract for 'up_down_counter' (8 ports).",
+     "payload": {
+      "contract": {
+       "clock_port": "clk",
+       "functional_requirements": [
+        "8-bit up/down counter with enable",
+        "Synchronous load has priority over counting",
+        "wrap_o pulses for one cycle after a wrap"
+       ],
+       "max_area_um2": 25000.0,
+       "max_power_mw": 5.0,
+       "module_name": "up_down_counter",
+       "pipeline_stages": 1,
+       "ports": [
+        {
+         "description": "System clock",
+         "direction": "input",
+         "name": "clk",
+         "width": 1
+        },
+        {
+         "description": "Active-low async reset",
+         "direction": "input",
+         "name": "rst_n",
+         "width": 1
+        },
+        {
+         "description": "Count enable",
+         "direction": "input",
+         "name": "en_i",
+         "width": 1
+        },
+        {
+         "description": "Synchronous load (priority over counting)",
+         "direction": "input",
+         "name": "load_i",
+         "width": 1
+        },
+        {
+         "description": "1=count up, 0=count down",
+         "direction": "input",
+         "name": "up_i",
+         "width": 1
+        },
+        {
+         "description": "Load value",
+         "direction": "input",
+         "name": "load_val_i",
+         "width": 8
+        },
+        {
+         "description": "Registered counter value",
+         "direction": "output",
+         "name": "count_o",
+         "width": 8
+        },
+        {
+         "description": "Registered wrap pulse",
+         "direction": "output",
+         "name": "wrap_o",
+         "width": 1
+        }
+       ],
+       "reset_active_low": true,
+       "reset_port": "rst_n",
+       "reset_sync": false,
+       "target_clock_ns": 10.0
+      }
+     },
+     "seq": 1,
+     "stage": "ARCHITECT",
+     "status": "PASS",
+     "ts": 1795218086.656
+    },
+    {
+     "detail": "RTL passed contract + lint + PDK guardrails on attempt 1.",
+     "payload": {
+      "attempt": 1,
+      "warnings": []
+     },
+     "seq": 2,
+     "stage": "GUARDRAIL_AUDIT",
+     "status": "PASS",
+     "ts": 1795218086.67
+    },
+    {
+     "detail": "Verilator lint: 0 error(s), 1 warning(s)",
+     "payload": {
+      "mode": "wsl"
+     },
+     "seq": 3,
+     "stage": "SIMULATION",
+     "status": "PASS",
+     "ts": 1795218091.273
+    },
+    {
+     "detail": "Formal check failed on iteration 1 (P_WRAP_NEEDS_COUNT_STEP); applying COI-sliced repair.",
+     "payload": {
+      "elapsed_sec": 1.348,
+      "iteration": 1,
+      "mode": "wsl",
+      "task_status": {
+       "bmc": "FAIL",
+       "cover": "PASS",
+       "prove": "ERROR"
+      },
+      "witnesses": [
+       {
+        "cycle": 3,
+        "failing_signal": "wrap_o",
+        "property_id": "P_WRAP_NEEDS_COUNT_STEP",
+        "stimulus": {
+         "clk": 1,
+         "en_i": 0,
+         "load_i": 0,
+         "load_val_i": 0,
+         "rst_n": 1,
+         "up_i": 0
+        },
+        "summary": "BMC counterexample: assertion P_WRAP_NEEDS_COUNT_STEP failed at step 3 (up_down_counter_formal.sv:55.13-55.75); inputs={'clk': 1, 'en_i': 0, 'load_i': 0, 'load_val_i': 0, 'rst_n': 1, 'up_i': 0}; outputs={'count_o': 255, 'wrap_o': 1}",
+        "task": "bmc",
+        "trace": {
+         "end": 40,
+         "signals": [
+          {
+           "changes": [
+            [
+             0,
+             "00000000000000000000000000000000"
+            ],
+            [
+             10,
+             "00000000000000000000000000000001"
+            ],
+            [
+             20,
+             "00000000000000000000000000000010"
+            ],
+            [
+             30,
+             "00000000000000000000000000000011"
+            ],
+            [
+             40,
+             "00000000000000000000000000000100"
+            ]
+           ],
+           "name": "smt_step",
+           "width": 32
+          },
+          {
+           "changes": [
+            [
+             0,
+             "1"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "1"
+            ],
+            [
+             40,
+             "1"
+            ]
+           ],
+           "name": "smt_clock",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_LOAD_TAKES_EFFECT_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_RST_COUNT_ZERO_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_RST_WRAP_LOW_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_WRAP_NEEDS_COUNT_STEP_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "1"
+            ],
+            [
+             5,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             15,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             25,
+             "0"
+            ],
+            [
+             30,
+             "1"
+            ],
+            [
+             35,
+             "0"
+            ],
+            [
+             40,
+             "1"
+            ]
+           ],
+           "name": "clk",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "00000000"
+            ],
+            [
+             10,
+             "00000000"
+            ],
+            [
+             20,
+             "11111111"
+            ],
+            [
+             30,
+             "00000000"
+            ]
+           ],
+           "name": "count_o",
+           "width": 8
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "en_i",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "1"
+            ]
+           ],
+           "name": "f_past_valid",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "load_i",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "00000000"
+            ],
+            [
+             10,
+             "11111111"
+            ],
+            [
+             20,
+             "00000000"
+            ],
+            [
+             30,
+             "00000000"
+            ]
+           ],
+           "name": "load_val_i",
+           "width": 8
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "rst_n",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "0"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "up_i",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "wrap_o",
+           "width": 1
+          }
+         ],
+         "timescale": "1ns"
+        }
+       }
+      ]
+     },
+     "seq": 4,
+     "stage": "FORMAL_VERIFY",
+     "status": "RETRY",
+     "ts": 1795218092.626
+    },
+    {
+     "detail": "BMC + k-induction/PDR + cover proved on iteration 2 (mode=wsl).",
+     "payload": {
+      "elapsed_sec": 1.312,
+      "iteration": 2,
+      "mode": "wsl",
+      "task_status": {
+       "bmc": "PASS",
+       "cover": "PASS",
+       "prove": "PASS"
+      },
+      "witnesses": []
+     },
+     "seq": 5,
+     "stage": "FORMAL_VERIFY",
+     "status": "PASS",
+     "ts": 1795218093.952
+    },
+    {
+     "detail": "Yosys synthesis + RTL-to-gate LEC passed (78 cells, mode=wsl).",
+     "payload": {
+      "cells": 78,
+      "elapsed_sec": 0.32,
+      "mode": "wsl"
+     },
+     "seq": 6,
+     "stage": "SYNTHESIS_LEC",
+     "status": "PASS",
+     "ts": 1795218094.288
+    },
+    {
+     "detail": "Episode 1: WNS=3.348ns area=1166um² DRC=0 reward=8.75 [wsl]",
+     "payload": {
+      "episode": 1,
+      "metrics": {
+       "area_um2": 1166.12,
+       "cached": false,
+       "cell_count": 123,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 6.293195476196318,
+        "max_ss_100C_1v60": 3.348412752954609,
+        "max_tt_025C_1v80": 5.4773169772312125,
+        "min_ff_n40C_1v95": 6.325191660581719,
+        "min_ss_100C_1v60": 3.44097693411681,
+        "min_tt_025C_1v80": 5.5258816864155,
+        "nom_ff_n40C_1v95": 6.309573930808012,
+        "nom_ss_100C_1v60": 3.3954013894885637,
+        "nom_tt_025C_1v80": 5.502105593536903
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 3375.99,
+        "hold_ws_ns": 0.11323220459545748,
+        "instance_area_um2": 1707.89,
+        "render_png": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\render\\up_down_counter.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\gds\\up_down_counter.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 45,
+        "GRT_ADJUSTMENT": 0.3,
+        "PL_TARGET_DENSITY_PCT": 60,
+        "SYNTH_STRATEGY": "AREA 0"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": 8.7489,
+       "run_dir": "runs\\real_counter_1\\pnr_ep_01",
+       "runtime_sec": 56.51,
+       "tns_ns": 0.0,
+       "total_power_mw": 0.22687656746711582,
+       "wns_ns": 3.348412752954609
+      }
+     },
+     "seq": 7,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795218150.799
+    },
+    {
+     "detail": "PPA optimization finished 1 episode(s) (cache hits: 0); best WNS=3.348ns, area=1166um², power=0.227mW, DRC=0.",
+     "payload": {
+      "cache_hits": 0,
+      "episodes": 1,
+      "mode": "wsl"
+     },
+     "seq": 8,
+     "stage": "PNR_RL_OPT",
+     "status": "PASS",
+     "ts": 1795218150.799
+    },
+    {
+     "detail": "Signoff checks passed. GDSII: up_down_counter.gds",
+     "payload": {
+      "checks": [
+       {
+        "detail": "WNS 3.348 ns @ 10.00 ns clock",
+        "name": "Timing (WNS >= 0.00 ns @ 10.00 ns clock)",
+        "passed": true
+       },
+       {
+        "detail": "0 violation(s)",
+        "name": "DRC clean",
+        "passed": true
+       },
+       {
+        "detail": "clean",
+        "name": "LVS clean",
+        "passed": true
+       },
+       {
+        "detail": "passed",
+        "name": "RTL == netlist (LEC)",
+        "passed": true
+       },
+       {
+        "detail": "BMC + prove + cover",
+        "name": "Formal proofs non-vacuous",
+        "passed": true
+       },
+       {
+        "detail": "ok",
+        "name": "Flow variables on PDK allowlist",
+        "passed": true
+       },
+       {
+        "detail": "1166 um² (max 25000.0)",
+        "name": "Area budget",
+        "passed": true
+       },
+       {
+        "detail": "0.227 mW (max 5.0)",
+        "name": "Power budget",
+        "passed": true
+       }
+      ],
+      "mode": "wsl"
+     },
+     "seq": 9,
+     "stage": "SIGNOFF",
+     "status": "PASS",
+     "ts": 1795218150.799
+    }
+   ],
+   "formal_history": [
+    {
+     "bmc_passed": false,
+     "cover_passed": true,
+     "elapsed_sec": 1.348,
+     "mode": "wsl",
+     "prove_passed": false,
+     "sby_log": "SBY 23:41:24 [up_down_counter_bmc] Removing directory 'runs/real_counter_1/formal/up_down_counter_bmc'.\nSBY 23:41:24 [up_down_counter_bmc] Copy 'runs/real_counter_1/formal/up_down_counter_formal.sv' to 'runs/real_counter_1/formal/up_down_counter_bmc/src/up_down_counter_formal.sv'.\nSBY 23:41:24 [up_down_counter_bmc] engine_0: smtbmc bitwuzla\nSBY 23:41:24 [up_down_counter_prove] Removing directory 'runs/real_counter_1/formal/up_down_counter_prove'.\nSBY 23:41:25 [up_down_counter_prove] Copy 'runs/real_counter_1/formal/up_down_counter_formal.sv' to 'runs/real_counter_1/formal/up_down_counter_prove/src/up_down_counter_formal.sv'.\nSBY 23:41:25 [up_down_counter_prove] engine_0: abc pdr\nSBY 23:41:25 [up_down_counter_cover] Removing directory 'runs/real_counter_1/formal/up_down_counter_cover'.\nSBY 23:41:25 [up_down_counter_cover] Copy 'runs/real_counter_1/formal/up_down_counter_formal.sv' to 'runs/real_counter_1/formal/up_down_counter_cover/src/up_down_counter_formal.sv'.\nSBY 23:41:25 [up_down_counter_cover] engine_0: smtbmc bitwuzla\nSBY 23:41:25 [up_down_counter_bmc] base: starting process \"cd up_down_counter_bmc/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY 23:41:25 [up_down_counter_prove] base: starting process \"cd up_down_counter_prove/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY 23:41:25 [up_down_counter_cover] base: starting process \"cd up_down_counter_cover/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY 23:41:25 [up_down_counter_bmc] base: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_cover] base: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_prove] base: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_bmc] prep: starting process \"cd up_down_counter_bmc/model; yosys -ql design_prep.log design_prep.ys\"\nSBY 23:41:25 [up_down_counter_cover] prep: starting process \"cd up_down_counter_cover/model; yosys -ql design_prep.log design_prep.ys\"\nSBY 23:41:25 [up_down_counter_prove] prep: starting process \"cd up_down_counter_prove/model; yosys -ql design_prep.log design_prep.ys\"\nSBY 23:41:25 [up_down_counter_cover] prep: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_bmc] prep: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_cover] smt2: starting process \"cd up_down_counter_cover/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY 23:41:25 [up_down_counter_prove] prep: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_bmc] smt2: starting process \"cd up_down_counter_bmc/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY 23:41:25 [up_down_counter_prove] aig: starting process \"cd up_down_counter_prove/model; yosys -ql design_aiger.log design_aiger.ys\"\nSBY 23:41:25 [up_down_counter_cover] smt2: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_cover] engine_0: starting process \"cd up_down_counter_cover; yosys-smtbmc -s bitwuzla --presat --unroll -c --noprogress -t 20  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2\"\nSBY 23:41:25 [up_down_counter_bmc] smt2: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_bmc] engine_0: starting process \"cd up_down_counter_bmc; yosys-smtbmc -s bitwuzla --presat --unroll --noprogress -t 20  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2\"\nSBY 23:41:25 [up_down_counter_prove] aig: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_prove] engine_0: starting process \"cd up_down_counter_prove; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw'\"\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 0..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 0..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 0..\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 1..\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 2..\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 3..\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Reached cover statement in step 3 at up_down_counter: C_REACH_WRAP\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace0.vcd\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace0_tb.v\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace0.smtc\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace0.yw\nSBY 23:41:25 [up_down_counter_cover] engine_0: ##   0:00:00  Status: passed\nSBY 23:41:25 [up_down_counter_cover] engine_0: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_cover] engine_0: Status returned by engine: pass\nSBY 23:41:25 [up_down_counter_prove] engine_0: ======== ABC command line \"read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw\"\nSBY 23:41:25 [up_down_counter_prove] engine_0: Warning: The last 2 outputs are interpreted as constraints.\nSBY 23:41:25 [up_down_counter_prove] engine_0: VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 179. MonoCNF = no. SkipGen = no. SolveAll = no.\nSBY 23:41:25 [up_down_counter_prove] engine_0: Frame Clauses                                                     Max Queue Flops Time\nSBY 23:41:25 [up_down_counter_prove] engine_0: 1 : 0 4                                                                 1     4      0.00 sec  T/O =  0  PRV =  0\nSBY 23:41:25 [up_down_counter_prove] engine_0: 2 : 0 7 1                                                               6    10      0.00 sec  T/O =  0  PRV =  0\nSBY 23:41:25 [up_down_counter_prove] engine_0: Block =    5  Oblig =    20  Clause =     8  Call =    39 (sat=56.4%)  Cex =   0  Start =   0\nSBY 23:41:25 [up_down_counter_prove] engine_0: SAT solving =     0.00 sec (  3.47 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: unsat     =     0.00 sec (  0.05 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: sat       =     0.00 sec (  3.42 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Generalize  =     0.00 sec (  2.19 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Push clause =     0.00 sec (  0.82 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Ternary sim =     0.00 sec (  0.38 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Containment =     0.00 sec (  0.01 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: CNF compute =     0.00 sec (  0.62 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Refinement  =     0.00 sec (  0.09 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: TOTAL       =     0.01 sec (100.00 %)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Output 0 of miter \"model/design_aiger\" was asserted in frame 5.  Time =     0.01 sec\nSBY 23:41:25 [up_down_counter_prove] engine_0: finished (returncode=0)\nSBY 23:41:25 [up_down_counter_prove] engine_0: Status returned by engine: FAIL\nSBY 23:41:25 [up_down_counter_cover] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:25 [up_down_counter_cover] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:25 [up_down_counter_cover] summary: engine_0 (smtbmc bitwuzla) returned pass\nSBY 23:41:25 [up_down_counter_cover] summary: cover trace: up_down_counter_cover/engine_0/trace0.vcd\nSBY 23:41:25 [up_down_counter_cover] summary:   reached cover statement up_down_counter.C_REACH_WRAP at up_down_counter_formal.sv:59.13-59.40 step 3\nSBY 23:41:25 [up_down_counter_cover] DONE (PASS, rc=0)\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 1..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 1..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 2..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 2..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 3..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 3..\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  BMC failed!\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Assert failed in up_down_counter: P_WRAP_NEEDS_COUNT_STEP\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace.vcd\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace_tb.v\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace.smtc\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace.yw\nSBY 23:41:25 [up_down_counter_bmc] engine_0: ##   0:00:00  Status: failed\nSBY 23:41:25 [up_down_counter_bmc] engine_0: finished (returncode=1)\nSBY 23:41:25 [up_down_counter_bmc] engine_0: Status returned by engine: FAIL\nSBY 23:41:25 [up_down_counter_prove] engine_0: starting process \"cd up_down_counter_prove; yosys-witness aiw2yw engine_0/trace.aiw model/design_aiger.ywa engine_0/trace_aiw.yw\"\nSBY 23:41:25 [up_down_counter_bmc] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:25 [up_down_counter_bmc] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:25 [up_down_counter_bmc] summary: engine_0 (smtbmc bitwuzla) returned FAIL\nSBY 23:41:25 [up_down_counter_bmc] summary: counterexample trace: up_down_counter_bmc/engine_0/trace.vcd\nSBY 23:41:25 [up_down_counter_bmc] summary:   failed assertion up_down_counter.P_WRAP_NEEDS_COUNT_STEP at up_down_counter_formal.sv:55.13-55.75 step 3\nSBY 23:41:25 [up_down_counter_bmc] DONE (FAIL, rc=2)\nSBY 23:41:32 [up_down_counter_prove] engine_0: Converting AIGER witness trace 'engine_0/trace.aiw' to Yosys witness trace 'engine_0/trace_aiw.yw'...\nSBY 23:41:32 [up_down_counter_prove] engine_0: Using Yosys witness AIGER map file 'model/design_aiger.ywa'\nSBY 23:41:32 [up_down_counter_prove] smt2: starting process \"cd up_down_counter_prove/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY 23:41:32 [up_down_counter_prove] engine_0: Converted 6 time steps.\nSBY 23:41:32 [up_down_counter_prove] engine_0: finished (returncode=0)\nSBY 23:41:32 [up_down_counter_prove] smt2: finished (returncode=0)\nSBY 23:41:32 [up_down_counter_prove] engine_0: starting process \"cd up_down_counter_prove; yosys-smtbmc -s yices --noprogress --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc --yw engine_0/trace_aiw.yw model/design_smt2.smt2\"\nSBY 23:41:32 [up_down_counter_prove] engine_0: ##   0:00:00  Solver: yices\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Skipping step 0..\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Skipping step 1..\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Skipping step 2..\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Skipping step 3..\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Skipping step 4..\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Checking assertions in step 5..\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  BMC failed!\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Assert failed in up_down_counter: P_LOAD_TAKES_EFFECT\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Writing trace to VCD file: engine_0/trace.vcd\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Writing trace to Verilog testbench: engine_0/trace_tb.v\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Writing trace to constraints file: engine_0/trace.smtc\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Writing trace to Yosys witness file: engine_0/trace.yw\nSBY 23:41:25 [up_down_counter_prove] engine_0: ##  -1:59:54  Status: FAILED\nSBY 23:41:25 [up_down_counter_prove] engine_0: finished (returncode=1)\nSBY 23:41:25 [up_down_counter_prove] ERROR: engine_0: Could not determine aigsmt status.\nSBY 23:41:25 [up_down_counter_prove] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:25 [up_down_counter_prove] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:25 [up_down_counter_prove] summary: engine_0 (abc pdr) returned FAIL\nSBY 23:41:25 [up_down_counter_prove] summary: engine_0 did not produce any traces\nSBY 23:41:25 [up_down_counter_prove] DONE (ERROR, rc=16)\nSBY 23:41:25 The following tasks failed: ['bmc', 'prove']",
+     "task_status": {
+      "bmc": "FAIL",
+      "cover": "PASS",
+      "prove": "ERROR"
+     },
+     "vacuous_detected": false,
+     "witnesses": [
+      {
+       "cycle": 3,
+       "failing_signal": "wrap_o",
+       "property_id": "P_WRAP_NEEDS_COUNT_STEP",
+       "stimulus": {
+        "clk": 1,
+        "en_i": 0,
+        "load_i": 0,
+        "load_val_i": 0,
+        "rst_n": 1,
+        "up_i": 0
+       },
+       "summary": "BMC counterexample: assertion P_WRAP_NEEDS_COUNT_STEP failed at step 3 (up_down_counter_formal.sv:55.13-55.75); inputs={'clk': 1, 'en_i': 0, 'load_i': 0, 'load_val_i': 0, 'rst_n': 1, 'up_i': 0}; outputs={'count_o': 255, 'wrap_o': 1}",
+       "task": "bmc",
+       "trace": {
+        "end": 40,
+        "signals": [
+         {
+          "changes": [
+           [
+            0,
+            "00000000000000000000000000000000"
+           ],
+           [
+            10,
+            "00000000000000000000000000000001"
+           ],
+           [
+            20,
+            "00000000000000000000000000000010"
+           ],
+           [
+            30,
+            "00000000000000000000000000000011"
+           ],
+           [
+            40,
+            "00000000000000000000000000000100"
+           ]
+          ],
+          "name": "smt_step",
+          "width": 32
+         },
+         {
+          "changes": [
+           [
+            0,
+            "1"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "1"
+           ],
+           [
+            40,
+            "1"
+           ]
+          ],
+          "name": "smt_clock",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_LOAD_TAKES_EFFECT_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_RST_COUNT_ZERO_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_RST_WRAP_LOW_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_WRAP_NEEDS_COUNT_STEP_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "1"
+           ],
+           [
+            5,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            15,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            25,
+            "0"
+           ],
+           [
+            30,
+            "1"
+           ],
+           [
+            35,
+            "0"
+           ],
+           [
+            40,
+            "1"
+           ]
+          ],
+          "name": "clk",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "00000000"
+           ],
+           [
+            10,
+            "00000000"
+           ],
+           [
+            20,
+            "11111111"
+           ],
+           [
+            30,
+            "00000000"
+           ]
+          ],
+          "name": "count_o",
+          "width": 8
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "en_i",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "1"
+           ]
+          ],
+          "name": "f_past_valid",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "load_i",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "00000000"
+           ],
+           [
+            10,
+            "11111111"
+           ],
+           [
+            20,
+            "00000000"
+           ],
+           [
+            30,
+            "00000000"
+           ]
+          ],
+          "name": "load_val_i",
+          "width": 8
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "rst_n",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "0"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "up_i",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "wrap_o",
+          "width": 1
+         }
+        ],
+        "timescale": "1ns"
+       }
+      }
+     ]
+    },
+    {
+     "bmc_passed": true,
+     "cover_passed": true,
+     "elapsed_sec": 1.312,
+     "mode": "wsl",
+     "prove_passed": true,
+     "sby_log": "SBY 23:41:26 [up_down_counter_bmc] Removing directory 'runs/real_counter_1/formal/up_down_counter_bmc'.\nSBY 23:41:26 [up_down_counter_bmc] Copy 'runs/real_counter_1/formal/up_down_counter_formal.sv' to 'runs/real_counter_1/formal/up_down_counter_bmc/src/up_down_counter_formal.sv'.\nSBY 23:41:26 [up_down_counter_bmc] engine_0: smtbmc bitwuzla\nSBY 23:41:26 [up_down_counter_prove] Removing directory 'runs/real_counter_1/formal/up_down_counter_prove'.\nSBY 23:41:26 [up_down_counter_prove] Copy 'runs/real_counter_1/formal/up_down_counter_formal.sv' to 'runs/real_counter_1/formal/up_down_counter_prove/src/up_down_counter_formal.sv'.\nSBY 23:41:26 [up_down_counter_prove] engine_0: abc pdr\nSBY 23:41:26 [up_down_counter_cover] Removing directory 'runs/real_counter_1/formal/up_down_counter_cover'.\nSBY 23:41:26 [up_down_counter_cover] Copy 'runs/real_counter_1/formal/up_down_counter_formal.sv' to 'runs/real_counter_1/formal/up_down_counter_cover/src/up_down_counter_formal.sv'.\nSBY 23:41:26 [up_down_counter_cover] engine_0: smtbmc bitwuzla\nSBY 23:41:26 [up_down_counter_bmc] base: starting process \"cd up_down_counter_bmc/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY 23:41:26 [up_down_counter_prove] base: starting process \"cd up_down_counter_prove/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY 23:41:26 [up_down_counter_cover] base: starting process \"cd up_down_counter_cover/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY 23:41:26 [up_down_counter_bmc] base: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_cover] base: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_prove] base: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_bmc] prep: starting process \"cd up_down_counter_bmc/model; yosys -ql design_prep.log design_prep.ys\"\nSBY 23:41:26 [up_down_counter_cover] prep: starting process \"cd up_down_counter_cover/model; yosys -ql design_prep.log design_prep.ys\"\nSBY 23:41:26 [up_down_counter_prove] prep: starting process \"cd up_down_counter_prove/model; yosys -ql design_prep.log design_prep.ys\"\nSBY 23:41:26 [up_down_counter_bmc] prep: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_bmc] smt2: starting process \"cd up_down_counter_bmc/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY 23:41:26 [up_down_counter_cover] prep: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_cover] smt2: starting process \"cd up_down_counter_cover/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY 23:41:26 [up_down_counter_prove] prep: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_prove] aig: starting process \"cd up_down_counter_prove/model; yosys -ql design_aiger.log design_aiger.ys\"\nSBY 23:41:26 [up_down_counter_cover] smt2: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_bmc] smt2: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_cover] engine_0: starting process \"cd up_down_counter_cover; yosys-smtbmc -s bitwuzla --presat --unroll -c --noprogress -t 20  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2\"\nSBY 23:41:26 [up_down_counter_bmc] engine_0: starting process \"cd up_down_counter_bmc; yosys-smtbmc -s bitwuzla --presat --unroll --noprogress -t 20  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2\"\nSBY 23:41:26 [up_down_counter_prove] aig: finished (returncode=0)\nSBY 23:41:26 [up_down_counter_prove] engine_0: starting process \"cd up_down_counter_prove; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw'\"\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY 23:41:26 [up_down_counter_bmc] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 0..\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 1..\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 2..\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Checking cover reachability in step 3..\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Reached cover statement in step 3 at up_down_counter: C_REACH_WRAP\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace0.vcd\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace0_tb.v\nSBY 23:41:26 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace0.smtc\nSBY 23:41:26 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 0..\nSBY 23:41:26 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 0..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 1..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 1..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 2..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 2..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 3..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 3..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 4..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 4..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 5..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 5..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 6..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 6..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 7..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 7..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 8..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 8..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 9..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 9..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 10..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 10..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 11..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 11..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 12..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 12..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 13..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 13..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 14..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 14..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 15..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 15..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 16..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 16..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 17..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 17..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 18..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 18..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assumptions in step 19..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Checking assertions in step 19..\nSBY 23:41:27 [up_down_counter_bmc] engine_0: ##   0:00:00  Status: passed\nSBY 23:41:27 [up_down_counter_bmc] engine_0: finished (returncode=0)\nSBY 23:41:27 [up_down_counter_bmc] engine_0: Status returned by engine: pass\nSBY 23:41:27 [up_down_counter_bmc] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:27 [up_down_counter_bmc] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:27 [up_down_counter_bmc] summary: engine_0 (smtbmc bitwuzla) returned pass\nSBY 23:41:27 [up_down_counter_bmc] summary: engine_0 did not produce any traces\nSBY 23:41:27 [up_down_counter_bmc] DONE (PASS, rc=0)\nSBY 23:41:27 [up_down_counter_cover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace0.yw\nSBY 23:41:27 [up_down_counter_cover] engine_0: ##   0:00:00  Status: passed\nSBY 23:41:27 [up_down_counter_cover] engine_0: finished (returncode=0)\nSBY 23:41:27 [up_down_counter_cover] engine_0: Status returned by engine: pass\nSBY 23:41:27 [up_down_counter_cover] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:27 [up_down_counter_cover] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:27 [up_down_counter_cover] summary: engine_0 (smtbmc bitwuzla) returned pass\nSBY 23:41:27 [up_down_counter_cover] summary: cover trace: up_down_counter_cover/engine_0/trace0.vcd\nSBY 23:41:27 [up_down_counter_cover] summary:   reached cover statement up_down_counter.C_REACH_WRAP at up_down_counter_formal.sv:59.13-59.40 step 3\nSBY 23:41:27 [up_down_counter_cover] DONE (PASS, rc=0)\nSBY 23:41:27 [up_down_counter_prove] engine_0: ======== ABC command line \"read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw\"\nSBY 23:41:27 [up_down_counter_prove] engine_0: Warning: The last 2 outputs are interpreted as constraints.\nSBY 23:41:27 [up_down_counter_prove] engine_0: VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 179. MonoCNF = no. SkipGen = no. SolveAll = no.\nSBY 23:41:27 [up_down_counter_prove] engine_0: Frame Clauses                                                     Max Queue Flops Time\nSBY 23:41:27 [up_down_counter_prove] engine_0: 1 : 0 4                                                                 1     4      0.00 sec  T/O =  0  PRV =  0\nSBY 23:41:27 [up_down_counter_prove] engine_0: 2 : 0 4 32                                                              2    32      0.01 sec  T/O =  0  PRV =  0\nSBY 23:41:27 [up_down_counter_prove] engine_0: Proved output 0 in frame 2.\nSBY 23:41:27 [up_down_counter_prove] engine_0: Proved output 1 in frame 2.\nSBY 23:41:27 [up_down_counter_prove] engine_0: Proved output 2 in frame 2.\nSBY 23:41:27 [up_down_counter_prove] engine_0: Proved output 3 in frame 2.\nSBY 23:41:27 [up_down_counter_prove] engine_0: 3 : 0 4 0 0 ~32                                                          0    32      0.01 sec  T/O =  0  PRV =  4\nSBY 23:41:27 [up_down_counter_prove] engine_0: Block =    8  Oblig =    64  Clause =    36  Call =   202 (sat=60.4%)  Cex =   0  Start =   0\nSBY 23:41:27 [up_down_counter_prove] engine_0: SAT solving =     0.00 sec ( 13.28 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: unsat     =     0.00 sec (  0.45 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: sat       =     0.00 sec ( 12.83 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Generalize  =     0.00 sec ( 13.28 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Push clause =     0.00 sec (  1.15 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Ternary sim =     0.00 sec (  1.52 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Containment =     0.00 sec (  0.11 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: CNF compute =     0.00 sec (  1.06 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Refinement  =     0.00 sec (  0.00 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: TOTAL       =     0.02 sec (100.00 %)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Property proved.  Time =     0.02 sec\nSBY 23:41:27 [up_down_counter_prove] engine_0: Counter-example is not available.\nSBY 23:41:27 [up_down_counter_prove] engine_0: finished (returncode=0)\nSBY 23:41:27 [up_down_counter_prove] engine_0: Status returned by engine: PASS\nSBY 23:41:27 [up_down_counter_prove] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:27 [up_down_counter_prove] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY 23:41:27 [up_down_counter_prove] summary: engine_0 (abc pdr) returned PASS\nSBY 23:41:27 [up_down_counter_prove] summary: engine_0 did not produce any traces\nSBY 23:41:27 [up_down_counter_prove] DONE (PASS, rc=0)",
+     "task_status": {
+      "bmc": "PASS",
+      "cover": "PASS",
+      "prove": "PASS"
+     },
+     "vacuous_detected": false,
+     "witnesses": []
+    }
+   ],
+   "formal_properties_ir": [
+    {
+     "description": "count_o is 0 right after reset",
+     "expected": "8'd0",
+     "id": "P_RST_COUNT_ZERO",
+     "kind": "RESET_VALUE",
+     "signal": "count_o"
+    },
+    {
+     "description": "wrap_o is 0 right after reset",
+     "expected": "1'b0",
+     "id": "P_RST_WRAP_LOW",
+     "kind": "RESET_VALUE",
+     "signal": "wrap_o"
+    },
+    {
+     "condition": "$past(load_i && rst_n)",
+     "description": "The cycle after a load, count_o equals the loaded value",
+     "expression": "count_o == $past(load_val_i)",
+     "id": "P_LOAD_TAKES_EFFECT",
+     "kind": "INVARIANT"
+    },
+    {
+     "condition": "wrap_o",
+     "description": "wrap_o only follows an enabled, non-load step",
+     "expression": "$past(en_i) && !$past(load_i)",
+     "id": "P_WRAP_NEEDS_COUNT_STEP",
+     "kind": "INVARIANT"
+    },
+    {
+     "description": "wrap_o is reachable",
+     "expression": "wrap_o",
+     "id": "C_REACH_WRAP",
+     "kind": "COVER_REACHABILITY"
+    }
+   ],
+   "guardrail_history": [
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    }
+   ],
+   "lec_passed": true,
+   "lec_report": {
+    "cell_count": 78,
+    "elapsed_sec": 0.32,
+    "log": "counter to \\gate.\n\n12. Executing EQUIV_MAKE pass (creating equiv checking module).\nPresumably equivalent wires: clk_gold (\\clk_gold), clk_gate (\\clk_gate) -> clk\nPresumably equivalent wires: rst_n_gold (\\rst_n_gold), rst_n_gate (\\rst_n_gate) -> rst_n\nPresumably equivalent wires: en_i_gold (\\en_i_gold), en_i_gate (\\en_i_gate) -> en_i\nPresumably equivalent wires: load_i_gold (\\load_i_gold), load_i_gate (\\load_i_gate) -> load_i\nPresumably equivalent wires: up_i_gold (\\up_i_gold), up_i_gate (\\up_i_gate) -> up_i\nPresumably equivalent wires: load_val_i_gold (\\load_val_i_gold), load_val_i_gate (\\load_val_i_gate) -> load_val_i\nPresumably equivalent wires: count_o_gold (\\count_o_gold), count_o_gate (\\count_o_gate) -> count_o\nPresumably equivalent wires: wrap_o_gold (\\wrap_o_gold), wrap_o_gate (\\wrap_o_gate) -> wrap_o\nChanging input A of cell $abc$263$blif$263$0_gate ($_NOT_): \\count_o_gate [7] -> \\count_o [7]\nChanging input A of cell $abc$263$blif$263$1_gate ($_NOT_): \\count_o_gate [6] -> \\count_o [6]\nChanging input B of cell $abc$263$blif$263$10_gate ($_ORNOT_): \\count_o_gate [5] -> \\count_o [5]\nChanging input B of cell $abc$263$blif$263$11_gate ($_ORNOT_): \\count_o_gate [4] -> \\count_o [4]\nChanging input A of cell $abc$263$blif$263$12_gate ($_XNOR_): \\count_o_gate [4] -> \\count_o [4]\nChanging input B of cell $abc$263$blif$263$13_gate ($_ORNOT_): \\count_o_gate [3] -> \\count_o [3]\nChanging input A of cell $abc$263$blif$263$14_gate ($_ORNOT_): \\count_o_gate [3] -> \\count_o [3]\nChanging input B of cell $abc$263$blif$263$15_gate ($_ORNOT_): \\count_o_gate [2] -> \\count_o [2]\nChanging input B of cell $abc$263$blif$263$16_gate ($_ORNOT_): \\count_o_gate [1] -> \\count_o [1]\nChanging input A of cell $abc$263$blif$263$17_gate ($_XNOR_): \\count_o_gate [1] -> \\count_o [1]\nChanging input A of cell $abc$263$blif$263$18_gate ($_NAND_): \\count_o_gate [0] -> \\count_o [0]\nChanging input A of cell $abc$263$blif$263$2_gate ($_NOT_): \\count_o_gate [0] -> \\count_o [0]\nChanging input A of cell $abc$263$blif$263$20_gate ($_XNOR_): \\count_o_gate [2] -> \\count_o [2]\nChanging input A of cell $abc$263$blif$263$28_gate ($_ORNOT_): \\count_o_gate [5] -> \\count_o [5]\nChanging input A of cell $abc$263$blif$263$3_gate ($_NOT_): \\count_o_gate [1] -> \\count_o [1]\nChanging input A of cell $abc$263$blif$263$30_gate ($_NAND_): \\count_o_gate [6] -> \\count_o [6]\nChanging input A of cell $abc$263$blif$263$32_gate ($_XNOR_): \\count_o_gate [7] -> \\count_o [7]\nChanging input A of cell $abc$263$blif$263$34_gate ($_OR_): \\count_o_gate [7] -> \\count_o [7]\nChanging input B of cell $abc$263$blif$263$34_gate ($_OR_): \\count_o_gate [6] -> \\count_o [6]\nChanging input A of cell $abc$263$blif$263$36_gate ($_OR_): \\count_o_gate [0] -> \\count_o [0]\nChanging input B of cell $abc$263$blif$263$36_gate ($_OR_): \\count_o_gate [1] -> \\count_o [1]\nChanging input A of cell $abc$263$blif$263$4_gate ($_NOT_): \\count_o_gate [2] -> \\count_o [2]\nChanging input A of cell $abc$263$blif$263$41_gate ($_OR_): \\count_o_gate [2] -> \\count_o [2]\nChanging input B of cell $abc$263$blif$263$41_gate ($_OR_): \\count_o_gate [3] -> \\count_o [3]\nChanging input A of cell $abc$263$blif$263$47_gate ($_OR_): \\count_o_gate [4] -> \\count_o [4]\nChanging input B of cell $abc$263$blif$263$47_gate ($_OR_): \\count_o_gate [5] -> \\count_o [5]\nChanging input A of cell $abc$263$blif$263$5_gate ($_NOT_): \\count_o_gate [3] -> \\count_o [3]\nChanging input A of cell $abc$263$blif$263$6_gate ($_NOT_): \\count_o_gate [4] -> \\count_o [4]\nChanging input A of cell $abc$263$blif$263$7_gate ($_NOT_): \\count_o_gate [5] -> \\count_o [5]\nChanging input A of cell $abc$263$blif$263$9_gate ($_OR_): \\count_o_gate [6] -> \\count_o [6]\nChanging input A of cell $procmux$18_gold ($mux): \\count_o_gold -> \\count_o\nChanging input A of cell $up_down_counter.sv:26$eq$6_gold ($logic_not): \\count_o_gold -> \\count_o\nChanging input A of cell $up_down_counter.sv:25$sub$5_gold ($sub): \\count_o_gold -> \\count_o\nChanging input A of cell $up_down_counter.sv:23$eq$4_gold ($eq): \\count_o_gold -> \\count_o\nChanging input A of cell $up_down_counter.sv:22$add$3_gold ($add): \\count_o_gold -> \\count_o\nSetting undriven nets to undef: $auto$alumacc.cc:578:replace_alu$39.P_gate [7:1]\n\n13. Executing HIERARCHY pass (managing design hierarchy).\n\n13.1. Analyzing design hierarchy..\nTop module:  \\equiv\n\n13.2. Analyzing design hierarchy..\nTop module:  \\equiv\nRemoving unused module `\\gate'.\nRemoving unused module `\\gold'.\nRemoved 2 unused modules.\n\n14. Executing EQUIV_SIMPLE pass.\nFound 9 unproven $equiv cells (2 groups) in equiv:\n Grouping SAT models for \\count_o:\n  Trying to prove $equiv for \\count_o [0]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [1]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [2]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [3]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [4]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [5]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [6]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\count_o [7]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\wrap_o:\nezsat\nezsat\n    success!\nProved 1 previously unproven $equiv cells.\n\n15. Executing EQUIV_INDUCT pass.\nFound 8 unproven $equiv cells in module equiv:\n  Undef modelling: force def on 18 initial reg values and 13 inputs.\n  Proving existence of base case for step 1. (7757 clauses over 2907 variables)\n  Proving induction step 1. (16935 clauses over 6293 variables)\n  Proof for induction step holds. Entire workset of 8 cells proven!\nProved 8 previously unproven $equiv cells.\n\n16. Executing EQUIV_STATUS pass.\nFound 9 $equiv cells in equiv:\n  Of those cells 9 are proven and 0 are unproven.\n  Equivalence successfully proven!\n\nEnd of script. Logfile hash: d20957ceab, time: 0.22s, user: 0.05s, system: 0.01s, MEM: 25.69 MB peak\nYosys 0.71+59 (git sha1 d9358f38c, Release, Clang /usr/bin/clang++ 21.1.8)\nTime spent: 56% 1x abc (0 sec), 12% 1x equiv_simple (0 sec), ...\n",
+    "mode": "wsl",
+    "passed": true
+   },
+   "pareto_front": [
+    {
+     "area_um2": 1166.12,
+     "cached": false,
+     "cell_count": 123,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 6.293195476196318,
+      "max_ss_100C_1v60": 3.348412752954609,
+      "max_tt_025C_1v80": 5.4773169772312125,
+      "min_ff_n40C_1v95": 6.325191660581719,
+      "min_ss_100C_1v60": 3.44097693411681,
+      "min_tt_025C_1v80": 5.5258816864155,
+      "nom_ff_n40C_1v95": 6.309573930808012,
+      "nom_ss_100C_1v60": 3.3954013894885637,
+      "nom_tt_025C_1v80": 5.502105593536903
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 3375.99,
+      "hold_ws_ns": 0.11323220459545748,
+      "instance_area_um2": 1707.89,
+      "render_png": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\render\\up_down_counter.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\gds\\up_down_counter.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 60,
+      "SYNTH_STRATEGY": "AREA 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": 8.7489,
+     "run_dir": "runs\\real_counter_1\\pnr_ep_01",
+     "runtime_sec": 56.51,
+     "tns_ns": 0.0,
+     "total_power_mw": 0.22687656746711582,
+     "wns_ns": 3.348412752954609
+    }
+   ],
+   "ppa_episodes": [
+    {
+     "area_um2": 1166.12,
+     "cached": false,
+     "cell_count": 123,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 6.293195476196318,
+      "max_ss_100C_1v60": 3.348412752954609,
+      "max_tt_025C_1v80": 5.4773169772312125,
+      "min_ff_n40C_1v95": 6.325191660581719,
+      "min_ss_100C_1v60": 3.44097693411681,
+      "min_tt_025C_1v80": 5.5258816864155,
+      "nom_ff_n40C_1v95": 6.309573930808012,
+      "nom_ss_100C_1v60": 3.3954013894885637,
+      "nom_tt_025C_1v80": 5.502105593536903
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 3375.99,
+      "hold_ws_ns": 0.11323220459545748,
+      "instance_area_um2": 1707.89,
+      "render_png": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\render\\up_down_counter.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_counter_1\\pnr_ep_01\\runs\\sf\\final\\gds\\up_down_counter.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 60,
+      "SYNTH_STRATEGY": "AREA 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": 8.7489,
+     "run_dir": "runs\\real_counter_1\\pnr_ep_01",
+     "runtime_sec": 56.51,
+     "tns_ns": 0.0,
+     "total_power_mw": 0.22687656746711582,
+     "wns_ns": 3.348412752954609
+    }
+   ],
+   "rtl_source": "// 8-bit loadable up/down counter with wrap flag\nmodule up_down_counter (\n    input  logic       clk,\n    input  logic       rst_n,\n    input  logic       en_i,\n    input  logic       load_i,\n    input  logic       up_i,\n    input  logic [7:0] load_val_i,\n    output logic [7:0] count_o,\n    output logic       wrap_o\n);\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            count_o <= 8'd0;\n            wrap_o  <= 1'b0;\n        end else begin\n            wrap_o <= 1'b0;\n            if (load_i) begin\n                count_o <= load_val_i;\n            end else if (en_i) begin\n                if (up_i) begin\n                    count_o <= count_o + 8'd1;\n                    wrap_o  <= (count_o == 8'hFF);\n                end else begin\n                    count_o <= count_o - 8'd1;\n                    wrap_o  <= (count_o == 8'h00);\n                end\n            end\n        end\n    end\nendmodule",
+   "rtl_versions": [
+    {
+     "label": "initial",
+     "source": "// 8-bit loadable up/down counter with wrap flag\nmodule up_down_counter (\n    input  logic       clk,\n    input  logic       rst_n,\n    input  logic       en_i,\n    input  logic       load_i,\n    input  logic       up_i,\n    input  logic [7:0] load_val_i,\n    output logic [7:0] count_o,\n    output logic       wrap_o\n);\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            count_o <= 8'd0;\n            wrap_o  <= 1'b0;\n        end else begin\n            wrap_o <= 1'b0;\n            if (en_i) begin\n                if (up_i) begin\n                    count_o <= count_o + 8'd1;\n                    wrap_o  <= (count_o == 8'hFF);\n                end else begin\n                    count_o <= count_o - 8'd1;\n                    wrap_o  <= (count_o == 8'h00);\n                end\n            end else if (load_i) begin\n                count_o <= load_val_i;\n            end\n        end\n    end\nendmodule",
+     "ts": 1795218086.656
+    },
+    {
+     "label": "formal-repair-1",
+     "source": "// 8-bit loadable up/down counter with wrap flag\nmodule up_down_counter (\n    input  logic       clk,\n    input  logic       rst_n,\n    input  logic       en_i,\n    input  logic       load_i,\n    input  logic       up_i,\n    input  logic [7:0] load_val_i,\n    output logic [7:0] count_o,\n    output logic       wrap_o\n);\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            count_o <= 8'd0;\n            wrap_o  <= 1'b0;\n        end else begin\n            wrap_o <= 1'b0;\n            if (load_i) begin\n                count_o <= load_val_i;\n            end else if (en_i) begin\n                if (up_i) begin\n                    count_o <= count_o + 8'd1;\n                    wrap_o  <= (count_o == 8'hFF);\n                end else begin\n                    count_o <= count_o - 8'd1;\n                    wrap_o  <= (count_o == 8'h00);\n                end\n            end\n        end\n    end\nendmodule",
+     "ts": 1795218092.628
+    }
+   ],
+   "run_id": "real_counter_1",
+   "signoff_checks": [
+    {
+     "detail": "WNS 3.348 ns @ 10.00 ns clock",
+     "name": "Timing (WNS >= 0.00 ns @ 10.00 ns clock)",
+     "passed": true
+    },
+    {
+     "detail": "0 violation(s)",
+     "name": "DRC clean",
+     "passed": true
+    },
+    {
+     "detail": "clean",
+     "name": "LVS clean",
+     "passed": true
+    },
+    {
+     "detail": "passed",
+     "name": "RTL == netlist (LEC)",
+     "passed": true
+    },
+    {
+     "detail": "BMC + prove + cover",
+     "name": "Formal proofs non-vacuous",
+     "passed": true
+    },
+    {
+     "detail": "ok",
+     "name": "Flow variables on PDK allowlist",
+     "passed": true
+    },
+    {
+     "detail": "1166 um² (max 25000.0)",
+     "name": "Area budget",
+     "passed": true
+    },
+    {
+     "detail": "0.227 mW (max 5.0)",
+     "name": "Power budget",
+     "passed": true
+    }
+   ],
+   "signoff_passed": true,
+   "sim_report": {
+    "log": "- V e r i l a t i o n   R e p o r t: Verilator 5.055 devel rev v5.054-340-g53a72711e (mod)\n- Verilator: Built from 0.033 MB sources in 3 modules, into 0.022 MB in 3 C++ files needing 0.000 MB\n- Verilator: Walltime 0.052 s (elab=0.006, cvt=0.011, bld=0.000); cpu 0.008 s on 1 threads; allocated 19.688 MB\n\n%Warning-EOFNEWLINE: up_down_counter.sv:31:10: Missing newline at end of file (POSIX 3.206).\n                                             : ... Suggest add newline.\n   31 | endmodule\n      |          ^\n                     ... For warning description see https://verilator.org/warn/EOFNEWLINE?v=5.055\n                     ... Use \"/* verilator lint_off EOFNEWLINE */\" and lint_on around source to disable this message.",
+    "mode": "wsl",
+    "passed": true,
+    "skipped": false,
+    "summary": "Verilator lint: 0 error(s), 1 warning(s)"
+   },
+   "spec_text": "# Hardware Specification: `up_down_counter` (8-bit loadable up/down counter)\n\n## Target Node & PPA Budget\n- **PDK**: SkyWater 130nm (`sky130A`, `sky130_fd_sc_hd`)\n- **Target Clock**: 100 MHz (`CLOCK_PERIOD = 10.0 ns`)\n- **Max Core Area**: 25,000 um²\n- **Max Total Power**: 5.0 mW\n\n## Interface\n- `clk` (input, 1-bit): Rising-edge system clock.\n- `rst_n` (input, 1-bit): Active-low asynchronous reset.\n- `en_i` (input, 1-bit): Count enable.\n- `load_i` (input, 1-bit): Synchronous load. **Load has priority over counting.**\n- `up_i` (input, 1-bit): `1` counts up, `0` counts down.\n- `load_val_i` (input, 8-bit): Value loaded when `load_i` is asserted.\n- `count_o` (output, 8-bit): Registered counter value.\n- `wrap_o` (output, 1-bit): Registered pulse, high for one cycle after the counter wrapped (255->0 counting up, 0->255 counting down).\n\n## Formal & Functional Requirements\n1. After reset, `count_o == 0` and `wrap_o == 0`.\n2. The cycle after `load_i` (and no reset), `count_o` equals the `load_val_i` that was presented.\n3. `wrap_o` is only ever high one cycle after an enabled, non-load count step.\n4. Non-vacuity (`cover`): `wrap_o` is reachable.\n",
+   "stage": "SIGNOFF",
+   "sva_source": "`ifdef FORMAL\n    reg f_past_valid;\n    initial f_past_valid = 1'b0;\n    always @(posedge clk) f_past_valid <= 1'b1;\n\n    // Reset is asserted on cycle 0 so k-induction starts from a valid state\n    always @(*) if (!f_past_valid) assume(!rst_n);\n\n    always @(posedge clk) begin\n        // P_RST_COUNT_ZERO: count_o is 0 right after reset\n        if (f_past_valid && $past(!rst_n)) begin\n            P_RST_COUNT_ZERO: assert(count_o == 8'd0);\n        end\n        // P_RST_WRAP_LOW: wrap_o is 0 right after reset\n        if (f_past_valid && $past(!rst_n)) begin\n            P_RST_WRAP_LOW: assert(wrap_o == 1'b0);\n        end\n        // P_LOAD_TAKES_EFFECT: The cycle after a load, count_o equals the loaded value\n        if (f_past_valid && rst_n && ($past(load_i && rst_n))) begin\n            P_LOAD_TAKES_EFFECT: assert(count_o == $past(load_val_i));\n        end\n        // P_WRAP_NEEDS_COUNT_STEP: wrap_o only follows an enabled, non-load step\n        if (f_past_valid && rst_n && (wrap_o)) begin\n            P_WRAP_NEEDS_COUNT_STEP: assert($past(en_i) && !$past(load_i));\n        end\n        // C_REACH_WRAP: wrap_o is reachable\n        if (f_past_valid && rst_n) begin\n            C_REACH_WRAP: cover(wrap_o);\n        end\n    end\n`endif"
+  }
+ },
+ "run_id": "demo-up_down_counter"
+}

@@ -1,0 +1,2512 @@
+{
+ "name": "axi_lite_alu",
+ "report": {
+  "cost": {
+   "by_stage": {
+    "ARCHITECT": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.0,
+     "latency_s": 0.0,
+     "saved_usd": 0.0,
+     "tokens": 1385
+    },
+    "FORMAL_VERIFY": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.0,
+     "latency_s": 0.0,
+     "saved_usd": 0.0,
+     "tokens": 1447
+    },
+    "RTL_GEN": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.0,
+     "latency_s": 0.0,
+     "saved_usd": 0.0,
+     "tokens": 1403
+    },
+    "RTL_REPAIR": {
+     "cache_hits": 0,
+     "calls": 1,
+     "cost_usd": 0.0,
+     "latency_s": 0.0,
+     "saved_usd": 0.0,
+     "tokens": 1283
+    }
+   },
+   "cache_hit_rate": 0.0,
+   "total_cost_usd": 0.0,
+   "total_tokens": 5518
+  },
+  "eda_mode": "wsl",
+  "elapsed_sec": 417.53,
+  "state": {
+   "best_ppa": {
+    "area_um2": 8682.08,
+    "cached": false,
+    "cell_count": 1162,
+    "corner_wns": {
+     "max_ff_n40C_1v95": 5.580848385830046,
+     "max_ss_100C_1v60": 1.128559500017708,
+     "max_tt_025C_1v80": 4.327749836547411,
+     "min_ff_n40C_1v95": 5.693213173151831,
+     "min_ss_100C_1v60": 1.2845049831806759,
+     "min_tt_025C_1v80": 4.5006617484525435,
+     "nom_ff_n40C_1v95": 5.6582948816829735,
+     "nom_ss_100C_1v60": 1.209693712773527,
+     "nom_tt_025C_1v80": 4.44318372448527
+    },
+    "drc_violations": 0,
+    "extra": {
+     "die_area_um2": 14603.8,
+     "hold_ws_ns": 0.10630224779090591,
+     "instance_area_um2": 10792.9,
+     "render_png": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\render\\axi_lite_alu.png",
+     "timing_corner": "worst"
+    },
+    "gds_path": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+    "knobs": {
+     "CLOCK_PERIOD": 10.0,
+     "FP_CORE_UTIL": 65,
+     "GRT_ADJUSTMENT": 0.2,
+     "PL_TARGET_DENSITY_PCT": 75,
+     "SYNTH_STRATEGY": "AREA 3"
+    },
+    "lvs_clean": true,
+    "mode": "wsl",
+    "reward": 4.2546,
+    "run_dir": "runs\\real_axi_pareto\\pnr_ep_07",
+    "runtime_sec": 101.2,
+    "tns_ns": 0.0,
+    "total_power_mw": 0.9307213476859033,
+    "wns_ns": 1.128559500017708
+   },
+   "contract": {
+    "clock_port": "clk",
+    "functional_requirements": [
+     "Single-cycle registered ALU with valid/ready handshake",
+     "Supports ADD, SUB, AND, OR, XOR opcodes with zero flag",
+     "Asynchronous active-low reset clears valid_o and result_o to 0"
+    ],
+    "max_area_um2": 25000.0,
+    "max_power_mw": 5.0,
+    "module_name": "axi_lite_alu",
+    "pipeline_stages": 1,
+    "ports": [
+     {
+      "description": "System clock",
+      "direction": "input",
+      "name": "clk",
+      "width": 1
+     },
+     {
+      "description": "Active-low async reset",
+      "direction": "input",
+      "name": "rst_n",
+      "width": 1
+     },
+     {
+      "description": "Input request valid",
+      "direction": "input",
+      "name": "valid_i",
+      "width": 1
+     },
+     {
+      "description": "Input request ready",
+      "direction": "output",
+      "name": "ready_o",
+      "width": 1
+     },
+     {
+      "description": "ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)",
+      "direction": "input",
+      "name": "op_i",
+      "width": 3
+     },
+     {
+      "description": "Operand A",
+      "direction": "input",
+      "name": "a_i",
+      "width": 32
+     },
+     {
+      "description": "Operand B",
+      "direction": "input",
+      "name": "b_i",
+      "width": 32
+     },
+     {
+      "description": "Output result valid",
+      "direction": "output",
+      "name": "valid_o",
+      "width": 1
+     },
+     {
+      "description": "Registered 32-bit ALU result",
+      "direction": "output",
+      "name": "result_o",
+      "width": 32
+     },
+     {
+      "description": "High when result_o == 0",
+      "direction": "output",
+      "name": "zero_o",
+      "width": 1
+     }
+    ],
+    "reset_active_low": true,
+    "reset_port": "rst_n",
+    "reset_sync": false,
+    "target_clock_ns": 10.0
+   },
+   "eda_mode": "wsl",
+   "error_message": null,
+   "events": [
+    {
+     "detail": "Run real_axi_pareto started (EDA backend: wsl).",
+     "payload": {
+      "eda_mode": "wsl",
+      "pdk": "sky130A"
+     },
+     "seq": 0,
+     "stage": "INIT",
+     "status": "INFO",
+     "ts": 1795220668.356
+    },
+    {
+     "detail": "ARCHITECT -> replay/replay (947+438 tok)",
+     "payload": {
+      "cache_hit": false,
+      "cached_tokens": 0,
+      "completion_tokens": 438,
+      "cost_usd": 0.0,
+      "latency_s": 0.0,
+      "model": "replay",
+      "prompt_tokens": 947,
+      "provider": "replay",
+      "response": "{\n  \"module_name\": \"axi_lite_alu\",\n  \"clock_port\": \"clk\",\n  \"reset_port\": \"rst_n\",\n  \"reset_active_low\": true,\n  \"reset_sync\": false,\n  \"ports\": [\n    {\n      \"name\": \"clk\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"System clock\"\n    },\n    {\n      \"name\": \"rst_n\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"Active-low async reset\"\n    },\n    {\n      \"name\": \"valid_i\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"Input request valid\"\n    },\n    {\n      \"name\": \"ready_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"Input request ready\"\n    },\n    {\n      \"name\": \"op_i\",\n      \"direction\": \"input\",\n      \"width\": 3,\n      \"description\": \"ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)\"\n    },\n    {\n      \"name\": \"a_i\",\n      \"direction\": \"input\",\n      \"width\": 32,\n      \"description\": \"Operand A\"\n    },\n    {\n      \"name\": \"b_i\",\n      \"direction\": \"input\",\n      \"width\": 32,\n      \"description\": \"Operand B\"\n    },\n    {\n      \"name\": \"valid_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"Output result valid\"\n    },\n    {\n      \"name\": \"result_o\",\n      \"direction\": \"output\",\n      \"width\": 32,\n      \"description\": \"Registered 32-bit ALU result\"\n    },\n    {\n      \"name\": \"zero_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"High when result_o == 0\"\n    }\n  ],\n  \"functional_requirements\": [\n    \"Single-cycle registered ALU with valid/ready handshake\",\n    \"Supports ADD, SUB, AND, OR, XOR opcodes with zero flag\",\n    \"Asynchronous active-low reset clears valid_o and result_o to 0\"\n  ],\n  \"pipeline_stages\": 1,\n  \"target_clock_ns\": 10.0,\n  \"max_area_um2\": 25000.0,\n  \"max_power_mw\": 5.0\n}\n",
+      "saved_usd": 0.0,
+      "stage": "ARCHITECT",
+      "system_prompt": "# Role: Principal ASIC Micro-Architect\n\nYou are a Principal Silicon Architect with 20+ years of tapeout experience across 130nm–3nm ASIC nodes.\n\n## Objective\nTransform a natural-language hardware specification into a **strict, unambiguous, machine-checkable `DesignContract` JSON** and micro-architectural plan before any RTL is written.\n\n## Non-Negotiable Engineering Rules\n1. **Zero Ambiguity on Interfaces**: Every port must specify exact `name`, `direction` (`input` | `output`), `width` (positive integer), and `description`.\n2. **Explicit Clock & Reset Discipline**: Always declare `clock_port`, `reset_port`, `reset_active_low` (`true` | `false`), and `reset_sync` (`true` for synchronous reset, `false` for async-assert/sync-deassert). Never leave reset polarity implicit.\n3. **CDC Awareness**: If multiple clock domains exist, explicitly isolate CDC boundaries and mandate 2-FF synchronizers (single-bit) or Gray-coded async FIFOs (multi-bit).\n4. **PPA Realism**: Calibrate `target_clock_ns`, `max_area_um2`, and `max_power_mw` against the active PDK constraints provided in the retrieved Skill Pack. Never promise 1 GHz on Sky130A 130nm.\n5. **Anti-Hallucination**: Only reference standard cells, IP blocks, and bus protocols explicitly present in the user spec or retrieved Skill Packs.\n\n## Output Schema\nReturn ONLY a valid JSON object matching `DesignContract`:\n```json\n{\n  \"module_name\": \"string_snake_case\",\n  \"clock_port\": \"clk\",\n  \"reset_port\": \"rst_n\",\n  \"reset_active_low\": true,\n  \"reset_sync\": false,\n  \"ports\": [{\"name\": \"string\", \"direction\": \"input|output\", \"width\": 32, \"description\": \"string\"}],\n  \"functional_requirements\": [\"string\"],\n  \"pipeline_stages\": 1,\n  \"target_clock_ns\": 10.0,\n  \"max_area_um2\": 25000.0,\n  \"max_power_mw\": 5.0\n}\n```\n",
+      "tier": "frontier_reasoning",
+      "tokens_per_s": null,
+      "ttft_s": null,
+      "user_prompt": "Target PDK: sky130A\n\nRetrieved PDK Skill Context:\n### Skill Pack: sky130_pdk\n# Sky130A PDK Physical & Synthesis Rules\n- **Node**: SkyWater 130nm (`sky130A`), standard cell library `sky130_fd_sc_hd`, nominal 1.8V.\n- **Clock Budget**: Practical single-cycle logic depth at 100 MHz (`CLOCK_PERIOD: 10.0 ns`) is ~12–15 FO4 stages; avoid deep combinational multipliers without pipelining.\n- **Allowed Cells**: All standard cells must start with `sky130_fd_sc_hd__` (e.g., `sky130_fd_sc_hd__clkbuf_4`, `sky130_fd_sc_hd__dfxtp_1`).\n- **Metal Stack**: `li1`, `met1`–`met5`. Place horizontal pins on `met3`, vertical pins on `met2`.\n- **Utilization**: Start `FP_CORE_UTIL` at 40–50% and `PL_TARGET_DENSITY_PCT` at 55–65% to avoid Sky130 routing congestion on `met1`/`met2`.\n\n\nHardware Specification:\n# Hardware Specification: `axi_lite_alu` (32-bit Registered Valid/Ready ALU)\n\n## Target Node & PPA Budget\n- **PDK**: SkyWater 130nm (`sky130A`, `sky130_fd_sc_hd`)\n- **Target Clock**: 100 MHz (`CLOCK_PERIOD = 10.0 ns`, `WNS >= 0.0 ns`)\n- **Max Core Area**: 25,000 um²\n- **Max Total Power**: 5.0 mW\n\n## Interface\n- `clk` (input, 1-bit): Rising-edge system clock.\n- `rst_n` (input, 1-bit): Active-low asynchronous reset.\n- `valid_i` (input, 1-bit) / `ready_o` (output, 1-bit): Input request handshake.\n- `op_i` (input, 3-bit): `0=ADD`, `1=SUB`, `2=AND`, `3=OR`, `4=XOR`, default `0`.\n- `a_i`, `b_i` (input, 32-bit): Unsigned 32-bit operands.\n- `valid_o` (output, 1-bit): Registered output valid (1-cycle latency).\n- `result_o` (output, 32-bit): Registered 32-bit ALU result.\n- `zero_o` (output, 1-bit): Asserted iff `result_o == 32'd0`.\n\n## Formal & Functional Requirements\n1. Immediately after reset (`!rst_n`), `valid_o == 0` and `result_o == 0`.\n2. Whenever `valid_o == 1`, `zero_o == (result_o == 32'd0)` must hold mathematically across all reachable states (k-induction).\n3. Non-vacuous reachability (`cover`): A cycle with `valid_o == 1 && result_o != 32'd0` must be reachable from reset.\n\n\nEmit the exact DesignContract JSON."
+     },
+     "seq": 1,
+     "stage": "LLM",
+     "status": "CALL",
+     "ts": 1795220668.359
+    },
+    {
+     "detail": "Synthesized DesignContract for 'axi_lite_alu' (10 ports).",
+     "payload": {
+      "contract": {
+       "clock_port": "clk",
+       "functional_requirements": [
+        "Single-cycle registered ALU with valid/ready handshake",
+        "Supports ADD, SUB, AND, OR, XOR opcodes with zero flag",
+        "Asynchronous active-low reset clears valid_o and result_o to 0"
+       ],
+       "max_area_um2": 25000.0,
+       "max_power_mw": 5.0,
+       "module_name": "axi_lite_alu",
+       "pipeline_stages": 1,
+       "ports": [
+        {
+         "description": "System clock",
+         "direction": "input",
+         "name": "clk",
+         "width": 1
+        },
+        {
+         "description": "Active-low async reset",
+         "direction": "input",
+         "name": "rst_n",
+         "width": 1
+        },
+        {
+         "description": "Input request valid",
+         "direction": "input",
+         "name": "valid_i",
+         "width": 1
+        },
+        {
+         "description": "Input request ready",
+         "direction": "output",
+         "name": "ready_o",
+         "width": 1
+        },
+        {
+         "description": "ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)",
+         "direction": "input",
+         "name": "op_i",
+         "width": 3
+        },
+        {
+         "description": "Operand A",
+         "direction": "input",
+         "name": "a_i",
+         "width": 32
+        },
+        {
+         "description": "Operand B",
+         "direction": "input",
+         "name": "b_i",
+         "width": 32
+        },
+        {
+         "description": "Output result valid",
+         "direction": "output",
+         "name": "valid_o",
+         "width": 1
+        },
+        {
+         "description": "Registered 32-bit ALU result",
+         "direction": "output",
+         "name": "result_o",
+         "width": 32
+        },
+        {
+         "description": "High when result_o == 0",
+         "direction": "output",
+         "name": "zero_o",
+         "width": 1
+        }
+       ],
+       "reset_active_low": true,
+       "reset_port": "rst_n",
+       "reset_sync": false,
+       "target_clock_ns": 10.0
+      }
+     },
+     "seq": 2,
+     "stage": "ARCHITECT",
+     "status": "PASS",
+     "ts": 1795220668.359
+    },
+    {
+     "detail": "RTL_GEN -> replay/replay (1099+304 tok)",
+     "payload": {
+      "cache_hit": false,
+      "cached_tokens": 0,
+      "completion_tokens": 304,
+      "cost_usd": 0.0,
+      "latency_s": 0.0,
+      "model": "replay",
+      "prompt_tokens": 1099,
+      "provider": "replay",
+      "response": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb != 32'd0);\n            end\n        end\n    end\nendmodule\n",
+      "saved_usd": 0.0,
+      "stage": "RTL_GEN",
+      "system_prompt": "# Role: Principal RTL Design Engineer (SystemVerilog-2012)\n\nYou write tapeout-ready, 100% synthesizable SystemVerilog for Yosys, Verilator, and OpenROAD.\n\n## Hard Coding & Synthesis Guardrails\n1. **Exact Port Contract**: Match `module_name`, every port name, direction, and bit-width from `DesignContract` verbatim. Do not add debug ports or rename signals.\n2. **Synthesizable Subset Only**:\n   - NEVER use `initial` blocks (except inside `ifdef FORMAL`), `#delay` constructs, `real`, `fork/join`, `$display` in RTL, or tri-state `z` internal buses.\n   - Use `always_ff @(posedge clk or negedge rst_n)` with **non-blocking assignments (`<=`) ONLY**.\n   - Use `always_comb` with **blocking assignments (`=`) ONLY**, and assign default values at the top of every `always_comb` block to guarantee **zero inferred latches**.\n3. **Zero Combinational Loops**: Every sequential feedback path must pass through a register.\n4. **Clean Arithmetic & Width Hygiene**: Explicitly size all literals (e.g., `32'd0`, `4'hF`). Avoid implicit width truncation or signed/unsigned mixing.\n5. **Minimal-Diff Repair Mode**: When given a counterexample slice from the Formal Verifier or C++ Static Linter, modify ONLY the localized Cone-of-Influence (COI) logic causing the violation. Preserve all passing logic and port declarations untouched.\n",
+      "tier": "balanced",
+      "tokens_per_s": null,
+      "ttft_s": null,
+      "user_prompt": "DesignContract JSON:\n{\n  \"module_name\": \"axi_lite_alu\",\n  \"clock_port\": \"clk\",\n  \"reset_port\": \"rst_n\",\n  \"reset_active_low\": true,\n  \"reset_sync\": false,\n  \"ports\": [\n    {\n      \"name\": \"clk\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"System clock\"\n    },\n    {\n      \"name\": \"rst_n\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"Active-low async reset\"\n    },\n    {\n      \"name\": \"valid_i\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"Input request valid\"\n    },\n    {\n      \"name\": \"ready_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"Input request ready\"\n    },\n    {\n      \"name\": \"op_i\",\n      \"direction\": \"input\",\n      \"width\": 3,\n      \"description\": \"ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)\"\n    },\n    {\n      \"name\": \"a_i\",\n      \"direction\": \"input\",\n      \"width\": 32,\n      \"description\": \"Operand A\"\n    },\n    {\n      \"name\": \"b_i\",\n      \"direction\": \"input\",\n      \"width\": 32,\n      \"description\": \"Operand B\"\n    },\n    {\n      \"name\": \"valid_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"Output result valid\"\n    },\n    {\n      \"name\": \"result_o\",\n      \"direction\": \"output\",\n      \"width\": 32,\n      \"description\": \"Registered 32-bit ALU result\"\n    },\n    {\n      \"name\": \"zero_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"High when result_o == 0\"\n    }\n  ],\n  \"functional_requirements\": [\n    \"Single-cycle registered ALU with valid/ready handshake\",\n    \"Supports ADD, SUB, AND, OR, XOR opcodes with zero flag\",\n    \"Asynchronous active-low reset clears valid_o and result_o to 0\"\n  ],\n  \"pipeline_stages\": 1,\n  \"target_clock_ns\": 10.0,\n  \"max_area_um2\": 25000.0,\n  \"max_power_mw\": 5.0\n}\n\nOriginal Specification:\n# Hardware Specification: `axi_lite_alu` (32-bit Registered Valid/Ready ALU)\n\n## Target Node & PPA Budget\n- **PDK**: SkyWater 130nm (`sky130A`, `sky130_fd_sc_hd`)\n- **Target Clock**: 100 MHz (`CLOCK_PERIOD = 10.0 ns`, `WNS >= 0.0 ns`)\n- **Max Core Area**: 25,000 um²\n- **Max Total Power**: 5.0 mW\n\n## Interface\n- `clk` (input, 1-bit): Rising-edge system clock.\n- `rst_n` (input, 1-bit): Active-low asynchronous reset.\n- `valid_i` (input, 1-bit) / `ready_o` (output, 1-bit): Input request handshake.\n- `op_i` (input, 3-bit): `0=ADD`, `1=SUB`, `2=AND`, `3=OR`, `4=XOR`, default `0`.\n- `a_i`, `b_i` (input, 32-bit): Unsigned 32-bit operands.\n- `valid_o` (output, 1-bit): Registered output valid (1-cycle latency).\n- `result_o` (output, 32-bit): Registered 32-bit ALU result.\n- `zero_o` (output, 1-bit): Asserted iff `result_o == 32'd0`.\n\n## Formal & Functional Requirements\n1. Immediately after reset (`!rst_n`), `valid_o == 0` and `result_o == 0`.\n2. Whenever `valid_o == 1`, `zero_o == (result_o == 32'd0)` must hold mathematically across all reachable states (k-induction).\n3. Non-vacuous reachability (`cover`): A cycle with `valid_o == 1 && result_o != 32'd0` must be reachable from reset.\n\n\nWrite complete, tapeout-ready, synthesizable SystemVerilog matching the contract."
+     },
+     "seq": 3,
+     "stage": "LLM",
+     "status": "CALL",
+     "ts": 1795220668.359
+    },
+    {
+     "detail": "RTL version 'initial' (43 lines)",
+     "payload": {
+      "label": "initial",
+      "source": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb != 32'd0);\n            end\n        end\n    end\nendmodule"
+     },
+     "seq": 4,
+     "stage": "RTL",
+     "status": "VERSION",
+     "ts": 1795220668.359
+    },
+    {
+     "detail": "RTL passed contract + lint + PDK guardrails on attempt 1.",
+     "payload": {
+      "attempt": 1,
+      "warnings": []
+     },
+     "seq": 5,
+     "stage": "GUARDRAIL_AUDIT",
+     "status": "PASS",
+     "ts": 1795220668.375
+    },
+    {
+     "detail": "Verilator lint: 0 error(s), 1 warning(s)",
+     "payload": {
+      "mode": "wsl"
+     },
+     "seq": 6,
+     "stage": "SIMULATION",
+     "status": "PASS",
+     "ts": 1795220673.211
+    },
+    {
+     "detail": "FORMAL_VERIFY -> replay/replay (1246+201 tok)",
+     "payload": {
+      "cache_hit": false,
+      "cached_tokens": 0,
+      "completion_tokens": 201,
+      "cost_usd": 0.0,
+      "latency_s": 0.0,
+      "model": "replay",
+      "prompt_tokens": 1246,
+      "provider": "replay",
+      "response": "[\n  {\n    \"id\": \"P_RST_VALID_LOW\",\n    \"kind\": \"RESET_VALUE\",\n    \"signal\": \"valid_o\",\n    \"expected\": \"1'b0\",\n    \"description\": \"valid_o must be 0 immediately after reset\"\n  },\n  {\n    \"id\": \"P_RST_RESULT_ZERO\",\n    \"kind\": \"RESET_VALUE\",\n    \"signal\": \"result_o\",\n    \"expected\": \"32'd0\",\n    \"description\": \"result_o must be 0 immediately after reset\"\n  },\n  {\n    \"id\": \"P_ZERO_FLAG_CONSISTENT\",\n    \"kind\": \"INVARIANT\",\n    \"condition\": \"valid_o\",\n    \"expression\": \"(zero_o == (result_o == 32'd0))\",\n    \"description\": \"zero_o must match (result_o == 0) whenever valid_o is asserted\"\n  },\n  {\n    \"id\": \"C_REACH_VALID_OUT\",\n    \"kind\": \"COVER_REACHABILITY\",\n    \"expression\": \"valid_o && (result_o != 32'd0)\",\n    \"description\": \"Prove non-vacuous reachability of a non-zero valid ALU result\"\n  }\n]\n",
+      "saved_usd": 0.0,
+      "stage": "FORMAL_VERIFY",
+      "system_prompt": "# Role: Principal Formal Verification Engineer\n\nYou verify RTL mathematically using Yosys, SymbiYosys (`sby`), and Z3/Bitwuzla via BMC, k-induction (`prove`), and reachability (`cover`).\n\n## Anti-Hallucination Formal Discipline\n1. **Never Emit Raw SVA Directly**: Emit ONLY structured `TypedPropertyIR` JSON objects. The deterministic `formal_ir.py` compiler lowers your IR into syntactically valid SymbiYosys SVA.\n2. **Anti-Vacuity Mandate**: For every safety `assert` property, emit at least one corresponding `COVER_REACHABILITY` property proving the antecedent/trigger state is actually reachable from reset. If `cover` fails, your `assume` constraints are over-constrained (vacuous proof).\n3. **Strict Signal Grounding**: Every signal name referenced in a property MUST exist in `DesignContract.ports`. Never invent internal wire names.\n4. **Counterexample Root-Cause Distillation**: When `sby` returns a failing witness trace, extract:\n   - The exact failing property ID\n   - The failing cycle index\n   - The minimal input stimulus sequence leading to the violation\n   - The exact RTL output/state signal to slice for minimal-diff repair.\n",
+      "tier": "frontier_reasoning",
+      "tokens_per_s": null,
+      "ttft_s": null,
+      "user_prompt": "Formal Verification Skill Context:\n### Skill Pack: sva_formal_patterns\n# SymbiYosys (sby) Formal Verification Patterns & Anti-Vacuity\n- **Engines**: Use `smtbmc z3` or `smtbmc bitwuzla` with separate `bmc`, `prove` (k-induction), and `cover` tasks.\n- **Reset Assumption**: Constrain initial cycle with `f_past_valid` register (`initial f_past_valid = 1'b0; always @(posedge clk) f_past_valid <= 1'b1;`) to avoid spurious `$past()` failures at cycle 0.\n- **Anti-Vacuity**: Always pair safety `assert(...)` checks with `cover(...)` reachability witnesses to confirm `assume(...)` constraints never block valid execution paths.\n- **LEC**: Post-synthesis equivalence must run `equiv_make gold gate equiv`, `equiv_simple`, `equiv_induct`, `equiv_status -assert`.\n\n\nDesignContract JSON:\n{\n  \"module_name\": \"axi_lite_alu\",\n  \"clock_port\": \"clk\",\n  \"reset_port\": \"rst_n\",\n  \"reset_active_low\": true,\n  \"reset_sync\": false,\n  \"ports\": [\n    {\n      \"name\": \"clk\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"System clock\"\n    },\n    {\n      \"name\": \"rst_n\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"Active-low async reset\"\n    },\n    {\n      \"name\": \"valid_i\",\n      \"direction\": \"input\",\n      \"width\": 1,\n      \"description\": \"Input request valid\"\n    },\n    {\n      \"name\": \"ready_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"Input request ready\"\n    },\n    {\n      \"name\": \"op_i\",\n      \"direction\": \"input\",\n      \"width\": 3,\n      \"description\": \"ALU opcode (0:ADD,1:SUB,2:AND,3:OR,4:XOR)\"\n    },\n    {\n      \"name\": \"a_i\",\n      \"direction\": \"input\",\n      \"width\": 32,\n      \"description\": \"Operand A\"\n    },\n    {\n      \"name\": \"b_i\",\n      \"direction\": \"input\",\n      \"width\": 32,\n      \"description\": \"Operand B\"\n    },\n    {\n      \"name\": \"valid_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"Output result valid\"\n    },\n    {\n      \"name\": \"result_o\",\n      \"direction\": \"output\",\n      \"width\": 32,\n      \"description\": \"Registered 32-bit ALU result\"\n    },\n    {\n      \"name\": \"zero_o\",\n      \"direction\": \"output\",\n      \"width\": 1,\n      \"description\": \"High when result_o == 0\"\n    }\n  ],\n  \"functional_requirements\": [\n    \"Single-cycle registered ALU with valid/ready handshake\",\n    \"Supports ADD, SUB, AND, OR, XOR opcodes with zero flag\",\n    \"Asynchronous active-low reset clears valid_o and result_o to 0\"\n  ],\n  \"pipeline_stages\": 1,\n  \"target_clock_ns\": 10.0,\n  \"max_area_um2\": 25000.0,\n  \"max_power_mw\": 5.0\n}\n\nSpecification:\n# Hardware Specification: `axi_lite_alu` (32-bit Registered Valid/Ready ALU)\n\n## Target Node & PPA Budget\n- **PDK**: SkyWater 130nm (`sky130A`, `sky130_fd_sc_hd`)\n- **Target Clock**: 100 MHz (`CLOCK_PERIOD = 10.0 ns`, `WNS >= 0.0 ns`)\n- **Max Core Area**: 25,000 um²\n- **Max Total Power**: 5.0 mW\n\n## Interface\n- `clk` (input, 1-bit): Rising-edge system clock.\n- `rst_n` (input, 1-bit): Active-low asynchronous reset.\n- `valid_i` (input, 1-bit) / `ready_o` (output, 1-bit): Input request handshake.\n- `op_i` (input, 3-bit): `0=ADD`, `1=SUB`, `2=AND`, `3=OR`, `4=XOR`, default `0`.\n- `a_i`, `b_i` (input, 32-bit): Unsigned 32-bit operands.\n- `valid_o` (output, 1-bit): Registered output valid (1-cycle latency).\n- `result_o` (output, 32-bit): Registered 32-bit ALU result.\n- `zero_o` (output, 1-bit): Asserted iff `result_o == 32'd0`.\n\n## Formal & Functional Requirements\n1. Immediately after reset (`!rst_n`), `valid_o == 0` and `result_o == 0`.\n2. Whenever `valid_o == 1`, `zero_o == (result_o == 32'd0)` must hold mathematically across all reachable states (k-induction).\n3. Non-vacuous reachability (`cover`): A cycle with `valid_o == 1 && result_o != 32'd0` must be reachable from reset.\n\n\nEmit a JSON array of TypedPropertyIR objects including at least one COVER_REACHABILITY property."
+     },
+     "seq": 7,
+     "stage": "LLM",
+     "status": "CALL",
+     "ts": 1795220673.213
+    },
+    {
+     "detail": "Formal check failed on iteration 1 (P_ZERO_FLAG_CONSISTENT); applying COI-sliced repair.",
+     "payload": {
+      "elapsed_sec": 1.41,
+      "iteration": 1,
+      "mode": "wsl",
+      "task_status": {
+       "bmc": "FAIL",
+       "cover": "PASS",
+       "prove": "FAIL"
+      },
+      "witnesses": [
+       {
+        "cycle": 3,
+        "failing_signal": "zero_o",
+        "property_id": "P_ZERO_FLAG_CONSISTENT",
+        "stimulus": {
+         "a_i": 0,
+         "b_i": 0,
+         "clk": 1,
+         "op_i": 0,
+         "rst_n": 1,
+         "valid_i": 0
+        },
+        "summary": "BMC counterexample: assertion P_ZERO_FLAG_CONSISTENT failed at step 3 (axi_lite_alu_formal.sv:63.13-63.76); inputs={'a_i': 0, 'b_i': 0, 'clk': 1, 'op_i': 0, 'rst_n': 1, 'valid_i': 0}; outputs={'ready_o': 1, 'result_o': 0, 'valid_o': 1, 'zero_o': 0}",
+        "task": "bmc",
+        "trace": {
+         "end": 40,
+         "signals": [
+          {
+           "changes": [
+            [
+             0,
+             "00000000000000000000000000000000"
+            ],
+            [
+             10,
+             "00000000000000000000000000000001"
+            ],
+            [
+             20,
+             "00000000000000000000000000000010"
+            ],
+            [
+             30,
+             "00000000000000000000000000000011"
+            ],
+            [
+             40,
+             "00000000000000000000000000000100"
+            ]
+           ],
+           "name": "smt_step",
+           "width": 32
+          },
+          {
+           "changes": [
+            [
+             0,
+             "1"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "1"
+            ],
+            [
+             40,
+             "1"
+            ]
+           ],
+           "name": "smt_clock",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_RST_RESULT_ZERO_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_RST_VALID_LOW_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "P_ZERO_FLAG_CONSISTENT_EN",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "00000000000000000000000000000000"
+            ],
+            [
+             10,
+             "00000000000000000000000000000000"
+            ],
+            [
+             20,
+             "00000000000000000000000000000000"
+            ],
+            [
+             30,
+             "00000000000000000000000000000000"
+            ]
+           ],
+           "name": "a_i",
+           "width": 32
+          },
+          {
+           "changes": [
+            [
+             0,
+             "00000000000000000000000000000000"
+            ],
+            [
+             10,
+             "00000000000000000000000000000000"
+            ],
+            [
+             20,
+             "00000000000000000000000000000000"
+            ],
+            [
+             30,
+             "00000000000000000000000000000000"
+            ]
+           ],
+           "name": "alu_comb",
+           "width": 32
+          },
+          {
+           "changes": [
+            [
+             0,
+             "00000000000000000000000000000000"
+            ],
+            [
+             10,
+             "00000000000000000000000000000000"
+            ],
+            [
+             20,
+             "00000000000000000000000000000000"
+            ],
+            [
+             30,
+             "00000000000000000000000000000000"
+            ]
+           ],
+           "name": "b_i",
+           "width": 32
+          },
+          {
+           "changes": [
+            [
+             0,
+             "1"
+            ],
+            [
+             5,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             15,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             25,
+             "0"
+            ],
+            [
+             30,
+             "1"
+            ],
+            [
+             35,
+             "0"
+            ],
+            [
+             40,
+             "1"
+            ]
+           ],
+           "name": "clk",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "1"
+            ]
+           ],
+           "name": "f_past_valid",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "000"
+            ],
+            [
+             10,
+             "000"
+            ],
+            [
+             20,
+             "000"
+            ],
+            [
+             30,
+             "000"
+            ]
+           ],
+           "name": "op_i",
+           "width": 3
+          },
+          {
+           "changes": [
+            [
+             0,
+             "1"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "1"
+            ]
+           ],
+           "name": "ready_o",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "00000000000000000000000000000000"
+            ],
+            [
+             10,
+             "00000000000000000000000000000000"
+            ],
+            [
+             20,
+             "00000000000000000000000000000000"
+            ],
+            [
+             30,
+             "00000000000000000000000000000000"
+            ]
+           ],
+           "name": "result_o",
+           "width": 32
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "rst_n",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "valid_i",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "0"
+            ],
+            [
+             10,
+             "0"
+            ],
+            [
+             20,
+             "1"
+            ],
+            [
+             30,
+             "0"
+            ]
+           ],
+           "name": "valid_o",
+           "width": 1
+          },
+          {
+           "changes": [
+            [
+             0,
+             "1"
+            ],
+            [
+             10,
+             "1"
+            ],
+            [
+             20,
+             "0"
+            ],
+            [
+             30,
+             "1"
+            ]
+           ],
+           "name": "zero_o",
+           "width": 1
+          }
+         ],
+         "timescale": "1ns"
+        }
+       }
+      ]
+     },
+     "seq": 8,
+     "stage": "FORMAL_VERIFY",
+     "status": "RETRY",
+     "ts": 1795220674.626
+    },
+    {
+     "detail": "RTL_REPAIR -> replay/replay (979+304 tok)",
+     "payload": {
+      "cache_hit": false,
+      "cached_tokens": 0,
+      "completion_tokens": 304,
+      "cost_usd": 0.0,
+      "latency_s": 0.0,
+      "model": "replay",
+      "prompt_tokens": 979,
+      "provider": "replay",
+      "response": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb == 32'd0);\n            end\n        end\n    end\nendmodule\n",
+      "saved_usd": 0.0,
+      "stage": "RTL_REPAIR",
+      "system_prompt": "# Role: Principal RTL Design Engineer (SystemVerilog-2012)\n\nYou write tapeout-ready, 100% synthesizable SystemVerilog for Yosys, Verilator, and OpenROAD.\n\n## Hard Coding & Synthesis Guardrails\n1. **Exact Port Contract**: Match `module_name`, every port name, direction, and bit-width from `DesignContract` verbatim. Do not add debug ports or rename signals.\n2. **Synthesizable Subset Only**:\n   - NEVER use `initial` blocks (except inside `ifdef FORMAL`), `#delay` constructs, `real`, `fork/join`, `$display` in RTL, or tri-state `z` internal buses.\n   - Use `always_ff @(posedge clk or negedge rst_n)` with **non-blocking assignments (`<=`) ONLY**.\n   - Use `always_comb` with **blocking assignments (`=`) ONLY**, and assign default values at the top of every `always_comb` block to guarantee **zero inferred latches**.\n3. **Zero Combinational Loops**: Every sequential feedback path must pass through a register.\n4. **Clean Arithmetic & Width Hygiene**: Explicitly size all literals (e.g., `32'd0`, `4'hF`). Avoid implicit width truncation or signed/unsigned mixing.\n5. **Minimal-Diff Repair Mode**: When given a counterexample slice from the Formal Verifier or C++ Static Linter, modify ONLY the localized Cone-of-Influence (COI) logic causing the violation. Preserve all passing logic and port declarations untouched.\n",
+      "tier": "frontier_reasoning",
+      "tokens_per_s": null,
+      "ttft_s": null,
+      "user_prompt": "REPAIR REQUEST (Attempt 1)\nModule: axi_lite_alu\nDiagnostic / Counterexample:\nBMC counterexample: assertion P_ZERO_FLAG_CONSISTENT failed at step 3 (axi_lite_alu_formal.sv:63.13-63.76); inputs={'a_i': 0, 'b_i': 0, 'clk': 1, 'op_i': 0, 'rst_n': 1, 'valid_i': 0}; outputs={'ready_o': 1, 'result_o': 0, 'valid_o': 1, 'zero_o': 0}\n\nLocalized Cone-of-Influence RTL Slice:\n// Backward Cone-of-Influence slice for signal 'zero_o' (signals: ['a_i', 'alu_comb', 'b1', 'b_i', 'zero_o'])\n  17 | \n  18 |     always_comb begin\n  19 |         alu_comb = 32'd0;\n  20 |         case (op_i)\n  21 |             3'd0:    alu_comb = a_i + b_i;\n  22 |             3'd1:    alu_comb = a_i - b_i;\n  23 |             3'd2:    alu_comb = a_i & b_i;\n  24 |             3'd3:    alu_comb = a_i | b_i;\n  25 |             3'd4:    alu_comb = a_i ^ b_i;\n  26 |             default: alu_comb = 32'd0;\n  27 |         endcase\n  28 |     end\n  32 |             valid_o  <= 1'b0;\n  33 |             result_o <= 32'd0;\n  34 |             zero_o   <= 1'b1;\n  35 |         end else begin\n  36 |             valid_o <= valid_i & ready_o;\n  37 |             if (valid_i & ready_o) begin\n  38 |                 result_o <= alu_comb;\n  39 |                 zero_o   <= (alu_comb != 32'd0);\n  40 |             end\n  41 |         end\n\nFull Current RTL:\n// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb != 32'd0);\n            end\n        end\n    end\nendmodule\n\nApply a minimal, surgical fix preserving all ports and passing logic."
+     },
+     "seq": 9,
+     "stage": "LLM",
+     "status": "CALL",
+     "ts": 1795220674.628
+    },
+    {
+     "detail": "RTL version 'formal-repair-1' (43 lines)",
+     "payload": {
+      "label": "formal-repair-1",
+      "source": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb == 32'd0);\n            end\n        end\n    end\nendmodule"
+     },
+     "seq": 10,
+     "stage": "RTL",
+     "status": "VERSION",
+     "ts": 1795220674.628
+    },
+    {
+     "detail": "BMC + k-induction/PDR + cover proved on iteration 2 (mode=wsl).",
+     "payload": {
+      "elapsed_sec": 1.398,
+      "iteration": 2,
+      "mode": "wsl",
+      "task_status": {
+       "bmc": "PASS",
+       "cover": "PASS",
+       "prove": "PASS"
+      },
+      "witnesses": []
+     },
+     "seq": 11,
+     "stage": "FORMAL_VERIFY",
+     "status": "PASS",
+     "ts": 1795220676.036
+    },
+    {
+     "detail": "Yosys synthesis + RTL-to-gate LEC passed (616 cells, mode=wsl).",
+     "payload": {
+      "cells": 616,
+      "elapsed_sec": 0.622,
+      "mode": "wsl"
+     },
+     "seq": 12,
+     "stage": "SYNTHESIS_LEC",
+     "status": "PASS",
+     "ts": 1795220676.673
+    },
+    {
+     "detail": "Episode 1: WNS=-1.588ns area=8036um² DRC=0 reward=-16.97 [wsl]",
+     "payload": {
+      "episode": 1,
+      "metrics": {
+       "area_um2": 8036.46,
+       "cached": false,
+       "cell_count": 896,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.7549068250851345,
+        "max_ss_100C_1v60": -1.5881207909362278,
+        "max_tt_025C_1v80": 2.9552205963252285,
+        "min_ff_n40C_1v95": 4.809439205240164,
+        "min_ss_100C_1v60": -1.4313706181022536,
+        "min_tt_025C_1v80": 3.032771453145423,
+        "nom_ff_n40C_1v95": 4.781479347797245,
+        "nom_ss_100C_1v60": -1.515312362922147,
+        "nom_tt_025C_1v80": 2.9912033696602016
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 15766.7,
+        "hold_ws_ns": 0.39518661683837564,
+        "instance_area_um2": 11861.4,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_01\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_01\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 45,
+        "GRT_ADJUSTMENT": 0.3,
+        "PL_TARGET_DENSITY_PCT": 60,
+        "SYNTH_STRATEGY": "AREA 0"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -16.9744,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_01",
+       "runtime_sec": 101.52,
+       "tns_ns": -8.3480380526732,
+       "total_power_mw": 0.9249694412574172,
+       "wns_ns": -1.5881207909362278
+      }
+     },
+     "seq": 13,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795220805.238
+    },
+    {
+     "detail": "Episode 2: WNS=-3.244ns area=7934um² DRC=0 reward=-37.93 [wsl]",
+     "payload": {
+      "episode": 2,
+      "metrics": {
+       "area_um2": 7933.86,
+       "cached": false,
+       "cell_count": 848,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.304777101072154,
+        "max_ss_100C_1v60": -3.244268057139628,
+        "max_tt_025C_1v80": 2.1692293020282998,
+        "min_ff_n40C_1v95": 4.34703352285211,
+        "min_ss_100C_1v60": -3.1410555046024853,
+        "min_tt_025C_1v80": 2.2304763112261647,
+        "nom_ff_n40C_1v95": 4.328113989709786,
+        "nom_ss_100C_1v60": -3.191448085026211,
+        "nom_tt_025C_1v80": 2.2008244738458647
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 13590.2,
+        "hold_ws_ns": 0.38757437245474424,
+        "instance_area_um2": 9819.42,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_02\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_02\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 52,
+        "GRT_ADJUSTMENT": 0.3,
+        "PL_TARGET_DENSITY_PCT": 65,
+        "SYNTH_STRATEGY": "AREA 2"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -37.9307,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_02",
+       "runtime_sec": 111.95,
+       "tns_ns": -23.650273520103198,
+       "total_power_mw": 0.9603998041711748,
+       "wns_ns": -3.244268057139628
+      }
+     },
+     "seq": 14,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795220805.238
+    },
+    {
+     "detail": "Episode 3: WNS=-1.440ns area=10847um² DRC=0 reward=-14.89 [wsl]",
+     "payload": {
+      "episode": 3,
+      "metrics": {
+       "area_um2": 10846.7,
+       "cached": false,
+       "cell_count": 1250,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.827868463880947,
+        "max_ss_100C_1v60": -1.4397772270824705,
+        "max_tt_025C_1v80": 2.967833174330888,
+        "min_ff_n40C_1v95": 4.997171262675556,
+        "min_ss_100C_1v60": -0.9605330136483051,
+        "min_tt_025C_1v80": 3.232017855939455,
+        "nom_ff_n40C_1v95": 4.915561874451758,
+        "nom_ss_100C_1v60": -1.1863355078532183,
+        "nom_tt_025C_1v80": 3.104594003085754
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 21888.6,
+        "hold_ws_ns": 0.11313894585875142,
+        "instance_area_um2": 17176.5,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_03\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_03\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 45,
+        "GRT_ADJUSTMENT": 0.3,
+        "PL_TARGET_DENSITY_PCT": 58,
+        "SYNTH_STRATEGY": "DELAY 0"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -14.8884,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_03",
+       "runtime_sec": 128.56,
+       "tns_ns": -6.049701355549045,
+       "total_power_mw": 1.0469851549714804,
+       "wns_ns": -1.4397772270824705
+      }
+     },
+     "seq": 15,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795220805.238
+    },
+    {
+     "detail": "Episode 4: WNS=-2.723ns area=11420um² DRC=0 reward=-31.01 [wsl]",
+     "payload": {
+      "episode": 4,
+      "metrics": {
+       "area_um2": 11419.7,
+       "cached": false,
+       "cell_count": 1427,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.464836182702303,
+        "max_ss_100C_1v60": -2.723184421705349,
+        "max_tt_025C_1v80": 2.301387590082111,
+        "min_ff_n40C_1v95": 4.569950769379027,
+        "min_ss_100C_1v60": -2.5767957386086398,
+        "min_tt_025C_1v80": 2.4627767189333776,
+        "nom_ff_n40C_1v95": 4.513437307202827,
+        "nom_ss_100C_1v60": -2.6265266260909748,
+        "nom_tt_025C_1v80": 2.3757378958763984
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 25670.6,
+        "hold_ws_ns": 0.10371082064468655,
+        "instance_area_um2": 20299.5,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_04\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_04\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 42,
+        "GRT_ADJUSTMENT": 0.35,
+        "PL_TARGET_DENSITY_PCT": 55,
+        "SYNTH_STRATEGY": "DELAY 4"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -31.0095,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_04",
+       "runtime_sec": 135.62,
+       "tns_ns": -14.603979772180008,
+       "total_power_mw": 1.1492352932691574,
+       "wns_ns": -2.723184421705349
+      }
+     },
+     "seq": 16,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795220947.712
+    },
+    {
+     "detail": "Episode 5: WNS=-2.930ns area=11251um² DRC=0 reward=-32.68 [wsl]",
+     "payload": {
+      "episode": 5,
+      "metrics": {
+       "area_um2": 11250.8,
+       "cached": false,
+       "cell_count": 1373,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.36952397743183,
+        "max_ss_100C_1v60": -2.930007430722914,
+        "max_tt_025C_1v80": 2.241837001713851,
+        "min_ff_n40C_1v95": 4.481318110102819,
+        "min_ss_100C_1v60": -2.6696441368731834,
+        "min_tt_025C_1v80": 2.414059243056582,
+        "nom_ff_n40C_1v95": 4.424718494617472,
+        "nom_ss_100C_1v60": -2.796527533143211,
+        "nom_tt_025C_1v80": 2.3275124708580326
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 21962.7,
+        "hold_ws_ns": 0.10822770763696905,
+        "instance_area_um2": 17176.5,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_05\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_05\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 50,
+        "GRT_ADJUSTMENT": 0.3,
+        "PL_TARGET_DENSITY_PCT": 62,
+        "SYNTH_STRATEGY": "DELAY 4"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -32.6766,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_05",
+       "runtime_sec": 142.47,
+       "tns_ns": -13.541436799608846,
+       "total_power_mw": 1.1283830972388387,
+       "wns_ns": -2.930007430722914
+      }
+     },
+     "seq": 17,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795220947.712
+    },
+    {
+     "detail": "Episode 6: WNS=-1.335ns area=9733um² DRC=0 reward=-15.77 [wsl]",
+     "payload": {
+      "episode": 6,
+      "metrics": {
+       "area_um2": 9733.08,
+       "cached": false,
+       "cell_count": 1196,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.777622876989839,
+        "max_ss_100C_1v60": -1.3352350714134327,
+        "max_tt_025C_1v80": 3.0530214775980857,
+        "min_ff_n40C_1v95": 4.931458048167915,
+        "min_ss_100C_1v60": -0.8806733369608021,
+        "min_tt_025C_1v80": 3.279633546455452,
+        "nom_ff_n40C_1v95": 4.856300388167287,
+        "nom_ss_100C_1v60": -1.109091516685709,
+        "nom_tt_025C_1v80": 3.1709298306832125
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 23778.2,
+        "hold_ws_ns": 0.04478029185321652,
+        "instance_area_um2": 18705.4,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_06\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_06\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 38,
+        "GRT_ADJUSTMENT": 0.35,
+        "PL_TARGET_DENSITY_PCT": 52,
+        "SYNTH_STRATEGY": "DELAY 2"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -15.7721,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_06",
+       "runtime_sec": 124.0,
+       "tns_ns": -11.45506566469776,
+       "total_power_mw": 0.9738258086144924,
+       "wns_ns": -1.3352350714134327
+      }
+     },
+     "seq": 18,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795220947.712
+    },
+    {
+     "detail": "Episode 7: WNS=1.129ns area=8682um² DRC=0 reward=4.25 [wsl]",
+     "payload": {
+      "episode": 7,
+      "metrics": {
+       "area_um2": 8682.08,
+       "cached": false,
+       "cell_count": 1162,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 5.580848385830046,
+        "max_ss_100C_1v60": 1.128559500017708,
+        "max_tt_025C_1v80": 4.327749836547411,
+        "min_ff_n40C_1v95": 5.693213173151831,
+        "min_ss_100C_1v60": 1.2845049831806759,
+        "min_tt_025C_1v80": 4.5006617484525435,
+        "nom_ff_n40C_1v95": 5.6582948816829735,
+        "nom_ss_100C_1v60": 1.209693712773527,
+        "nom_tt_025C_1v80": 4.44318372448527
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 14603.8,
+        "hold_ws_ns": 0.10630224779090591,
+        "instance_area_um2": 10792.9,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 65,
+        "GRT_ADJUSTMENT": 0.2,
+        "PL_TARGET_DENSITY_PCT": 75,
+        "SYNTH_STRATEGY": "AREA 3"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": 4.2546,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_07",
+       "runtime_sec": 101.2,
+       "tns_ns": 0.0,
+       "total_power_mw": 0.9307213476859033,
+       "wns_ns": 1.128559500017708
+      }
+     },
+     "seq": 19,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795221085.884
+    },
+    {
+     "detail": "Episode 8: WNS=-3.183ns area=11203um² DRC=0 reward=-36.27 [wsl]",
+     "payload": {
+      "episode": 8,
+      "metrics": {
+       "area_um2": 11203.2,
+       "cached": false,
+       "cell_count": 1379,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 4.40166004992229,
+        "max_ss_100C_1v60": -3.1825867286822462,
+        "max_tt_025C_1v80": 2.2584894593757725,
+        "min_ff_n40C_1v95": 4.514063917095648,
+        "min_ss_100C_1v60": -2.903136480053344,
+        "min_tt_025C_1v80": 2.440155702122269,
+        "nom_ff_n40C_1v95": 4.45630123193681,
+        "nom_ss_100C_1v60": -3.040108695278077,
+        "nom_tt_025C_1v80": 2.3469067353791115
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 22776.8,
+        "hold_ws_ns": 0.10503878619757374,
+        "instance_area_um2": 17902.2,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_08\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_08\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 10.0,
+        "FP_CORE_UTIL": 48,
+        "GRT_ADJUSTMENT": 0.32,
+        "PL_TARGET_DENSITY_PCT": 56,
+        "SYNTH_STRATEGY": "DELAY 4"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -36.2691,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_08",
+       "runtime_sec": 138.17,
+       "tns_ns": -16.41050008998358,
+       "total_power_mw": 1.13588385283947,
+       "wns_ns": -3.1825867286822462
+      }
+     },
+     "seq": 20,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795221085.884
+    },
+    {
+     "detail": "Episode 9: WNS=-1.497ns area=10540um² DRC=0 reward=-16.51 [wsl]",
+     "payload": {
+      "episode": 9,
+      "metrics": {
+       "area_um2": 10540.1,
+       "cached": false,
+       "cell_count": 1241,
+       "corner_wns": {
+        "max_ff_n40C_1v95": 5.634652903749545,
+        "max_ss_100C_1v60": -1.496877331121473,
+        "max_tt_025C_1v80": 3.5451553807126945,
+        "min_ff_n40C_1v95": 5.804578759723195,
+        "min_ss_100C_1v60": -1.0021610491785515,
+        "min_tt_025C_1v80": 3.819944468863184,
+        "nom_ff_n40C_1v95": 5.72375496533384,
+        "nom_ss_100C_1v60": -1.2454340133930648,
+        "nom_tt_025C_1v80": 3.6849733196746293
+       },
+       "drc_violations": 0,
+       "extra": {
+        "die_area_um2": 21888.6,
+        "hold_ws_ns": 0.10952705719058722,
+        "instance_area_um2": 17176.5,
+        "render_png": "runs\\real_axi_pareto\\pnr_ep_09\\runs\\sf\\final\\render\\axi_lite_alu.png",
+        "timing_corner": "worst"
+       },
+       "gds_path": "runs\\real_axi_pareto\\pnr_ep_09\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+       "knobs": {
+        "CLOCK_PERIOD": 11.5,
+        "FP_CORE_UTIL": 45,
+        "GRT_ADJUSTMENT": 0.3,
+        "PL_TARGET_DENSITY_PCT": 58,
+        "SYNTH_STRATEGY": "DELAY 0"
+       },
+       "lvs_clean": true,
+       "mode": "wsl",
+       "reward": -16.5131,
+       "run_dir": "runs\\real_axi_pareto\\pnr_ep_09",
+       "runtime_sec": 136.68,
+       "tns_ns": -8.988129606107293,
+       "total_power_mw": 0.8933423669077456,
+       "wns_ns": -1.496877331121473
+      }
+     },
+     "seq": 21,
+     "stage": "PNR_RL_OPT",
+     "status": "EPISODE",
+     "ts": 1795221085.884
+    },
+    {
+     "detail": "PPA optimization finished 9 episode(s) (cache hits: 0); best WNS=1.129ns, area=8682um², power=0.931mW, DRC=0.",
+     "payload": {
+      "cache_hits": 0,
+      "episodes": 9,
+      "mode": "wsl"
+     },
+     "seq": 22,
+     "stage": "PNR_RL_OPT",
+     "status": "PASS",
+     "ts": 1795221085.887
+    },
+    {
+     "detail": "Signoff checks passed. GDSII: axi_lite_alu.gds",
+     "payload": {
+      "checks": [
+       {
+        "detail": "WNS 1.129 ns @ 10.00 ns clock",
+        "name": "Timing (WNS >= 0.00 ns @ 10.00 ns clock)",
+        "passed": true
+       },
+       {
+        "detail": "0 violation(s)",
+        "name": "DRC clean",
+        "passed": true
+       },
+       {
+        "detail": "clean",
+        "name": "LVS clean",
+        "passed": true
+       },
+       {
+        "detail": "passed",
+        "name": "RTL == netlist (LEC)",
+        "passed": true
+       },
+       {
+        "detail": "BMC + prove + cover",
+        "name": "Formal proofs non-vacuous",
+        "passed": true
+       },
+       {
+        "detail": "ok",
+        "name": "Flow variables on PDK allowlist",
+        "passed": true
+       },
+       {
+        "detail": "8682 um² (max 25000.0)",
+        "name": "Area budget",
+        "passed": true
+       },
+       {
+        "detail": "0.931 mW (max 5.0)",
+        "name": "Power budget",
+        "passed": true
+       }
+      ],
+      "mode": "wsl"
+     },
+     "seq": 23,
+     "stage": "SIGNOFF",
+     "status": "PASS",
+     "ts": 1795221085.887
+    }
+   ],
+   "formal_history": [
+    {
+     "bmc_passed": false,
+     "cover_passed": true,
+     "elapsed_sec": 1.41,
+     "mode": "wsl",
+     "prove_passed": false,
+     "sby_log": "SBY  0:24:26 [axi_lite_alu_bmc] Removing directory 'runs/real_axi_pareto/formal/axi_lite_alu_bmc'.\nSBY  0:24:26 [axi_lite_alu_bmc] Copy 'runs/real_axi_pareto/formal/axi_lite_alu_formal.sv' to 'runs/real_axi_pareto/formal/axi_lite_alu_bmc/src/axi_lite_alu_formal.sv'.\nSBY  0:24:26 [axi_lite_alu_bmc] engine_0: smtbmc bitwuzla\nSBY  0:24:27 [axi_lite_alu_prove] Removing directory 'runs/real_axi_pareto/formal/axi_lite_alu_prove'.\nSBY  0:24:27 [axi_lite_alu_prove] Copy 'runs/real_axi_pareto/formal/axi_lite_alu_formal.sv' to 'runs/real_axi_pareto/formal/axi_lite_alu_prove/src/axi_lite_alu_formal.sv'.\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: abc pdr\nSBY  0:24:27 [axi_lite_alu_cover] Removing directory 'runs/real_axi_pareto/formal/axi_lite_alu_cover'.\nSBY  0:24:27 [axi_lite_alu_cover] Copy 'runs/real_axi_pareto/formal/axi_lite_alu_formal.sv' to 'runs/real_axi_pareto/formal/axi_lite_alu_cover/src/axi_lite_alu_formal.sv'.\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: smtbmc bitwuzla\nSBY  0:24:27 [axi_lite_alu_bmc] base: starting process \"cd axi_lite_alu_bmc/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY  0:24:27 [axi_lite_alu_prove] base: starting process \"cd axi_lite_alu_prove/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY  0:24:27 [axi_lite_alu_cover] base: starting process \"cd axi_lite_alu_cover/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY  0:24:27 [axi_lite_alu_bmc] base: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_cover] base: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_prove] base: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_bmc] prep: starting process \"cd axi_lite_alu_bmc/model; yosys -ql design_prep.log design_prep.ys\"\nSBY  0:24:27 [axi_lite_alu_cover] prep: starting process \"cd axi_lite_alu_cover/model; yosys -ql design_prep.log design_prep.ys\"\nSBY  0:24:27 [axi_lite_alu_prove] prep: starting process \"cd axi_lite_alu_prove/model; yosys -ql design_prep.log design_prep.ys\"\nSBY  0:24:27 [axi_lite_alu_bmc] prep: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_cover] prep: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_bmc] smt2: starting process \"cd axi_lite_alu_bmc/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY  0:24:27 [axi_lite_alu_prove] prep: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_cover] smt2: starting process \"cd axi_lite_alu_cover/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY  0:24:27 [axi_lite_alu_prove] aig: starting process \"cd axi_lite_alu_prove/model; yosys -ql design_aiger.log design_aiger.ys\"\nSBY  0:24:27 [axi_lite_alu_bmc] smt2: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_cover] smt2: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_bmc] engine_0: starting process \"cd axi_lite_alu_bmc; yosys-smtbmc -s bitwuzla --presat --unroll --noprogress -t 20  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2\"\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: starting process \"cd axi_lite_alu_cover; yosys-smtbmc -s bitwuzla --presat --unroll -c --noprogress -t 20  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2\"\nSBY  0:24:34 [axi_lite_alu_prove] aig: Warning: Treating undriven bit axi_lite_alu.\\b_i [0] like $anyseq.\nSBY  0:24:34 [axi_lite_alu_prove] aig: Warning: Treating a total of 1 undriven bits in axi_lite_alu like $anyseq.\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY  0:24:34 [axi_lite_alu_prove] aig: finished (returncode=0)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: starting process \"cd axi_lite_alu_prove; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw'\"\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 0..\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 0..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 0..\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 1..\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 2..\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 3..\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Reached cover statement in step 3 at axi_lite_alu: C_REACH_VALID_OUT\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace0.vcd\nSBY  0:24:34 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace0_tb.v\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 1..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 1..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 2..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 2..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 3..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 3..\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  BMC failed!\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Assert failed in axi_lite_alu: P_ZERO_FLAG_CONSISTENT\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace.vcd\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace_tb.v\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace.smtc\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace.yw\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Status: failed\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: finished (returncode=1)\nSBY  0:24:34 [axi_lite_alu_bmc] engine_0: Status returned by engine: FAIL\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: ======== ABC command line \"read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw\"\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Warning: The last 2 outputs are interpreted as constraints.\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 159. MonoCNF = no. SkipGen = no. SolveAll = no.\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Frame Clauses                                                     Max Queue Flops Time\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: 1 : 0 3                                                                 1     3      0.01 sec  T/O =  0  PRV =  0\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: 2 : 0 4 36                                                              4    43      0.01 sec  T/O =  0  PRV =  0\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Block =    6  Oblig =    81  Clause =    40  Call =   201 (sat=59.2%)  Cex =   0  Start =   0\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: SAT solving =     0.00 sec ( 10.71 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: unsat     =     0.00 sec (  0.13 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: sat       =     0.00 sec ( 10.58 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Generalize  =     0.00 sec ( 12.55 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Push clause =     0.00 sec (  0.26 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Ternary sim =     0.00 sec (  1.54 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Containment =     0.00 sec (  0.03 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: CNF compute =     0.00 sec (  1.68 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Refinement  =     0.00 sec (  0.09 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: TOTAL       =     0.02 sec (100.00 %)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Output 2 of miter \"model/design_aiger\" was asserted in frame 3.  Time =     0.02 sec\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: finished (returncode=0)\nSBY  0:24:34 [axi_lite_alu_prove] engine_0: Status returned by engine: FAIL\nSBY  0:24:27 [axi_lite_alu_bmc] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:27 [axi_lite_alu_bmc] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:27 [axi_lite_alu_bmc] summary: engine_0 (smtbmc bitwuzla) returned FAIL\nSBY  0:24:27 [axi_lite_alu_bmc] summary: counterexample trace: axi_lite_alu_bmc/engine_0/trace.vcd\nSBY  0:24:27 [axi_lite_alu_bmc] summary:   failed assertion axi_lite_alu.P_ZERO_FLAG_CONSISTENT at axi_lite_alu_formal.sv:63.13-63.76 step 3\nSBY  0:24:27 [axi_lite_alu_bmc] DONE (FAIL, rc=2)\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace0.smtc\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace0.yw\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: ##   0:00:00  Status: passed\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_cover] engine_0: Status returned by engine: pass\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: starting process \"cd axi_lite_alu_prove; yosys-witness aiw2yw engine_0/trace.aiw model/design_aiger.ywa engine_0/trace_aiw.yw\"\nSBY  0:24:27 [axi_lite_alu_cover] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:27 [axi_lite_alu_cover] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:27 [axi_lite_alu_cover] summary: engine_0 (smtbmc bitwuzla) returned pass\nSBY  0:24:27 [axi_lite_alu_cover] summary: cover trace: axi_lite_alu_cover/engine_0/trace0.vcd\nSBY  0:24:27 [axi_lite_alu_cover] summary:   reached cover statement axi_lite_alu.C_REACH_VALID_OUT at axi_lite_alu_formal.sv:67.13-67.69 step 3\nSBY  0:24:27 [axi_lite_alu_cover] DONE (PASS, rc=0)\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: Converting AIGER witness trace 'engine_0/trace.aiw' to Yosys witness trace 'engine_0/trace_aiw.yw'...\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: Using Yosys witness AIGER map file 'model/design_aiger.ywa'\nSBY  0:24:27 [axi_lite_alu_prove] smt2: starting process \"cd axi_lite_alu_prove/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: Converted 4 time steps.\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_prove] smt2: finished (returncode=0)\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: starting process \"cd axi_lite_alu_prove; yosys-smtbmc -s yices --noprogress --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc --yw engine_0/trace_aiw.yw model/design_smt2.smt2\"\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Solver: yices\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Skipping step 0..\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Skipping step 1..\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Skipping step 2..\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Checking assertions in step 3..\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  BMC failed!\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Assert failed in axi_lite_alu: P_ZERO_FLAG_CONSISTENT\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace.vcd\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace_tb.v\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace.smtc\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace.yw\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: ##   0:00:00  Status: FAILED\nSBY  0:24:27 [axi_lite_alu_prove] engine_0: finished (returncode=1)\nSBY  0:24:27 [axi_lite_alu_prove] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:27 [axi_lite_alu_prove] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:27 [axi_lite_alu_prove] summary: engine_0 (abc pdr) returned FAIL\nSBY  0:24:27 [axi_lite_alu_prove] summary: counterexample trace: axi_lite_alu_prove/engine_0/trace.vcd\nSBY  0:24:27 [axi_lite_alu_prove] summary:   failed assertion axi_lite_alu.P_ZERO_FLAG_CONSISTENT at axi_lite_alu_formal.sv:63.13-63.76 step 3\nSBY  0:24:28 [axi_lite_alu_prove] DONE (FAIL, rc=2)\nSBY  0:24:28 The following tasks failed: ['bmc', 'prove']",
+     "task_status": {
+      "bmc": "FAIL",
+      "cover": "PASS",
+      "prove": "FAIL"
+     },
+     "vacuous_detected": false,
+     "witnesses": [
+      {
+       "cycle": 3,
+       "failing_signal": "zero_o",
+       "property_id": "P_ZERO_FLAG_CONSISTENT",
+       "stimulus": {
+        "a_i": 0,
+        "b_i": 0,
+        "clk": 1,
+        "op_i": 0,
+        "rst_n": 1,
+        "valid_i": 0
+       },
+       "summary": "BMC counterexample: assertion P_ZERO_FLAG_CONSISTENT failed at step 3 (axi_lite_alu_formal.sv:63.13-63.76); inputs={'a_i': 0, 'b_i': 0, 'clk': 1, 'op_i': 0, 'rst_n': 1, 'valid_i': 0}; outputs={'ready_o': 1, 'result_o': 0, 'valid_o': 1, 'zero_o': 0}",
+       "task": "bmc",
+       "trace": {
+        "end": 40,
+        "signals": [
+         {
+          "changes": [
+           [
+            0,
+            "00000000000000000000000000000000"
+           ],
+           [
+            10,
+            "00000000000000000000000000000001"
+           ],
+           [
+            20,
+            "00000000000000000000000000000010"
+           ],
+           [
+            30,
+            "00000000000000000000000000000011"
+           ],
+           [
+            40,
+            "00000000000000000000000000000100"
+           ]
+          ],
+          "name": "smt_step",
+          "width": 32
+         },
+         {
+          "changes": [
+           [
+            0,
+            "1"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "1"
+           ],
+           [
+            40,
+            "1"
+           ]
+          ],
+          "name": "smt_clock",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_RST_RESULT_ZERO_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_RST_VALID_LOW_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "P_ZERO_FLAG_CONSISTENT_EN",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "00000000000000000000000000000000"
+           ],
+           [
+            10,
+            "00000000000000000000000000000000"
+           ],
+           [
+            20,
+            "00000000000000000000000000000000"
+           ],
+           [
+            30,
+            "00000000000000000000000000000000"
+           ]
+          ],
+          "name": "a_i",
+          "width": 32
+         },
+         {
+          "changes": [
+           [
+            0,
+            "00000000000000000000000000000000"
+           ],
+           [
+            10,
+            "00000000000000000000000000000000"
+           ],
+           [
+            20,
+            "00000000000000000000000000000000"
+           ],
+           [
+            30,
+            "00000000000000000000000000000000"
+           ]
+          ],
+          "name": "alu_comb",
+          "width": 32
+         },
+         {
+          "changes": [
+           [
+            0,
+            "00000000000000000000000000000000"
+           ],
+           [
+            10,
+            "00000000000000000000000000000000"
+           ],
+           [
+            20,
+            "00000000000000000000000000000000"
+           ],
+           [
+            30,
+            "00000000000000000000000000000000"
+           ]
+          ],
+          "name": "b_i",
+          "width": 32
+         },
+         {
+          "changes": [
+           [
+            0,
+            "1"
+           ],
+           [
+            5,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            15,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            25,
+            "0"
+           ],
+           [
+            30,
+            "1"
+           ],
+           [
+            35,
+            "0"
+           ],
+           [
+            40,
+            "1"
+           ]
+          ],
+          "name": "clk",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "1"
+           ]
+          ],
+          "name": "f_past_valid",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "000"
+           ],
+           [
+            10,
+            "000"
+           ],
+           [
+            20,
+            "000"
+           ],
+           [
+            30,
+            "000"
+           ]
+          ],
+          "name": "op_i",
+          "width": 3
+         },
+         {
+          "changes": [
+           [
+            0,
+            "1"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "1"
+           ]
+          ],
+          "name": "ready_o",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "00000000000000000000000000000000"
+           ],
+           [
+            10,
+            "00000000000000000000000000000000"
+           ],
+           [
+            20,
+            "00000000000000000000000000000000"
+           ],
+           [
+            30,
+            "00000000000000000000000000000000"
+           ]
+          ],
+          "name": "result_o",
+          "width": 32
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "rst_n",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "valid_i",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "0"
+           ],
+           [
+            10,
+            "0"
+           ],
+           [
+            20,
+            "1"
+           ],
+           [
+            30,
+            "0"
+           ]
+          ],
+          "name": "valid_o",
+          "width": 1
+         },
+         {
+          "changes": [
+           [
+            0,
+            "1"
+           ],
+           [
+            10,
+            "1"
+           ],
+           [
+            20,
+            "0"
+           ],
+           [
+            30,
+            "1"
+           ]
+          ],
+          "name": "zero_o",
+          "width": 1
+         }
+        ],
+        "timescale": "1ns"
+       }
+      }
+     ]
+    },
+    {
+     "bmc_passed": true,
+     "cover_passed": true,
+     "elapsed_sec": 1.398,
+     "mode": "wsl",
+     "prove_passed": true,
+     "sby_log": "SBY  0:24:28 [axi_lite_alu_bmc] Removing directory 'runs/real_axi_pareto/formal/axi_lite_alu_bmc'.\nSBY  0:24:28 [axi_lite_alu_bmc] Copy 'runs/real_axi_pareto/formal/axi_lite_alu_formal.sv' to 'runs/real_axi_pareto/formal/axi_lite_alu_bmc/src/axi_lite_alu_formal.sv'.\nSBY  0:24:28 [axi_lite_alu_bmc] engine_0: smtbmc bitwuzla\nSBY  0:24:28 [axi_lite_alu_prove] Removing directory 'runs/real_axi_pareto/formal/axi_lite_alu_prove'.\nSBY  0:24:28 [axi_lite_alu_prove] Copy 'runs/real_axi_pareto/formal/axi_lite_alu_formal.sv' to 'runs/real_axi_pareto/formal/axi_lite_alu_prove/src/axi_lite_alu_formal.sv'.\nSBY  0:24:28 [axi_lite_alu_prove] engine_0: abc pdr\nSBY  0:24:28 [axi_lite_alu_cover] Removing directory 'runs/real_axi_pareto/formal/axi_lite_alu_cover'.\nSBY  0:24:28 [axi_lite_alu_cover] Copy 'runs/real_axi_pareto/formal/axi_lite_alu_formal.sv' to 'runs/real_axi_pareto/formal/axi_lite_alu_cover/src/axi_lite_alu_formal.sv'.\nSBY  0:24:28 [axi_lite_alu_cover] engine_0: smtbmc bitwuzla\nSBY  0:24:28 [axi_lite_alu_bmc] base: starting process \"cd axi_lite_alu_bmc/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY  0:24:28 [axi_lite_alu_prove] base: starting process \"cd axi_lite_alu_prove/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY  0:24:28 [axi_lite_alu_cover] base: starting process \"cd axi_lite_alu_cover/src; yosys -ql ../model/design.log ../model/design.ys\"\nSBY  0:24:28 [axi_lite_alu_bmc] base: finished (returncode=0)\nSBY  0:24:28 [axi_lite_alu_cover] base: finished (returncode=0)\nSBY  0:24:28 [axi_lite_alu_prove] base: finished (returncode=0)\nSBY  0:24:28 [axi_lite_alu_bmc] prep: starting process \"cd axi_lite_alu_bmc/model; yosys -ql design_prep.log design_prep.ys\"\nSBY  0:24:28 [axi_lite_alu_cover] prep: starting process \"cd axi_lite_alu_cover/model; yosys -ql design_prep.log design_prep.ys\"\nSBY  0:24:28 [axi_lite_alu_prove] prep: starting process \"cd axi_lite_alu_prove/model; yosys -ql design_prep.log design_prep.ys\"\nSBY  0:24:28 [axi_lite_alu_bmc] prep: finished (returncode=0)\nSBY  0:24:28 [axi_lite_alu_bmc] smt2: starting process \"cd axi_lite_alu_bmc/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY  0:24:28 [axi_lite_alu_cover] prep: finished (returncode=0)\nSBY  0:24:28 [axi_lite_alu_cover] smt2: starting process \"cd axi_lite_alu_cover/model; yosys -ql design_smt2.log design_smt2.ys\"\nSBY  0:24:28 [axi_lite_alu_prove] prep: finished (returncode=0)\nSBY  0:24:28 [axi_lite_alu_prove] aig: starting process \"cd axi_lite_alu_prove/model; yosys -ql design_aiger.log design_aiger.ys\"\nSBY  0:24:29 [axi_lite_alu_cover] smt2: finished (returncode=0)\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: starting process \"cd axi_lite_alu_cover; yosys-smtbmc -s bitwuzla --presat --unroll -c --noprogress -t 20  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2\"\nSBY  0:24:29 [axi_lite_alu_bmc] smt2: finished (returncode=0)\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: starting process \"cd axi_lite_alu_bmc; yosys-smtbmc -s bitwuzla --presat --unroll --noprogress -t 20  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2\"\nSBY  0:24:29 [axi_lite_alu_prove] aig: Warning: Treating undriven bit axi_lite_alu.\\b_i [0] like $anyseq.\nSBY  0:24:29 [axi_lite_alu_prove] aig: Warning: Treating a total of 1 undriven bits in axi_lite_alu like $anyseq.\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Solver: bitwuzla\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 0..\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 1..\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 2..\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 3..\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Reached cover statement in step 3 at axi_lite_alu: C_REACH_VALID_OUT\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace0.vcd\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace0_tb.v\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace0.smtc\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 0..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 0..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 1..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 1..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 2..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 2..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 3..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 3..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 4..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 4..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 5..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 5..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 6..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 6..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 7..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 7..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 8..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 8..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 9..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 9..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 10..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 10..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 11..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 11..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 12..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 12..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 13..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 13..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 14..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 14..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 15..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 15..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 16..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 16..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 17..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 17..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 18..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 18..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assumptions in step 19..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Checking assertions in step 19..\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: ##   0:00:00  Status: passed\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: finished (returncode=0)\nSBY  0:24:29 [axi_lite_alu_bmc] engine_0: Status returned by engine: pass\nSBY  0:24:29 [axi_lite_alu_bmc] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:29 [axi_lite_alu_bmc] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:29 [axi_lite_alu_bmc] summary: engine_0 (smtbmc bitwuzla) returned pass\nSBY  0:24:29 [axi_lite_alu_bmc] summary: engine_0 did not produce any traces\nSBY  0:24:29 [axi_lite_alu_bmc] DONE (PASS, rc=0)\nSBY  0:24:29 [axi_lite_alu_prove] aig: finished (returncode=0)\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace0.yw\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: ##   0:00:00  Status: passed\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: finished (returncode=0)\nSBY  0:24:29 [axi_lite_alu_cover] engine_0: Status returned by engine: pass\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: starting process \"cd axi_lite_alu_prove; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw'\"\nSBY  0:24:29 [axi_lite_alu_cover] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:29 [axi_lite_alu_cover] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:29 [axi_lite_alu_cover] summary: engine_0 (smtbmc bitwuzla) returned pass\nSBY  0:24:29 [axi_lite_alu_cover] summary: cover trace: axi_lite_alu_cover/engine_0/trace0.vcd\nSBY  0:24:29 [axi_lite_alu_cover] summary:   reached cover statement axi_lite_alu.C_REACH_VALID_OUT at axi_lite_alu_formal.sv:67.13-67.69 step 3\nSBY  0:24:29 [axi_lite_alu_cover] DONE (PASS, rc=0)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: ======== ABC command line \"read_aiger model/design_aiger.aig; fold; strash; pdr -v -l; write_cex -a engine_0/trace.aiw\"\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Warning: The last 2 outputs are interpreted as constraints.\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 159. MonoCNF = no. SkipGen = no. SolveAll = no.\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Frame Clauses                                                     Max Queue Flops Time\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: 1 : 0 3                                                                 1     3      0.00 sec  T/O =  0  PRV =  0\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: 2 : 0 3 70                                                              2    44      0.01 sec  T/O =  0  PRV =  0\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Proved output 0 in frame 2.\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Proved output 1 in frame 2.\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Proved output 2 in frame 2.\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: 3 : 0 3 0 0 ~70                                                          0    44      0.02 sec  T/O =  0  PRV =  3\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Block =    6  Oblig =   140  Clause =    73  Call =   433 (sat=64.9%)  Cex =   0  Start =   0\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: SAT solving =     0.01 sec ( 35.79 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: unsat     =     0.00 sec (  0.41 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: sat       =     0.01 sec ( 35.37 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Generalize  =     0.01 sec ( 37.96 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Push clause =     0.00 sec (  0.74 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Ternary sim =     0.00 sec (  2.30 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Containment =     0.00 sec (  0.07 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: CNF compute =     0.00 sec (  2.16 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Refinement  =     0.00 sec (  0.00 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: TOTAL       =     0.02 sec (100.00 %)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Property proved.  Time =     0.02 sec\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Counter-example is not available.\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: finished (returncode=0)\nSBY  0:24:29 [axi_lite_alu_prove] engine_0: Status returned by engine: PASS\nSBY  0:24:29 [axi_lite_alu_prove] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:29 [axi_lite_alu_prove] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)\nSBY  0:24:29 [axi_lite_alu_prove] summary: engine_0 (abc pdr) returned PASS\nSBY  0:24:29 [axi_lite_alu_prove] summary: engine_0 did not produce any traces\nSBY  0:24:29 [axi_lite_alu_prove] DONE (PASS, rc=0)",
+     "task_status": {
+      "bmc": "PASS",
+      "cover": "PASS",
+      "prove": "PASS"
+     },
+     "vacuous_detected": false,
+     "witnesses": []
+    }
+   ],
+   "formal_properties_ir": [
+    {
+     "description": "valid_o must be 0 immediately after reset",
+     "expected": "1'b0",
+     "id": "P_RST_VALID_LOW",
+     "kind": "RESET_VALUE",
+     "signal": "valid_o"
+    },
+    {
+     "description": "result_o must be 0 immediately after reset",
+     "expected": "32'd0",
+     "id": "P_RST_RESULT_ZERO",
+     "kind": "RESET_VALUE",
+     "signal": "result_o"
+    },
+    {
+     "condition": "valid_o",
+     "description": "zero_o must match (result_o == 0) whenever valid_o is asserted",
+     "expression": "(zero_o == (result_o == 32'd0))",
+     "id": "P_ZERO_FLAG_CONSISTENT",
+     "kind": "INVARIANT"
+    },
+    {
+     "description": "Prove non-vacuous reachability of a non-zero valid ALU result",
+     "expression": "valid_o && (result_o != 32'd0)",
+     "id": "C_REACH_VALID_OUT",
+     "kind": "COVER_REACHABILITY"
+    }
+   ],
+   "guardrail_history": [
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    },
+    {
+     "passed": true,
+     "violations": []
+    }
+   ],
+   "lec_passed": true,
+   "lec_report": {
+    "cell_count": 616,
+    "elapsed_sec": 0.622,
+    "log": "ll $abc$1767$blif$1767$581_gate ($_NOR_): \\alu_comb_gate [31] -> \\alu_comb [31]\nChanging input B of cell $procmux$14_gold ($mux): \\alu_comb_gold -> \\alu_comb\nChanging input A of cell $procmux$14_gold ($mux): \\result_o_gold -> \\result_o\nChanging input A of cell $procmux$12_gold ($mux): \\zero_o_gold -> \\zero_o\nChanging input A of cell $axi_lite_alu.sv:39$eq$11_gold ($logic_not): \\alu_comb_gold -> \\alu_comb\n\n13. Executing HIERARCHY pass (managing design hierarchy).\n\n13.1. Analyzing design hierarchy..\nTop module:  \\equiv\n\n13.2. Analyzing design hierarchy..\nTop module:  \\equiv\nRemoving unused module `\\gate'.\nRemoving unused module `\\gold'.\nRemoved 2 unused modules.\n\n14. Executing EQUIV_SIMPLE pass.\nFound 67 unproven $equiv cells (5 groups) in equiv:\n  Trying to prove $equiv for \\ready_o:\nezsat\n    success!\n  Trying to prove $equiv for \\valid_o:\nezsat\n    success!\n Grouping SAT models for \\result_o:\n  Trying to prove $equiv for \\result_o [0]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [1]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [2]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [3]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [4]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [5]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [6]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [7]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [8]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [9]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [10]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [11]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [12]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [13]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [14]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [15]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [16]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [17]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [18]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [19]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [20]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [21]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [22]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [23]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [24]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [25]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [26]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [27]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [28]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [29]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [30]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\result_o [31]:\nezsat\nezsat\n failed.\n  Trying to prove $equiv for \\zero_o:\nezsat\nezsat\n failed.\n Grouping SAT models for \\alu_comb:\n  Trying to prove $equiv for \\alu_comb [0]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [1]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [2]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [3]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [4]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [5]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [6]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [7]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [8]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [9]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [10]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [11]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [12]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [13]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [14]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [15]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [16]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [17]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [18]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [19]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [20]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [21]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [22]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [23]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [24]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [25]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [26]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [27]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [28]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [29]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [30]:\nezsat\n    success!\n  Trying to prove $equiv for \\alu_comb [31]:\nezsat\n    success!\nProved 34 previously unproven $equiv cells.\n\n15. Executing EQUIV_INDUCT pass.\nFound 33 unproven $equiv cells in module equiv:\n  Undef modelling: force def on 68 initial reg values and 70 inputs.\n  Proving existence of base case for step 1. (46936 clauses over 17707 variables)\n  Proving induction step 1. (99335 clauses over 37257 variables)\n  Proof for induction step holds. Entire workset of 33 cells proven!\nProved 33 previously unproven $equiv cells.\n\n16. Executing EQUIV_STATUS pass.\nFound 67 $equiv cells in equiv:\n  Of those cells 67 are proven and 0 are unproven.\n  Equivalence successfully proven!\n\nEnd of script. Logfile hash: 4cfb9c2e7a, time: 0.53s, user: 0.36s, system: 0.01s, MEM: 48.75 MB peak\nYosys 0.71+59 (git sha1 d9358f38c, Release, Clang /usr/bin/clang++ 21.1.8)\nTime spent: 49% 1x equiv_simple (0 sec), 23% 1x equiv_induct (0 sec), ...\n",
+    "mode": "wsl",
+    "passed": true
+   },
+   "pareto_front": [
+    {
+     "area_um2": 8682.08,
+     "cached": false,
+     "cell_count": 1162,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 5.580848385830046,
+      "max_ss_100C_1v60": 1.128559500017708,
+      "max_tt_025C_1v80": 4.327749836547411,
+      "min_ff_n40C_1v95": 5.693213173151831,
+      "min_ss_100C_1v60": 1.2845049831806759,
+      "min_tt_025C_1v80": 4.5006617484525435,
+      "nom_ff_n40C_1v95": 5.6582948816829735,
+      "nom_ss_100C_1v60": 1.209693712773527,
+      "nom_tt_025C_1v80": 4.44318372448527
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 14603.8,
+      "hold_ws_ns": 0.10630224779090591,
+      "instance_area_um2": 10792.9,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 65,
+      "GRT_ADJUSTMENT": 0.2,
+      "PL_TARGET_DENSITY_PCT": 75,
+      "SYNTH_STRATEGY": "AREA 3"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": 4.2546,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_07",
+     "runtime_sec": 101.2,
+     "tns_ns": 0.0,
+     "total_power_mw": 0.9307213476859033,
+     "wns_ns": 1.128559500017708
+    },
+    {
+     "area_um2": 10540.1,
+     "cached": false,
+     "cell_count": 1241,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 5.634652903749545,
+      "max_ss_100C_1v60": -1.496877331121473,
+      "max_tt_025C_1v80": 3.5451553807126945,
+      "min_ff_n40C_1v95": 5.804578759723195,
+      "min_ss_100C_1v60": -1.0021610491785515,
+      "min_tt_025C_1v80": 3.819944468863184,
+      "nom_ff_n40C_1v95": 5.72375496533384,
+      "nom_ss_100C_1v60": -1.2454340133930648,
+      "nom_tt_025C_1v80": 3.6849733196746293
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 21888.6,
+      "hold_ws_ns": 0.10952705719058722,
+      "instance_area_um2": 17176.5,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_09\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_09\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 11.5,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 58,
+      "SYNTH_STRATEGY": "DELAY 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -16.5131,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_09",
+     "runtime_sec": 136.68,
+     "tns_ns": -8.988129606107293,
+     "total_power_mw": 0.8933423669077456,
+     "wns_ns": -1.496877331121473
+    },
+    {
+     "area_um2": 8036.46,
+     "cached": false,
+     "cell_count": 896,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.7549068250851345,
+      "max_ss_100C_1v60": -1.5881207909362278,
+      "max_tt_025C_1v80": 2.9552205963252285,
+      "min_ff_n40C_1v95": 4.809439205240164,
+      "min_ss_100C_1v60": -1.4313706181022536,
+      "min_tt_025C_1v80": 3.032771453145423,
+      "nom_ff_n40C_1v95": 4.781479347797245,
+      "nom_ss_100C_1v60": -1.515312362922147,
+      "nom_tt_025C_1v80": 2.9912033696602016
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 15766.7,
+      "hold_ws_ns": 0.39518661683837564,
+      "instance_area_um2": 11861.4,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_01\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_01\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 60,
+      "SYNTH_STRATEGY": "AREA 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -16.9744,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_01",
+     "runtime_sec": 101.52,
+     "tns_ns": -8.3480380526732,
+     "total_power_mw": 0.9249694412574172,
+     "wns_ns": -1.5881207909362278
+    },
+    {
+     "area_um2": 7933.86,
+     "cached": false,
+     "cell_count": 848,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.304777101072154,
+      "max_ss_100C_1v60": -3.244268057139628,
+      "max_tt_025C_1v80": 2.1692293020282998,
+      "min_ff_n40C_1v95": 4.34703352285211,
+      "min_ss_100C_1v60": -3.1410555046024853,
+      "min_tt_025C_1v80": 2.2304763112261647,
+      "nom_ff_n40C_1v95": 4.328113989709786,
+      "nom_ss_100C_1v60": -3.191448085026211,
+      "nom_tt_025C_1v80": 2.2008244738458647
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 13590.2,
+      "hold_ws_ns": 0.38757437245474424,
+      "instance_area_um2": 9819.42,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_02\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_02\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 52,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 65,
+      "SYNTH_STRATEGY": "AREA 2"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -37.9307,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_02",
+     "runtime_sec": 111.95,
+     "tns_ns": -23.650273520103198,
+     "total_power_mw": 0.9603998041711748,
+     "wns_ns": -3.244268057139628
+    }
+   ],
+   "ppa_episodes": [
+    {
+     "area_um2": 8036.46,
+     "cached": false,
+     "cell_count": 896,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.7549068250851345,
+      "max_ss_100C_1v60": -1.5881207909362278,
+      "max_tt_025C_1v80": 2.9552205963252285,
+      "min_ff_n40C_1v95": 4.809439205240164,
+      "min_ss_100C_1v60": -1.4313706181022536,
+      "min_tt_025C_1v80": 3.032771453145423,
+      "nom_ff_n40C_1v95": 4.781479347797245,
+      "nom_ss_100C_1v60": -1.515312362922147,
+      "nom_tt_025C_1v80": 2.9912033696602016
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 15766.7,
+      "hold_ws_ns": 0.39518661683837564,
+      "instance_area_um2": 11861.4,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_01\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_01\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 60,
+      "SYNTH_STRATEGY": "AREA 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -16.9744,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_01",
+     "runtime_sec": 101.52,
+     "tns_ns": -8.3480380526732,
+     "total_power_mw": 0.9249694412574172,
+     "wns_ns": -1.5881207909362278
+    },
+    {
+     "area_um2": 7933.86,
+     "cached": false,
+     "cell_count": 848,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.304777101072154,
+      "max_ss_100C_1v60": -3.244268057139628,
+      "max_tt_025C_1v80": 2.1692293020282998,
+      "min_ff_n40C_1v95": 4.34703352285211,
+      "min_ss_100C_1v60": -3.1410555046024853,
+      "min_tt_025C_1v80": 2.2304763112261647,
+      "nom_ff_n40C_1v95": 4.328113989709786,
+      "nom_ss_100C_1v60": -3.191448085026211,
+      "nom_tt_025C_1v80": 2.2008244738458647
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 13590.2,
+      "hold_ws_ns": 0.38757437245474424,
+      "instance_area_um2": 9819.42,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_02\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_02\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 52,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 65,
+      "SYNTH_STRATEGY": "AREA 2"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -37.9307,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_02",
+     "runtime_sec": 111.95,
+     "tns_ns": -23.650273520103198,
+     "total_power_mw": 0.9603998041711748,
+     "wns_ns": -3.244268057139628
+    },
+    {
+     "area_um2": 10846.7,
+     "cached": false,
+     "cell_count": 1250,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.827868463880947,
+      "max_ss_100C_1v60": -1.4397772270824705,
+      "max_tt_025C_1v80": 2.967833174330888,
+      "min_ff_n40C_1v95": 4.997171262675556,
+      "min_ss_100C_1v60": -0.9605330136483051,
+      "min_tt_025C_1v80": 3.232017855939455,
+      "nom_ff_n40C_1v95": 4.915561874451758,
+      "nom_ss_100C_1v60": -1.1863355078532183,
+      "nom_tt_025C_1v80": 3.104594003085754
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 21888.6,
+      "hold_ws_ns": 0.11313894585875142,
+      "instance_area_um2": 17176.5,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_03\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_03\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 58,
+      "SYNTH_STRATEGY": "DELAY 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -14.8884,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_03",
+     "runtime_sec": 128.56,
+     "tns_ns": -6.049701355549045,
+     "total_power_mw": 1.0469851549714804,
+     "wns_ns": -1.4397772270824705
+    },
+    {
+     "area_um2": 11419.7,
+     "cached": false,
+     "cell_count": 1427,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.464836182702303,
+      "max_ss_100C_1v60": -2.723184421705349,
+      "max_tt_025C_1v80": 2.301387590082111,
+      "min_ff_n40C_1v95": 4.569950769379027,
+      "min_ss_100C_1v60": -2.5767957386086398,
+      "min_tt_025C_1v80": 2.4627767189333776,
+      "nom_ff_n40C_1v95": 4.513437307202827,
+      "nom_ss_100C_1v60": -2.6265266260909748,
+      "nom_tt_025C_1v80": 2.3757378958763984
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 25670.6,
+      "hold_ws_ns": 0.10371082064468655,
+      "instance_area_um2": 20299.5,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_04\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_04\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 42,
+      "GRT_ADJUSTMENT": 0.35,
+      "PL_TARGET_DENSITY_PCT": 55,
+      "SYNTH_STRATEGY": "DELAY 4"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -31.0095,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_04",
+     "runtime_sec": 135.62,
+     "tns_ns": -14.603979772180008,
+     "total_power_mw": 1.1492352932691574,
+     "wns_ns": -2.723184421705349
+    },
+    {
+     "area_um2": 11250.8,
+     "cached": false,
+     "cell_count": 1373,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.36952397743183,
+      "max_ss_100C_1v60": -2.930007430722914,
+      "max_tt_025C_1v80": 2.241837001713851,
+      "min_ff_n40C_1v95": 4.481318110102819,
+      "min_ss_100C_1v60": -2.6696441368731834,
+      "min_tt_025C_1v80": 2.414059243056582,
+      "nom_ff_n40C_1v95": 4.424718494617472,
+      "nom_ss_100C_1v60": -2.796527533143211,
+      "nom_tt_025C_1v80": 2.3275124708580326
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 21962.7,
+      "hold_ws_ns": 0.10822770763696905,
+      "instance_area_um2": 17176.5,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_05\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_05\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 50,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 62,
+      "SYNTH_STRATEGY": "DELAY 4"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -32.6766,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_05",
+     "runtime_sec": 142.47,
+     "tns_ns": -13.541436799608846,
+     "total_power_mw": 1.1283830972388387,
+     "wns_ns": -2.930007430722914
+    },
+    {
+     "area_um2": 9733.08,
+     "cached": false,
+     "cell_count": 1196,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.777622876989839,
+      "max_ss_100C_1v60": -1.3352350714134327,
+      "max_tt_025C_1v80": 3.0530214775980857,
+      "min_ff_n40C_1v95": 4.931458048167915,
+      "min_ss_100C_1v60": -0.8806733369608021,
+      "min_tt_025C_1v80": 3.279633546455452,
+      "nom_ff_n40C_1v95": 4.856300388167287,
+      "nom_ss_100C_1v60": -1.109091516685709,
+      "nom_tt_025C_1v80": 3.1709298306832125
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 23778.2,
+      "hold_ws_ns": 0.04478029185321652,
+      "instance_area_um2": 18705.4,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_06\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_06\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 38,
+      "GRT_ADJUSTMENT": 0.35,
+      "PL_TARGET_DENSITY_PCT": 52,
+      "SYNTH_STRATEGY": "DELAY 2"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -15.7721,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_06",
+     "runtime_sec": 124.0,
+     "tns_ns": -11.45506566469776,
+     "total_power_mw": 0.9738258086144924,
+     "wns_ns": -1.3352350714134327
+    },
+    {
+     "area_um2": 8682.08,
+     "cached": false,
+     "cell_count": 1162,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 5.580848385830046,
+      "max_ss_100C_1v60": 1.128559500017708,
+      "max_tt_025C_1v80": 4.327749836547411,
+      "min_ff_n40C_1v95": 5.693213173151831,
+      "min_ss_100C_1v60": 1.2845049831806759,
+      "min_tt_025C_1v80": 4.5006617484525435,
+      "nom_ff_n40C_1v95": 5.6582948816829735,
+      "nom_ss_100C_1v60": 1.209693712773527,
+      "nom_tt_025C_1v80": 4.44318372448527
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 14603.8,
+      "hold_ws_ns": 0.10630224779090591,
+      "instance_area_um2": 10792.9,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_07\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 65,
+      "GRT_ADJUSTMENT": 0.2,
+      "PL_TARGET_DENSITY_PCT": 75,
+      "SYNTH_STRATEGY": "AREA 3"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": 4.2546,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_07",
+     "runtime_sec": 101.2,
+     "tns_ns": 0.0,
+     "total_power_mw": 0.9307213476859033,
+     "wns_ns": 1.128559500017708
+    },
+    {
+     "area_um2": 11203.2,
+     "cached": false,
+     "cell_count": 1379,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 4.40166004992229,
+      "max_ss_100C_1v60": -3.1825867286822462,
+      "max_tt_025C_1v80": 2.2584894593757725,
+      "min_ff_n40C_1v95": 4.514063917095648,
+      "min_ss_100C_1v60": -2.903136480053344,
+      "min_tt_025C_1v80": 2.440155702122269,
+      "nom_ff_n40C_1v95": 4.45630123193681,
+      "nom_ss_100C_1v60": -3.040108695278077,
+      "nom_tt_025C_1v80": 2.3469067353791115
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 22776.8,
+      "hold_ws_ns": 0.10503878619757374,
+      "instance_area_um2": 17902.2,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_08\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_08\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 10.0,
+      "FP_CORE_UTIL": 48,
+      "GRT_ADJUSTMENT": 0.32,
+      "PL_TARGET_DENSITY_PCT": 56,
+      "SYNTH_STRATEGY": "DELAY 4"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -36.2691,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_08",
+     "runtime_sec": 138.17,
+     "tns_ns": -16.41050008998358,
+     "total_power_mw": 1.13588385283947,
+     "wns_ns": -3.1825867286822462
+    },
+    {
+     "area_um2": 10540.1,
+     "cached": false,
+     "cell_count": 1241,
+     "corner_wns": {
+      "max_ff_n40C_1v95": 5.634652903749545,
+      "max_ss_100C_1v60": -1.496877331121473,
+      "max_tt_025C_1v80": 3.5451553807126945,
+      "min_ff_n40C_1v95": 5.804578759723195,
+      "min_ss_100C_1v60": -1.0021610491785515,
+      "min_tt_025C_1v80": 3.819944468863184,
+      "nom_ff_n40C_1v95": 5.72375496533384,
+      "nom_ss_100C_1v60": -1.2454340133930648,
+      "nom_tt_025C_1v80": 3.6849733196746293
+     },
+     "drc_violations": 0,
+     "extra": {
+      "die_area_um2": 21888.6,
+      "hold_ws_ns": 0.10952705719058722,
+      "instance_area_um2": 17176.5,
+      "render_png": "runs\\real_axi_pareto\\pnr_ep_09\\runs\\sf\\final\\render\\axi_lite_alu.png",
+      "timing_corner": "worst"
+     },
+     "gds_path": "runs\\real_axi_pareto\\pnr_ep_09\\runs\\sf\\final\\gds\\axi_lite_alu.gds",
+     "knobs": {
+      "CLOCK_PERIOD": 11.5,
+      "FP_CORE_UTIL": 45,
+      "GRT_ADJUSTMENT": 0.3,
+      "PL_TARGET_DENSITY_PCT": 58,
+      "SYNTH_STRATEGY": "DELAY 0"
+     },
+     "lvs_clean": true,
+     "mode": "wsl",
+     "reward": -16.5131,
+     "run_dir": "runs\\real_axi_pareto\\pnr_ep_09",
+     "runtime_sec": 136.68,
+     "tns_ns": -8.988129606107293,
+     "total_power_mw": 0.8933423669077456,
+     "wns_ns": -1.496877331121473
+    }
+   ],
+   "rtl_source": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb == 32'd0);\n            end\n        end\n    end\nendmodule",
+   "rtl_versions": [
+    {
+     "label": "initial",
+     "source": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb != 32'd0);\n            end\n        end\n    end\nendmodule",
+     "ts": 1795220668.359
+    },
+    {
+     "label": "formal-repair-1",
+     "source": "// Reference synthesizable SystemVerilog-2012 module for SiliconForge\nmodule axi_lite_alu (\n    input  logic        clk,\n    input  logic        rst_n,\n    input  logic        valid_i,\n    output logic        ready_o,\n    input  logic [2:0]  op_i,\n    input  logic [31:0] a_i,\n    input  logic [31:0] b_i,\n    output logic        valid_o,\n    output logic [31:0] result_o,\n    output logic        zero_o\n);\n    logic [31:0] alu_comb;\n\n    assign ready_o = 1'b1;\n\n    always_comb begin\n        alu_comb = 32'd0;\n        case (op_i)\n            3'd0:    alu_comb = a_i + b_i;\n            3'd1:    alu_comb = a_i - b_i;\n            3'd2:    alu_comb = a_i & b_i;\n            3'd3:    alu_comb = a_i | b_i;\n            3'd4:    alu_comb = a_i ^ b_i;\n            default: alu_comb = 32'd0;\n        endcase\n    end\n\n    always_ff @(posedge clk or negedge rst_n) begin\n        if (!rst_n) begin\n            valid_o  <= 1'b0;\n            result_o <= 32'd0;\n            zero_o   <= 1'b1;\n        end else begin\n            valid_o <= valid_i & ready_o;\n            if (valid_i & ready_o) begin\n                result_o <= alu_comb;\n                zero_o   <= (alu_comb == 32'd0);\n            end\n        end\n    end\nendmodule",
+     "ts": 1795220674.628
+    }
+   ],
+   "run_id": "real_axi_pareto",
+   "signoff_checks": [
+    {
+     "detail": "WNS 1.129 ns @ 10.00 ns clock",
+     "name": "Timing (WNS >= 0.00 ns @ 10.00 ns clock)",
+     "passed": true
+    },
+    {
+     "detail": "0 violation(s)",
+     "name": "DRC clean",
+     "passed": true
+    },
+    {
+     "detail": "clean",
+     "name": "LVS clean",
+     "passed": true
+    },
+    {
+     "detail": "passed",
+     "name": "RTL == netlist (LEC)",
+     "passed": true
+    },
+    {
+     "detail": "BMC + prove + cover",
+     "name": "Formal proofs non-vacuous",
+     "passed": true
+    },
+    {
+     "detail": "ok",
+     "name": "Flow variables on PDK allowlist",
+     "passed": true
+    },
+    {
+     "detail": "8682 um² (max 25000.0)",
+     "name": "Area budget",
+     "passed": true
+    },
+    {
+     "detail": "0.931 mW (max 5.0)",
+     "name": "Power budget",
+     "passed": true
+    }
+   ],
+   "signoff_passed": true,
+   "sim_report": {
+    "log": "- V e r i l a t i o n   R e p o r t: Verilator 5.055 devel rev v5.054-340-g53a72711e (mod)\n- Verilator: Built from 0.034 MB sources in 3 modules, into 0.025 MB in 3 C++ files needing 0.000 MB\n- Verilator: Walltime 0.078 s (elab=0.020, cvt=0.017, bld=0.000); cpu 0.011 s on 1 threads; allocated 20.062 MB\n\n%Warning-EOFNEWLINE: axi_lite_alu.sv:43:10: Missing newline at end of file (POSIX 3.206).\n                                          : ... Suggest add newline.\n   43 | endmodule\n      |          ^\n                     ... For warning description see https://verilator.org/warn/EOFNEWLINE?v=5.055\n                     ... Use \"/* verilator lint_off EOFNEWLINE */\" and lint_on around source to disable this message.",
+    "mode": "wsl",
+    "passed": true,
+    "skipped": false,
+    "summary": "Verilator lint: 0 error(s), 1 warning(s)"
+   },
+   "spec_text": "# Hardware Specification: `axi_lite_alu` (32-bit Registered Valid/Ready ALU)\n\n## Target Node & PPA Budget\n- **PDK**: SkyWater 130nm (`sky130A`, `sky130_fd_sc_hd`)\n- **Target Clock**: 100 MHz (`CLOCK_PERIOD = 10.0 ns`, `WNS >= 0.0 ns`)\n- **Max Core Area**: 25,000 um²\n- **Max Total Power**: 5.0 mW\n\n## Interface\n- `clk` (input, 1-bit): Rising-edge system clock.\n- `rst_n` (input, 1-bit): Active-low asynchronous reset.\n- `valid_i` (input, 1-bit) / `ready_o` (output, 1-bit): Input request handshake.\n- `op_i` (input, 3-bit): `0=ADD`, `1=SUB`, `2=AND`, `3=OR`, `4=XOR`, default `0`.\n- `a_i`, `b_i` (input, 32-bit): Unsigned 32-bit operands.\n- `valid_o` (output, 1-bit): Registered output valid (1-cycle latency).\n- `result_o` (output, 32-bit): Registered 32-bit ALU result.\n- `zero_o` (output, 1-bit): Asserted iff `result_o == 32'd0`.\n\n## Formal & Functional Requirements\n1. Immediately after reset (`!rst_n`), `valid_o == 0` and `result_o == 0`.\n2. Whenever `valid_o == 1`, `zero_o == (result_o == 32'd0)` must hold mathematically across all reachable states (k-induction).\n3. Non-vacuous reachability (`cover`): A cycle with `valid_o == 1 && result_o != 32'd0` must be reachable from reset.\n",
+   "stage": "SIGNOFF",
+   "sva_source": "`ifdef FORMAL\n    reg f_past_valid;\n    initial f_past_valid = 1'b0;\n    always @(posedge clk) f_past_valid <= 1'b1;\n\n    // Reset is asserted on cycle 0 so k-induction starts from a valid state\n    always @(*) if (!f_past_valid) assume(!rst_n);\n\n    always @(posedge clk) begin\n        // P_RST_VALID_LOW: valid_o must be 0 immediately after reset\n        if (f_past_valid && $past(!rst_n)) begin\n            P_RST_VALID_LOW: assert(valid_o == 1'b0);\n        end\n        // P_RST_RESULT_ZERO: result_o must be 0 immediately after reset\n        if (f_past_valid && $past(!rst_n)) begin\n            P_RST_RESULT_ZERO: assert(result_o == 32'd0);\n        end\n        // P_ZERO_FLAG_CONSISTENT: zero_o must match (result_o == 0) whenever valid_o is asserted\n        if (f_past_valid && rst_n && (valid_o)) begin\n            P_ZERO_FLAG_CONSISTENT: assert((zero_o == (result_o == 32'd0)));\n        end\n        // C_REACH_VALID_OUT: Prove non-vacuous reachability of a non-zero valid ALU result\n        if (f_past_valid && rst_n) begin\n            C_REACH_VALID_OUT: cover(valid_o && (result_o != 32'd0));\n        end\n    end\n`endif"
+  }
+ },
+ "run_id": "demo-axi_lite_alu"
+}

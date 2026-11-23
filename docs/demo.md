@@ -11,7 +11,7 @@ Nothing in the demo is produced by demo-only code. Each part comes from somethin
 | Part | Where it comes from |
 | :--- | :--- |
 | Evals, AgentBench, Insights, Models, Knowledge pages | The committed files in `benchmarks/results/`, served through the real `/api/benchmarks`, `/api/skills` and `/api/estimate` route code. The agent-insights panel is the real `telemetry.aggregate` over the AgentBench runs of our own loop. |
-| Runs | Two finished runs on real tools (WSL: Yosys, SymbiYosys, OpenROAD; sky130A), stored sanitised in `benchmarks/demo/runs/`. They go through the real run store and routes, so they carry their provenance stamp, events, formal retry, equivalence check, PPA episodes and layout. |
+| Runs | Two finished runs on real tools (WSL: Yosys, SymbiYosys, OpenROAD; sky130A), stored sanitised in `benchmarks/demo/recorded/`. They go through the real run store and routes, so they carry their provenance stamp, events, formal retry, equivalence check, PPA episodes and layout. |
 | Agent replay | A recording made by `services/orchestrator/demo/record_trace.py`. The agent session, tool box, permission and approval code, loop guard, transcript compaction and the static linter are the real ones. **The language model is a script of fixed replies**: no model is called, and nothing about model quality is shown. The page says so. |
 | Approve / Request revision | Both outcomes were recorded from the real agent (a decline ends the turn, so the revision is a second message). The visitor chooses which recording to follow; nothing is generated. |
 | Machine details (GPU, installed tools, local models, keys) | Replaced by neutral values. The bundle is identical on every machine, and a test fails if a path or user name gets into it. |
@@ -38,7 +38,7 @@ cannot 404 on a static host. `vercel.json` and `public/_redirects` are there for
 
 - **New result file:** commit it under `benchmarks/results/` and re-export.
 - **New recorded run:** make a real run, then `python scripts/export_demo_bundle.py --capture runs/<run_id> <name>` (sanitises it into
-  `benchmarks/demo/runs/<name>.json`; refuses if local details remain), then re-export. Layout images come from `assets/layout/<module>.png`.
+  `benchmarks/demo/recorded/<name>.json`; refuses if local details remain), then re-export. Layout images come from `assets/layout/<module>.png`.
 - **A different recording:** edit the scripted replies in `record_trace.py`, which also holds the notes on what is real.
 
 ## The engineering note

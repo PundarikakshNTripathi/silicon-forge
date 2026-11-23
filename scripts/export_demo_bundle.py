@@ -4,7 +4,7 @@
 
     python scripts/export_demo_bundle.py                 # rebuild services/dashboard/public/demo-data and demo-assets
     python scripts/export_demo_bundle.py --check         # rebuild into a temp folder and fail if the committed bundle differs
-    python scripts/export_demo_bundle.py --capture <run_dir> <name>   # sanitise a finished real run into benchmarks/demo/runs/
+    python scripts/export_demo_bundle.py --capture <run_dir> <name>   # sanitise a finished real run into benchmarks/demo/recorded/
 
 The demo is a static copy of the dashboard fed by these files; see docs/demo.md. Nothing here calls a model.
 """
@@ -36,7 +36,7 @@ def _same(a: Path, b: Path) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="rebuild into a temp folder and compare with the committed bundle")
-    ap.add_argument("--capture", nargs=2, metavar=("RUN_DIR", "NAME"), help="sanitise a finished run into benchmarks/demo/runs/")
+    ap.add_argument("--capture", nargs=2, metavar=("RUN_DIR", "NAME"), help="sanitise a finished run into benchmarks/demo/recorded/")
     args = ap.parse_args()
     if args.capture:
         dest = bundle.capture_run(Path(args.capture[0]), args.capture[1])

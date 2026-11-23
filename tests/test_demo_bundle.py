@@ -40,7 +40,7 @@ def test_leftovers_flags_what_the_scrubber_misses():
 
 def test_committed_demo_runs_carry_no_local_details():
     files = sorted(bundle.DEMO_RUNS.glob("*.json"))
-    assert files, "no recorded runs under benchmarks/demo/runs/"
+    assert files, "no recorded runs under benchmarks/demo/recorded/"
     for f in files:
         assert bundle.leftovers(f.read_text(encoding="utf-8")) == [], f.name
         report = json.loads(f.read_text(encoding="utf-8"))["report"]
