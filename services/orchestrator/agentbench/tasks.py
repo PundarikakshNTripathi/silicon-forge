@@ -471,3 +471,8 @@ BY_ID = {t.id: t for t in SUITE}
 from services.orchestrator.agentbench.tasks_holdout import HOLDOUT  # noqa: E402
 
 BY_ID.update({t.id: t for t in HOLDOUT})
+
+# A second suite, written and frozen before the loop was changed (see tasks_heldout.py).
+from services.orchestrator.agentbench.tasks_heldout import HELDOUT  # noqa: E402
+
+BY_ID.update({t.id: t for t in HELDOUT})

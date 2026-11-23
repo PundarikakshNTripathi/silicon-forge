@@ -28,10 +28,12 @@ class Script(BaseLLMProvider):
     def __init__(self, replies):
         self.replies = list(replies)
         self.prompts: list[str] = []
+        self.system_prompts: list[str] = []
         self.schemas: list[dict | None] = []
 
     def generate(self, model, system_prompt, user_prompt, temperature=0.1, json_schema=None):
         self.prompts.append(user_prompt)
+        self.system_prompts.append(system_prompt)
         self.schemas.append(json_schema)
         reply = self.replies.pop(0)
         return LLMResponse(content=reply if isinstance(reply, str) else json.dumps(reply), prompt_tokens=50,
@@ -288,3 +290,24 @@ def test_interrupt_stops_the_turn_before_the_next_model_call(env):
     # the flag does not leak into the next turn
     s._run_tool = original  # type: ignore[method-assign]
     assert s.send("again").stopped == "done"
+
+
+def test_a_vague_first_request_is_flagged_to_the_model_once_and_a_concrete_one_is_not(env):
+    ws, make = env
+    s, prov, _ = make([act("Which do you mean: clock speed, latency or area?")])
+    s.send("Make the design faster.")
+    assert "underspecified" in prov.prompts[0]  # the reminder reached the model
+    s2, prov2, _ = make([act("Done.")])
+    s2.send("Add a comment to rtl/cnt.sv saying it is reviewed.")
+    assert "underspecified" not in prov2.prompts[0]
+    s3, prov3, _ = make([act("ok"), act("ok")])
+    s3.send("List the files.")
+    s3.send("Make it better.")  # a later turn: the user may be answering a question, so it is not held again
+    assert "underspecified" not in prov3.prompts[1]
+
+
+def test_ask_first_can_be_turned_off_to_reproduce_the_released_loop(env):
+    ws, make = env
+    s, prov, _ = make([act("ok")], ask_first=False)
+    s.send("Make the design faster.")
+    assert "underspecified" not in prov.prompts[0] and "ambiguous" not in prov.system_prompts[0]

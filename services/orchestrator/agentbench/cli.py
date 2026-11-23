@@ -16,6 +16,7 @@ from services.orchestrator.agentbench.arms.base import Arm
 from services.orchestrator.paths import data_root
 
 ARMS = ("custom", "langgraph", "pydantic_ai")
+OPTIONAL_ARMS = ("custom_prev",)  # the loop before the ask-first check; not in the default run
 VERSIONED = ("langgraph", "langchain", "langchain-openai", "langchain-core", "pydantic-ai-slim", "pydantic", "openai", "httpx")
 
 
@@ -26,6 +27,13 @@ def build_arm(name: str) -> Arm:
     if flag and not guarded:
         raise SystemExit(f"unknown arm option {flag!r} in {name!r}; the only one is +guards")
     try:
+        if base == "custom_prev":
+            from services.orchestrator.agentbench.arms.custom import CustomArm
+
+            arm0 = CustomArm()
+            arm0.ask_first = False
+            arm0.name = name
+            return arm0
         if base == "custom":
             from services.orchestrator.agentbench.arms.custom import CustomArm
 
@@ -97,7 +105,7 @@ def _runner(backend: str) -> Any:
 
 def cmd_agentbench(args: argparse.Namespace) -> int:
     if args.action == "list":
-        for t in (*tasks.SUITE, *tasks.HOLDOUT):
+        for t in (*tasks.SUITE, *tasks.HOLDOUT, *tasks.HELDOUT):
             print(f"{t.id:<22} {t.category:<14} {'EDA ' if t.needs_eda else '    '}{t.title}")
         return 0
     if args.action == "report":

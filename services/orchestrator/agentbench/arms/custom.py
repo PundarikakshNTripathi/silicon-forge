@@ -34,11 +34,13 @@ def bench_router(base_url: str, model: str, max_tokens: int) -> ModelRouter:
 class CustomArm:
     name = "custom"
     guarded = False  # the session applies its own guards; the toolbox must not apply them a second time
+    ask_first = True  # `custom_prev` sets this False: the loop as released in v0.6.0, for a before/after on the same tasks
 
     def run(self, ctx: ArmContext) -> ArmResult:
         router = bench_router(ctx.base_url, ctx.model, ctx.max_tokens)
         own = Tracer()
-        session = AgentSession(router, ctx.tools.ws, ctx.tools, mode="auto", max_steps=ctx.max_steps, tracer=own)
+        session = AgentSession(router, ctx.tools.ws, ctx.tools, mode="auto", max_steps=ctx.max_steps, tracer=own,
+                               ask_first=self.ask_first)
         res = session.send(ctx.task.prompt)
         llm = sorted((s for s in own.spans if s.kind == "llm"), key=lambda s: s.start)
         invalid = [i for i, s in enumerate(llm) if s.status == "error" and s.error == INVALID_ACTION]
