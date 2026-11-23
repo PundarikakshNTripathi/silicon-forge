@@ -104,6 +104,40 @@ The frameworks were not re-run, one run per configuration, one model. What the t
 gone on tasks of those kinds, at the cost of 6% more tokens and a 100-token larger first prompt. A fair re-test needs tasks written blind
 by someone who has not read the failures.
 
+## A second, held-out comparison (tasks frozen before the change)
+
+The earlier comparison's tasks were public, so the 92% after the fixes is weak evidence. This one was set up to avoid that. 13 new tasks
+(`agentbench/tasks_heldout.py`, ids `h2_*`) were written and committed **before** the change under test and before any run of it; the change
+was designed from the earlier failures (not from these tasks). The change: `agent/clarify.py`, a mechanical check that a short, vague
+*first* request ("Make the design faster.") gets one clarifying question and no edit, the way the session already checks a requested answer
+format, plus the matching sentence in the system prompt. Four arms ran interleaved on the same Qwen3.5-9B, tools, sampling and budget, 5 trials
+each (`benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-heldout-ask-2026-11-23.json`): `custom` (with the change), `custom_prev` (the loop as released in v0.6.0), LangGraph and Pydantic AI.
+
+| Arm | Task success (95% interval) | Runs solved | Tokens per solved task | Median time | First prompt |
+| :--- | :--- | :--- | ---: | ---: | ---: |
+| `custom` (with ask-first) | **92.3%** (76.9 to 100) | 60/65 | **4,835** | 4.0 s | 626 |
+| `custom_prev` (v0.6.0) | 69.2% (46.2 to 92.3) | 45/65 | 11,240 | 7.1 s | 572 |
+| LangGraph | 76.9% (53.8 to 100) | 50/65 | 12,284 | 7.2 s | 958 |
+| Pydantic AI | 75.4% (52.3 to 96.9) | 49/65 | 12,297 | 7.2 s | 958 |
+
+Paired over the 13 tasks (task-level bootstrap): `custom` minus `custom_prev` **+23.1 points (3.1 to 46.2), separated from zero**; `custom` minus
+LangGraph +15.4 (-15.4 to 46.2) and minus Pydantic AI +16.9 (-12.3 to 46.2): **a lead in the point estimate that these data do not separate
+from zero.** Zero safety violations in every arm.
+
+Where the difference comes from, so it is not over-read:
+
+- **All of the lead is the three vague-request tasks.** `custom` asked a question and changed nothing in 15 of 15 runs; `custom_prev` 1 of 15,
+  LangGraph and Pydantic AI 0 of 15, although both frameworks' prompt tells them to ask. The short concrete request that must *not* be met with
+  a question (`h2_short_specific`) passed 5 of 5 in every arm, so the check did not buy its win by over-asking.
+- **On the other ten tasks the frameworks are as good or better.** `custom` failed `h2_reset_polarity` in 5 of 5 runs where both frameworks solved
+  it: the answer was right but the requested final line (`ANSWER: HIGH` or `ANSWER: LOW`) was missing, because the format check only recognises
+  `ANSWER: <value>` and not that wording (content-correct 100% against strict 92.3%). That is a bug in `required_line_prefix`. It is recorded here and
+  not fixed in this change, so that this suite's result stays untouched; the fix needs a new suite to be measured on.
+- **Cost, which is not a judgement call:** 4,835 tokens per solved task against about 12,300 for both frameworks (60% fewer), and a median
+  4.0 s against 7.2 s. Part of that is fewer steps from asking instead of exploring, so it is not a clean "framework overhead" figure.
+- 13 tasks and one model: the intervals are wide, and a 3-task lead is a lead on one capability, not a general ranking. The tasks were written
+  by the same person who built the change, so they are held out from the change's design, not independent of its author.
+
 ## What this does and does not show
 
 - **It is one 9B model on 13 tasks.** A framework with a stronger model, or a different task mix, could rank differently. With

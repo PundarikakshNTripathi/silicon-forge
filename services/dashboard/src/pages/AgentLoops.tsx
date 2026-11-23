@@ -20,7 +20,7 @@ export interface AgentBenchDoc {
 }
 interface BenchFile { file: string; data: Record<string, any> }
 
-const NAMES: Record<string, string> = { custom: "SiliconForge loop", langgraph: "LangGraph", pydantic_ai: "Pydantic AI" };
+const NAMES: Record<string, string> = { custom: "SiliconForge loop", custom_prev: "SiliconForge loop (v0.6.0)", langgraph: "LangGraph", pydantic_ai: "Pydantic AI" };
 const name = (arm: string) => {
   const [base, flag] = arm.split("+");
   return (NAMES[base] ?? base) + (flag ? " + our guards" : "");

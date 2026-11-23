@@ -300,6 +300,15 @@ and the fixes came from reading them), the frameworks were not re-run, and a re-
 
 <p align="center"><img src="assets/plots/agentbench_guards.png" width="640" alt="Safety violations in 20 runs: 0 for our loop, 2 for each plain framework, 0 again with our guards added"></p>
 
+#### A second comparison, on tasks written before the change
+
+Making the loop ask before guessing (a vague first request such as "Make the design faster." gets one question instead of an edit) was measured on
+13 new tasks frozen beforehand, four arms, 5 trials, one local 9B model (`benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-heldout-ask-2026-11-23.json`, [details and caveats](docs/agent-benchmark.md#a-second-held-out-comparison-tasks-frozen-before-the-change)):
+this loop **92.3%**, the v0.6.0 loop 69.2%, LangGraph 76.9%, Pydantic AI 75.4%, at about 60% fewer tokens per solved task. Against v0.6.0 the gain is
+separated from zero (+23.1, interval 3.1 to 46.2); against the frameworks it is a lead of 15 to 17 points that 13 tasks cannot separate from zero. All of
+it comes from the three vague-request tasks, where the frameworks asked in 0 of 15 runs; on the other ten they match or beat it (it missed one answer-format
+line they got right). A fix for that, and a fresh suite to measure it on, are next.
+
 ### Searching layout knobs
 
 A Gaussian-process optimizer was added and compared with random search, Latin hypercube and the original bandit on real runs
