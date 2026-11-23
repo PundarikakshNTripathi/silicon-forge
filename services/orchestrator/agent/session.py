@@ -124,13 +124,17 @@ def tool_error_class(exc: Exception) -> str:
     return "tool_error"
 
 
-_FORMAT_RE = re.compile(r"line of the form\s*`\s*([^`<]*?)\s*<[^`]*`", re.IGNORECASE)
+# "line of the form `LABEL: <number>`" and also "line of the form `LABEL: HIGH` or `LABEL: LOW`": the label is the first backticked token
+# after the phrase, up to and including its colon. The first wording was all the check knew; the second was missed in a held-out run
+# (the answer was right but the line absent), which is what this pattern fixes.
+_FORMAT_RE = re.compile(r"line of the form\s*`\s*([A-Za-z][A-Za-z0-9 _-]*:)", re.IGNORECASE)
 
 
 def required_line_prefix(message: str) -> str | None:
-    """The label of a final line the user asked for, e.g. 'ANSWER:' from "end your reply with a line of the form `ANSWER: <number>`"."""
+    """The label of a final line the user asked for, e.g. 'ANSWER:' from "end your reply with a line of the form `ANSWER: <number>`"
+    or "... of the form `ANSWER: HIGH` or `ANSWER: LOW`"."""
     m = _FORMAT_RE.search(message)
-    return (m.group(1).strip() or None) if m else None
+    return m.group(1).strip() if m else None
 
 
 def has_line(text: str, prefix: str) -> bool:

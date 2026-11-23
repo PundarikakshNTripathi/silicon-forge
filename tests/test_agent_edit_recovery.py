@@ -104,3 +104,14 @@ def test_a_reply_without_the_requested_line_gets_one_chance_to_add_it(tmp_path):
     # no requested format, no extra call
     s3, prov3 = session([act("12.")])
     assert s3.send("How wide is it?").reply == "12." and len(prov3.prompts) == 1
+
+
+def test_the_format_check_also_knows_a_choice_between_two_answer_lines():
+    from services.orchestrator.agent.session import required_line_prefix
+
+    msg = "Is the reset active high or low? End your reply with a line of the form `ANSWER: HIGH` or `ANSWER: LOW`."
+    assert required_line_prefix(msg) == "ANSWER:"
+    assert required_line_prefix("End with a line of the form `ANSWER: <port name>`.") == "ANSWER:"
+    assert required_line_prefix("End with a line of the form `Final answer: YES` or `Final answer: NO`") == "Final answer:"
+    assert required_line_prefix("Reply with a line of the form `<value>`") is None  # no label, nothing to check
+    assert required_line_prefix("Is it high or low? Answer in a sentence.") is None
