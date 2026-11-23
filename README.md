@@ -65,6 +65,15 @@ Free-form specs need a model. The bundled-examples profile fails on an unknown s
 
 ## Quick start
 
+**No terminal: the desktop app.** Download `SiliconForge.Setup.<version>.exe` (installer) or `SiliconForge.<version>.exe` (portable, nothing to install)
+from the [Releases page](https://github.com/PundarikakshNTripathi/silicon-forge/releases) and double-click it. A window opens with the same cockpit
+described below; the app starts its own backend on your machine, so there is no command to run. Windows only for now, and the files are not code-signed, so
+SmartScreen will say "unknown publisher" (More info, Run anyway). It works straight away with the bundled examples on the simulated backend; real
+results need the open EDA tools once. What each file is, and how updates work: [docs/releases.md](docs/releases.md). To look first, a read-only copy with
+recorded results is [in your browser](https://pundarikakshntripathi.github.io/silicon-forge/).
+
+**From the command line** (also how you get the cockpit on Linux and macOS):
+
 ```bash
 git clone https://github.com/PundarikakshNTripathi/silicon-forge && cd silicon-forge
 uv venv --python 3.12 .venv && source .venv/bin/activate            # Windows: .venv\Scripts\activate
@@ -344,6 +353,20 @@ an exception. [docs/ppa-search.md](docs/ppa-search.md)
 - The equivalence check compares RTL with Yosys' generic synthesis result, not with the technology-mapped netlist.
 - Open tools. No claim is made about parity with commercial signoff tools.
 - Local runs use one 8 GB GPU; latency numbers are for one request at a time.
+- The desktop installers are Windows only and unsigned. Nothing here has been taped out; real results are from open tools on small blocks.
+
+**If there were capital and compute** (future work, not a promise; prices are estimates from the research in [docs/roadmap.md](docs/roadmap.md)):
+
+- The audited, hidden-test comparison at scale: NotSoTiny and the corrected CVDP and RTLLM sets, with a plain coding agent given Yosys as the
+  baseline and a stop rule fixed in advance. Roughly $50 to $150 of API calls.
+- Rejection-sampling fine-tuning of an open 4B or 9B model on verified answers, which is where the published recipes find most of their gain: about
+  $50 to $200 of teacher tokens and $10 to $50 of GPU time.
+- A measured reinforcement-learning pilot (30 steps, a hidden second checker, mutation-checked tests), then a main run on one 24 to 48 GB GPU, only if
+  the supervised step moved the held-out score: about $5 to $15 for the pilot, $100 to $300 for a main run, three to five times that for debugging.
+- Memory that records which fix worked for which kind of failure, and search over prompts and tools, both judged on a sealed set the loop cannot read.
+- Larger designs: hierarchy, SRAM macros, netlist-level clock-domain-crossing checks, more PDKs.
+- One design in silicon on a Tiny Tapeout shuttle, which only makes sense with an outside collaborator and a public proof and equivalence record first.
+- Outside users and case studies before anything is hosted.
 
 ## Architecture
 
