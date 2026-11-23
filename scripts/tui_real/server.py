@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Host the real `siliconforge chat` TUI in a real pseudo-terminal and serve it to a browser-hosted terminal (xterm.js) over a websocket.
 
 Nothing is scripted here except the keystrokes a driver sends. The program under the pty is the actual app, talking to a real local model and real tools.

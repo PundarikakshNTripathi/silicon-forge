@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 // Drive the browser-hosted terminal with real keystrokes and capture frames. Usage: node rec.cjs PORT OUT_DIR "<request text>"
 const { chromium } = require("playwright-core");
 const fs = require("fs");

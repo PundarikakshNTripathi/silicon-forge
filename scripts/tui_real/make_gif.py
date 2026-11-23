@@ -1,5 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path

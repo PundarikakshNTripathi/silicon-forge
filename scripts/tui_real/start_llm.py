@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Start a private llama-server for the recording and keep it up until a stop file appears. Refuses if the GPU is busy (the repo's own guard)."""
 import os
 import sys
