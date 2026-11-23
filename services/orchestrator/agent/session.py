@@ -137,6 +137,15 @@ def required_line_prefix(message: str) -> str | None:
     return m.group(1).strip() if m else None
 
 
+def move_inline_answer(text: str, prefix: str) -> str:
+    """If the requested label sits at the end of a sentence ("... no reset. ANSWER: NO") instead of starting its own line, put it on its own line.
+    Nothing is invented: the value is the model's own, and a reply that already has the line, or has no label at all, is returned unchanged."""
+    if has_line(text, prefix):
+        return text
+    m = re.search(r"(?<=\S)[ \t]+(" + re.escape(prefix) + r"[ \t]*\S[^\n]*)\s*$", text)
+    return text[: m.start()].rstrip() + "\n" + m.group(1).strip() if m else text
+
+
 def has_line(text: str, prefix: str) -> bool:
     return any(ln.strip().lstrip("*#> ").startswith(prefix) for ln in text.splitlines())
 
@@ -304,6 +313,8 @@ class AgentSession:
         if act["say"]:
             self._emit("assistant", act["say"])
         if act["tool"] is None:
+            if self._format_prefix:  # a label written inline at the end of a sentence is moved to its own line before it is checked
+                act["say"] = move_inline_answer(act["say"], self._format_prefix)
             if self._format_prefix and not self._format_asked and not has_line(act["say"], self._format_prefix):
                 # the user asked for a final line of a given form and the reply lacks it: ask once, instead of handing back a reply
                 # that is right but unusable by whatever reads it (small models often ignore a format inside a JSON envelope)
