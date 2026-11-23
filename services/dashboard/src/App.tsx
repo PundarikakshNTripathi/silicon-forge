@@ -18,8 +18,14 @@ import { CostPage } from "./pages/Insights";
 import { KnowledgePage, SystemPage } from "./pages/Admin";
 import WorkspacePage from "./pages/Workspace";
 import { Empty } from "./ui";
+import { DEMO } from "./demo/mode";
+import Overview from "./demo/Overview";
+import DemoAgent from "./demo/DemoAgent";
+import EngineeringNote from "./demo/EngineeringNote";
+import Tour from "./demo/Tour";
 
 const GROUPS = [
+  ...(DEMO ? [{ label: "Demo", items: [{ to: "/", label: "Overview", icon: BookOpen }, { to: "/note", label: "Engineering note", icon: Code }] }] : []),
   { label: "Work", items: [
     { to: "/new", label: "New run", icon: Play },
     { to: "/runs", label: "Runs", icon: ListChecks },
@@ -75,6 +81,7 @@ function Palette({ onClose }: { onClose: () => void }) {
 function Landing() {
   const runs = useQuery({ queryKey: ["runs"], queryFn: () => api<RunSummary[]>("/runs") });
   if (runs.isLoading) return <div className="page"><div className="skeleton" style={{ height: 120 }} /></div>;
+  if (DEMO) return <Overview />;
   return (runs.data?.length ?? 0) > 0 ? <Navigate to="/runs" replace /> : <NewRun />;
 }
 
@@ -94,7 +101,7 @@ export default function App() {
           <div className="group" key={g.label}>
             <div className="index-label">{g.label}</div>
             {g.items.map(({ to, label, icon: Icon }) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
+              <NavLink key={to} to={to} end={to === "/"} className={({ isActive }) => `nav ${isActive ? "active" : ""}`}><Icon size={17} /><span>{label}</span></NavLink>
             ))}
           </div>
         ))}
@@ -106,12 +113,14 @@ export default function App() {
         </div>
       </nav>
       <main className="main">
+        {DEMO && <Tour />}
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/new" element={<NewRun />} />
           <Route path="/runs" element={<Runs />} />
           <Route path="/runs/:id" element={<RunDetail />} />
-          <Route path="/workspace" element={<WorkspacePage />} />
+          <Route path="/workspace" element={DEMO ? <DemoAgent /> : <WorkspacePage />} />
+          {DEMO && <Route path="/note" element={<EngineeringNote />} />}
           <Route path="/models" element={<Models />} />
           <Route path="/cost" element={<CostPage />} />
           <Route path="/evals" element={<EvalsPage />} />

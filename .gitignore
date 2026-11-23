@@ -39,6 +39,7 @@ models/
 .env
 .env.*
 !.env.example
+!services/dashboard/.env.demo
 *.pem
 *.key
 secrets/

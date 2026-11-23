@@ -74,6 +74,7 @@ jobs:
           pnpm install --frozen-lockfile --ignore-scripts
           pnpm run build
           pnpm run test
+          pnpm run build:demo-static  # the static demo must keep building from the committed bundle
 
   harness:
     runs-on: ubuntu-latest
