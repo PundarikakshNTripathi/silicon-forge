@@ -11,6 +11,7 @@ and listed in the result. The dataset is downloaded to the data directory at a p
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import re
 import time
@@ -193,6 +194,24 @@ def selfcheck(runner, workdir: Path, tasks: list[Task], *, want: int, seed: int 
         if on_progress:
             on_progress(f"{t.id}: {'kept' if not why else 'dropped: ' + why}")
     return kept, dropped
+
+
+@contextlib.contextmanager
+def scrambled_on_disk(root: Path | None = None):
+    """While a general-purpose agent runs on this machine, the reference solutions must not sit on disk as readable text: one such agent was caught opening the
+    dataset file and reading the answer. The file is replaced by a copy scrambled with a key that exists only in this process, and put back on exit. This
+    defeats opening and searching the file; it does not stop an agent that fetches the public dataset from the network, which the run audit
+    (`plain_agent.audit`) is for. If the process dies, `scripts/notsotiny.py fetch --force` restores the file."""
+    import os
+
+    path = dataset_file(root)
+    plain = path.read_bytes()
+    key = os.urandom(32)
+    path.write_bytes(bytes(b ^ key[i % 32] for i, b in enumerate(plain)))
+    try:
+        yield
+    finally:
+        path.write_bytes(plain)
 
 
 def now() -> str:

@@ -21,6 +21,14 @@ from pathlib import Path
 from services.orchestrator.evals import notsotiny as ns
 
 CLIS = ("agy", "claude")
+#: Strings that only appear if the agent went looking for the reference: the dataset file, its folder, the dataset's names and the network sources it comes from.
+#: The legitimate check command (`scripts/notsotiny.py check project.v`) contains none of them. A run whose transcript has any is void.
+LOOKUP_MARKERS = ("tasks.jsonl", "datasets\\notsotiny", "datasets/notsotiny", "datasets\\\\notsotiny", "huggingface.co", "datasets-server", "golden_module", "HPAI-BSC")
+
+
+def audit(transcript: str) -> list[str]:
+    """The lookup markers found in a run's full transcript (empty if the run stayed in its folder as far as the transcript shows)."""
+    return sorted({m for m in LOOKUP_MARKERS if m.lower() in transcript.lower()})
 PROMPT = """Complete the Verilog project in project.v. One module's body is missing, between the two marker comments
 `{begin}` and `{end}`.
 
@@ -28,7 +36,8 @@ Read TASK.md for the full task, then edit project.v so that the missing body is 
 that the project reads in Yosys with: {check}
 That check only tells you whether the project parses and elaborates; it cannot tell you whether the body is right, so reason carefully about what the
 module must do from the rest of the project. Only edit between the markers (or replace the whole module if you prefer). Work only in this folder.
-When you are done, reply with the single word DONE."""
+Do not look at any file outside this folder, do not search the disk, and do not use the network: the reference solution exists
+somewhere on this machine and looking for it voids the run. When you are done, reply with the single word DONE."""
 
 
 def check_command(repo_root: Path) -> str:
@@ -44,12 +53,12 @@ def prepare(task: ns.Task, workdir: Path, repo_root: Path) -> None:
 def _argv(cli: str, prompt: str, model: str | None) -> list[str]:
     if cli == "agy":
         exe = os.environ.get("SILICONFORGE_AGY") or "agy"
-        a = [exe, "--output-format", "json", "--mode", "auto", "--dangerously-skip-permissions", "--print-timeout", "600s"]
+        a = [exe, "--output-format", "stream-json", "--mode", "auto", "--dangerously-skip-permissions", "--print-timeout", "600s"]
         if model:
             a += ["--model", model]
         return a + ["--print", prompt]
     if cli == "claude":
-        a = ["claude", "-p", prompt, "--output-format", "json", "--permission-mode", "acceptEdits", "--no-session-persistence",
+        a = ["claude", "-p", prompt, "--output-format", "stream-json", "--verbose", "--permission-mode", "acceptEdits", "--no-session-persistence",
              "--max-turns", "16", "--allowedTools", "Read", "Edit", "Write", "Bash(python:*)", "Bash(\"*python*\":*)"]
         if model:
             a += ["--model", model]
@@ -57,7 +66,8 @@ def _argv(cli: str, prompt: str, model: str | None) -> list[str]:
     raise ValueError(f"unknown CLI {cli!r}; choose from {CLIS}")
 
 
-def run(cli: str, task: ns.Task, workdir: Path, repo_root: Path, *, model: str | None = None, timeout: float = 700.0) -> dict:
+def run(cli: str, task: ns.Task, workdir: Path, repo_root: Path, *, model: str | None = None, timeout: float = 700.0,
+        transcripts: Path | None = None) -> dict:
     """Run the agent on one task. Returns {code, seconds, tokens_in, tokens_out, cost_usd, error}; the grade is applied by the caller."""
     prepare(task, workdir, repo_root)
     prompt = PROMPT.format(begin=ns.BEGIN, end=ns.END, check=check_command(repo_root))
@@ -76,9 +86,13 @@ def run(cli: str, task: ns.Task, workdir: Path, repo_root: Path, *, model: str |
         err = f"{cli} is not installed or not on PATH: {exc}"
     secs = round(time.perf_counter() - t0, 1)
     info = _usage(out)
+    markers = audit(out)
+    if transcripts is not None:
+        transcripts.mkdir(parents=True, exist_ok=True)
+        (transcripts / f"{cli}-{task.id}.jsonl").write_text(out, encoding="utf-8")
     project = (workdir / "project.v").read_text(encoding="utf-8", errors="replace")
     code = _answer_from(project, task)
-    return {"code": code, "seconds": secs, "error": err, **info}
+    return {"code": code, "seconds": secs, "error": err, "lookup_markers": markers, **info}
 
 
 def _answer_from(project: str, task: ns.Task) -> str:

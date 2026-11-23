@@ -16,6 +16,7 @@ Nothing here sees the reference module. The sample list is committed before any 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import sys
 import tempfile
@@ -27,6 +28,7 @@ sys.path.insert(0, str(ROOT))
 
 from services.orchestrator.evals import notsotiny as ns  # noqa: E402
 from services.orchestrator.evals.stats import bootstrap_ci, paired_difference  # noqa: E402
+from services.orchestrator.paths import data_root  # noqa: E402
 
 SCHEMA = "siliconforge.notsotiny/1"
 
@@ -104,6 +106,8 @@ def cmd_run(a) -> int:
     runner, cfg = _runner(a.backend)
     sample = json.loads(Path(a.sample).read_text(encoding="utf-8"))
     by_id = {t.id: t for t in ns.load_tasks()}
+    guard = ns.scrambled_on_disk() if a.arm == "agent" else contextlib.nullcontext()
+    guard.__enter__()
     ids = sample["tasks"][: a.max_tasks] if a.max_tasks else sample["tasks"]
     server = None
     llm = None
@@ -121,8 +125,12 @@ def cmd_run(a) -> int:
                 if a.arm == "agent":
                     from services.orchestrator.evals import plain_agent as pa
 
-                    r = pa.run(a.cli, task, tmp / "ws", ROOT, model=a.model, timeout=a.agent_timeout)
-                    g = ns.grade(runner, tmp / "grade", task, r.pop("code"), timeout=a.timeout) if not r["error"] or True else {}
+                    r = pa.run(a.cli, task, tmp / "ws", ROOT, model=a.model, timeout=a.agent_timeout, transcripts=data_root() / "transcripts" / ns.SUITE)
+                    code = r.pop("code")
+                    if r["lookup_markers"]:  # the transcript shows a lookup of the reference: the run is void, whatever the answer
+                        g = {"syntax": False, "verdict": "void_reference_lookup", "detail": "transcript contains: " + ", ".join(r["lookup_markers"])}
+                    else:
+                        g = ns.grade(runner, tmp / "grade", task, code, timeout=a.timeout)
                     rec = {**g, **r}
                     if r["error"] and "limit" in r["error"].lower():
                         stopped = f"stopped after {i} tasks: {r['error'][:120]}"
@@ -133,6 +141,7 @@ def cmd_run(a) -> int:
             records.append({"id": tid, **rec})
             print(f"{i + 1:>3}/{len(ids)} {tid:<18} {rec['verdict']:<12} {rec.get('seconds', '')}s", flush=True)
     finally:
+        guard.__exit__(None, None, None)
         if server is not None:
             server.stop()
     n = len(records)
@@ -140,7 +149,7 @@ def cmd_run(a) -> int:
     syn = [1.0 if r.get("syntax") else 0.0 for r in records]
     doc = {"schema": SCHEMA, "suite": ns.SUITE, "dataset": {"repo": ns.REPO, "revision": ns.REVISION, "license": "Apache-2.0"},
            "arm": a.arm + (f":{a.cli}" if a.arm == "agent" else ""), "model": label, "sample": Path(a.sample).name, "seed": sample["seed"],
-           "tasks_run": n, "tasks_in_sample": len(sample["tasks"]), "stopped": stopped or None, "runner": runner.name,
+           "void_runs": sum(1 for r in records if r["verdict"] == "void_reference_lookup"), "tasks_run": n, "tasks_in_sample": len(sample["tasks"]), "stopped": stopped or None, "runner": runner.name,
            "grader": sample["grader"], "equivalent_rate": {"mean": sum(ok) / n if n else None, "ci95": list(bootstrap_ci(ok)) if n else None},
            "syntax_ok_rate": sum(syn) / n if n else None,
            "tokens": {"in": sum(r.get("tokens_in") or 0 for r in records), "out": sum(r.get("tokens_out") or 0 for r in records)},
@@ -163,6 +172,24 @@ def cmd_compare(a) -> int:
     d = paired_difference([float(xa[i]) for i in ids], [float(ya[i]) for i in ids])
     print(f"{y['arm']} ({y['model']}) minus {x['arm']} ({x['model']}): {d['mean'] * 100:+.1f} points "
           f"(95% interval {d['ci95'][0] * 100:+.1f} to {d['ci95'][1] * 100:+.1f}) over {len(ids)} shared tasks")
+    return 0
+
+
+def cmd_table(a) -> int:
+    """A markdown table of result files, with each arm's paired difference from the first on the tasks they share (so no number is typed by hand)."""
+    docs = [json.loads(Path(p).read_text(encoding="utf-8")) for p in a.files]
+    base = {r["id"]: r["verdict"] == "equivalent" for r in docs[0]["per_task"]}
+    print("| Setup | Tasks | Equivalent (95% interval) | Reads in Yosys | Void runs | vs first row (shared tasks, paired) |")
+    print("| :--- | ---: | :--- | ---: | ---: | :--- |")
+    for d in docs:
+        m = d["equivalent_rate"]
+        mine = {r["id"]: r["verdict"] == "equivalent" for r in d["per_task"]}
+        ids = sorted(set(base) & set(mine))
+        pd = paired_difference([float(base[i]) for i in ids], [float(mine[i]) for i in ids]) if d is not docs[0] and len(ids) > 1 else None
+        diff = "-" if pd is None else f"{pd['mean'] * 100:+.1f} points ({pd['ci95'][0] * 100:+.1f} to {pd['ci95'][1] * 100:+.1f}), {len(ids)} tasks"
+        n_eq = sum(mine.values())
+        print(f"| {d['model']} / {d['arm']} | {d['tasks_run']} | {m['mean'] * 100:.1f}% ({m['ci95'][0] * 100:.1f} to {m['ci95'][1] * 100:.1f}), {n_eq} of {d['tasks_run']} "
+              f"| {d['syntax_ok_rate'] * 100:.0f}% | {d.get('void_runs', 0)} | {diff} |")
     return 0
 
 
@@ -209,6 +236,9 @@ def main() -> int:
     c.add_argument("a")
     c.add_argument("b")
     c.set_defaults(fn=cmd_compare)
+    tb = s.add_parser("table")
+    tb.add_argument("files", nargs="+")
+    tb.set_defaults(fn=cmd_table)
     k = s.add_parser("check")
     k.add_argument("file")
     k.set_defaults(fn=cmd_check)
