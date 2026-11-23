@@ -3,6 +3,9 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (agent: ask before guessing)
+- **A short, vague first request now gets one clarifying question and no edit** (`agent/clarify.py`, plus a sentence in the system prompt). Every loop in the earlier comparison, ours and both frameworks', edited on "Make the design faster." On 13 held-out tasks written and frozen before the change (`agentbench/tasks_heldout.py`), 4 arms, 5 trials, same model: the loop scored 92.3% against 69.2% for the v0.6.0 loop (paired +23.1, interval 3.1 to 46.2) and 76.9% / 75.4% for LangGraph / Pydantic AI (+15 to +17, not separated from zero), at about 60% fewer tokens per solved task. All of the lead is the three vague-request tasks; the loop lost one task the frameworks solved (a requested `ANSWER: HIGH` or `ANSWER: LOW` line it did not add). `docs/agent-benchmark.md`, `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-heldout-ask-2026-11-23.json`.
+- `agentbench` arm `custom_prev` (the loop without the ask-first check), for before/after runs on the same tasks.
 
 ## [0.6.0] - 2026-11-23
 A browser demo that needs no install, a guided tour, a redesigned look, and a plainer account of what has and has not been shown.
