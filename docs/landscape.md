@@ -58,6 +58,20 @@ structural and not something an open project matches: access to signoff-grade to
 coverage-closure infrastructure, regression farms, and vendor support. What an open local-first tool can offer instead:
 auditability (every result says which tool produced it), no data leaving the machine, and a flow a student can run.
 
+### 3b. Added in November 2026 (read on their own pages, 2026-11-23)
+
+These change two things this page used to imply. First, "tool verdicts decide" is now a stated principle of the big vendors too, so the
+slogan is not a difference; evidence is. Second, waveform debugging is no longer a gap: free servers exist.
+
+| Item | What it is | What it means here |
+|---|---|---|
+| [Harmonic Aristotle](https://harmonic.fun) | A paid service that compiles SystemVerilog and SVA into Lean 4, lets a model propose proof steps and has the Lean kernel check them; returns proved, refuted (with a counterexample) or unresolved per property. Verilog, Rust and C; also an MCP server. Its Ibex multiplier/divider demo (3 Nov) proved 9 properties with no environment assumptions. Closed, vendor-reported. | The closest "agent plus a checker that decides" for hardware, and it makes "an AI proved my RTL" a one-line MCP call for anyone with a budget. SiliconForge's formal path is SymbiYosys (bounded and unbounded, with vacuity checks), open and free, and it does not try to match Lean-level proofs. |
+| [TraceWeave](https://github.com/gokeshenzhen/TraceWeave) (MIT), [Tencent/wave-mcp](https://github.com/Tencent/wave-mcp) | Free MCP servers that give an agent waveform and log tools (FST/VCD, drivers, first divergence, handshakes). TraceWeave reports a repair pass-rate rise from 78.33% to 88.75% on 240 tasks (self-reported, not checked here). | Overlaps the waveform window and cone tracing in `docs/debug-context.md`, with more tools. Not a differentiator; worth interoperating with. |
+| [ChipMATE](https://arxiv.org/abs/2605.12857) (Qwen3.5-4B and 9B, Apache-2.0 code and weights, gated) | A Verilog agent and a Python reference-model agent cross-check each other on 1,000 random stimuli, with no golden testbench. SFT adds 19 to 22 points on VerilogEval; the RL on top adds 1.4 to 6.5. | The nearest published result on our base-model family, and the evidence that SFT, not RL, does most of the work. Training took 8 to 16 datacentre GPUs and over $2,000 of teacher tokens; we can serve and fine-tune the 4B pair, not repeat the training. Its agentic rows use several times the samples of the single-pass baselines. |
+| [NotSoTiny](https://arxiv.org/abs/2512.20823) (HPAI-BSC, Apache-2.0) | 1,146 module-completion tasks from Tiny Tapeout designs, refreshed as new shuttles appear, graded by Yosys formal equivalence (`equiv_simple`, then `equiv_induct` at k=30). Best model in the paper: about 23% equivalent. | The best-fit public benchmark for this project: formal oracle on open tools, headroom, and the same Tiny Tapeout ecosystem. Bounded induction can miss deep bugs. Not yet run here. |
+| Build-A-Chip-Bench (ChipAgents and NVIDIA) | A private spec-to-GDS benchmark on open tools; best agent score 16.6% (functional 65, layout 75, PPA 25.5, all models in one harness), most open models near 0. Harness and tasks not released. | Shows the open-tool end-to-end task is unsolved. Vendor-authored and closed, so it cannot be a dependency. |
+| ChipAgents' audit of CVDP, RTLLM and ChipBench | Using Lean 4, they report that few tasks have a specification and tests that agree, and publish corrected subsets (`chipagents/*-verified` on Hugging Face; licences follow the upstream sets). | Every public RTL number, ours on VerilogEval included, is noisy and partly contaminated. A hidden-test, audited comparison is the clearest open gap (see the roadmap). |
+
 ## 4. What contest entries actually do
 
 Seven public entries to the Jane Street x Tiny Tapeout protocol-emulator competition were read (READMEs and linked docs,
@@ -96,6 +110,15 @@ placement or scale beyond blocks.
 
 ## 6. Where SiliconForge is weaker
 
-No UVM or constrained-random class libraries; one benchmark suite (VerilogEval, close to saturated for strong models) and no CVDP or ChipBench run yet; no clock-domain-crossing analysis, hierarchical macros or SRAM macros in the project flow; no learned improvement demonstrated yet beyond what `docs/evals.md` reports; no line or branch coverage here (Icarus has none, and the WSL setup has no C++
-toolchain); one PDK family is deeply supported; designs are blocks, not SoCs; timing, DRC and LVS signoff for the contest
-process rely on the official Tiny Tapeout flow.
+- **No audited, hidden-test comparison.** Results rest on VerilogEval, which is close to saturated and probably contaminated for strong
+  models, and on our own AgentBench tasks, which are public. There is no run on NotSoTiny or on corrected CVDP/RTLLM sets, and no
+  comparison against a plain coding agent that calls Yosys and SymbiYosys itself. Until that exists, nothing here shows the
+  tool-gated pipeline beats a simpler setup.
+- **Learning is small.** One LoRA round on a 1.5B model (+8.1 points on held-out problems) is the only fine-tuning result. No
+  reinforcement learning has been run; the published recipes for it need datacentre GPUs and gain a few points over supervised
+  fine-tuning (ChipMATE above).
+- No UVM or constrained-random class libraries; CDC is a text-level heuristic, not sign-off; no hierarchical macros or SRAM macros in
+  the project flow; no line or branch coverage here (Icarus has none, and the WSL setup has no C++ toolchain).
+- Three PDKs have a signoff-clean run, each of one small design; designs are blocks, not SoCs; timing, DRC and LVS signoff for the
+  contest process rely on the official Tiny Tapeout flow.
+- Waveform and log tooling for agents is now widely available and free; this project's version is not ahead of it.

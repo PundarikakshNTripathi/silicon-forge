@@ -3,6 +3,12 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (research roadmap)
+- **`services/orchestrator/evals/equiv.py`**: a pairwise RTL equivalence grader (Yosys `equiv_simple`, then `equiv_induct -seq 30`, the NotSoTiny recipe) with a self-check. No model, CPU only; verdicts are `equivalent`, `not_proven` or `error`.
+### Changed
+- `docs/landscape.md` adds what November 2026 changed (Harmonic Aristotle, the free waveform MCP servers, ChipMATE, NotSoTiny, Build-A-Chip-Bench, ChipAgents' benchmark audit) and states plainly where this project is weaker. `docs/roadmap.md` now starts with the one comparison that would show whether the tool-gated pipeline beats simpler setups, with a stop rule, and puts learning steps after it. README Limits and Roadmap follow.
+### Fixed
+- `docs/agent-benchmark.md` said the paired intervals touch zero in all three runs; in run 1 LangGraph minus ours is +20.0 (1.5 to 43.1), which excludes zero.
 ### Changed (design: web, terminal, logo, README)
 - **Light and dark are both ordinary**: the sidebar follows the theme (it was dark in the light theme). New neutrals (warm paper, ink navy), ink-coloured buttons and links so colour stays reserved for data, softer corners, quieter rules.
 - **Typography**: Geist for the interface, Geist Mono for code and identifiers, Newsreader (a serif) for page titles, design names and big numbers; tabular figures kept. Replaces Atkinson Hyperlegible Next and Commit Mono.
