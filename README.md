@@ -17,6 +17,8 @@
 
 <sub>One real run, start to finish, on real tools (a replayed model driving Yosys, SymbiYosys and OpenROAD in WSL2), then every page of the cockpit. Each pipeline stage has its own colour; the amber diamond is the moment formal verification sent the design back for repair.</sub>
 
+**[Try the static demo](https://pundarikakshntripathi.github.io/silicon-forge/)**: the cockpit in a browser with recorded results, no install ([what is real in it](docs/demo.md)).
+
 [Status](#status) · [Quick start](#quick-start) · [A look around](#a-look-around) · [What is in it](#what-is-in-it) · [Results](#results) · [Limits](#limits) · [Architecture](#architecture) · [Reference](#reference) · [Licence](#licence)
 
 </div>
@@ -320,7 +322,10 @@ an exception. [docs/ppa-search.md](docs/ppa-search.md)
 
 ## Limits
 
-- One benchmark suite, and it is nearly saturated for strong models. No CVDP or ChipBench run.
+- One benchmark suite, and it is nearly saturated for strong models. No CVDP, ChipBench or NotSoTiny run, so nothing here yet shows the
+  tool-gated pipeline beating a simpler setup, such as a plain coding agent with Yosys. That comparison is the first item on the roadmap.
+- Learning is small: one LoRA round on a 1.5B model is the only fine-tuning result, and no reinforcement learning has been run (published
+  recipes for it need datacentre GPUs and gain a few points over supervised tuning).
 - The pipeline results are four designs, one run each. Nothing in them supports a claim about model quality.
 - The repair loops, the knowledge packs and the Gaussian-process optimizer have **not** been shown to improve outcomes. What has been
   shown is described above, including the null results.
@@ -411,9 +416,14 @@ are stronger.
 
 The detailed list, with why each item matters and where it stands, is in [docs/roadmap.md](docs/roadmap.md). In short:
 
-a re-test of the fixed agent loop on tasks written blind; a test-and-assertion agent rewarded by mutant kills; resuming
-interrupted runs; netlist-level CDC and macros in the project flow; CVDP as a second benchmark; Tiny Tapeout hardening through Docker; signed
-installers and images.
+- **First:** one audited comparison with hidden tests (raw model, model with simulation feedback, this pipeline, and a plain coding agent
+  with Yosys) on [NotSoTiny](https://arxiv.org/abs/2512.20823) and corrected CVDP/RTLLM subsets, with intervals and a stop rule decided in
+  advance. The grader it needs, a pairwise Yosys equivalence check with a self-check, is in `services/orchestrator/evals/equiv.py`; the task
+  sets, baselines and runs are not done.
+- **Then, only if that shows an edge:** verdict-labelled memory, rejection-sampling fine-tuning at a larger scale, a short reinforcement-learning
+  pilot with a hidden second checker, and improvement loops over prompts and tools that are judged on a sealed set. None is started.
+- **Also:** a re-test of the fixed agent loop on tasks written blind; a test-and-assertion agent rewarded by mutant kills; resuming
+  interrupted runs; netlist-level CDC and macros in the project flow; Tiny Tapeout hardening through Docker; signed installers and images.
 
 ## Licence
 

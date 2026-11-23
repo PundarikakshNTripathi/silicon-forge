@@ -3,6 +3,32 @@
 What is deliberately **not** in v0.5.0, why, and what would make it worth doing. Items are ordered by how much they would change
 what an engineer can trust or do, not by effort. Nothing here is promised for a date.
 
+## First: one clean piece of evidence
+
+Everything below matters less than this. The project's claim is that gating each stage on a tool verdict beats simpler setups; today
+that is argued, not shown (see [landscape.md](landscape.md#6-where-siliconforge-is-weaker)). The missing result is a single comparison
+that could come out against us:
+
+- **Setups:** the raw model; the model with compile and simulation feedback; the full tool-gated pipeline; and a plain coding agent
+  (Claude Code or Gemini CLI) given Yosys and SymbiYosys and no SiliconForge code.
+- **Tasks:** a set that is not saturated and not memorised: [NotSoTiny](landscape.md#3b-added-in-november-2026-read-on-their-own-pages-2026-11-23)
+  (formal-equivalence grading, refreshed as new Tiny Tapeout shuttles appear) and the corrected CVDP/RTLLM subsets, plus a private
+  held-out set kept out of the repository. Visible tests for the agent, hidden tests for the score.
+- **Reporting:** intervals, every failure listed, and the grader checked first (the reference passes, a mutant fails).
+- **Stop rule, decided in advance:** if the pipeline is not clearly better than model-plus-simulation-feedback, or the plain coding
+  agent matches it, the project is positioned as teaching and tooling and nothing is spent on training or compute.
+
+The first step exists: `services/orchestrator/evals/equiv.py` is a pairwise equivalence grader (Yosys `equiv_simple`, then `equiv_induct -seq 30`, the NotSoTiny recipe) with the self-check above. It needs no model and runs on CPU. What is missing is the task sets, the baselines and the runs.
+
+Only after that is there a reason to look at learning:
+
+| Step | Evidence it is worth it | Cost note |
+| :--- | :--- | :--- |
+| Verdict-labelled memory (what worked on which kind of failure, replay-checked before use) | A gain on repeated failure families, measured against the same agent without it. Published memory gains are 2 to 8 points and fragile. | Small. |
+| Rejection-sampling fine-tuning on verified answers, at a larger scale than the 1.5B round | The ChipMATE ablation puts most of the available gain here, not in RL. | Teacher tokens and a rented 24 GB GPU; tens of dollars. |
+| A short reinforcement-learning pilot (tens of steps, LoRA) with a hidden second checker and mutation-checked tests | Only if supervised tuning has already moved the held-out score. Published RL adds 1.4 to 6.5 points and reward hacking is the main risk. | A few dollars for the pilot, hundreds for a real run. |
+| Improvement loops over harness and prompts (evolutionary search against the verifier) | Only with a sealed audit set the loop cannot read, paired runs, at least two repeats and matched budgets. Call it verified continual improvement, not self-improvement. | Small. |
+
 ## Worth doing next
 
 | Item | Why it matters | State |

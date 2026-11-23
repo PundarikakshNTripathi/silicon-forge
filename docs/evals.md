@@ -99,6 +99,14 @@ siliconforge evals run verilogeval --serve model.gguf --arm single --split test 
   -0.1 for a candidate that does not compile (the compiler message comes back as the observation), 0.0 for one that compiles but fails
   the testbench, 1.0 for a pass. The testbench output is never in the observation.
 
+## Pairwise equivalence grading
+
+`services/orchestrator/evals/equiv.py` grades a candidate module against a reference by proof instead of by testbench: Yosys `equiv_make`,
+`equiv_simple`, then `equiv_induct -seq 30` (the recipe of [NotSoTiny](https://arxiv.org/abs/2512.20823)). The verdict is `equivalent`,
+`not_proven` or `error`; it never says "different", because an unproven pair may be a different design or one that bounded induction could
+not close. `self_check` runs reference-versus-reference and reference-versus-mutant so a grader is checked before it scores anything.
+It needs no model; no task set is wired to it yet (see [roadmap.md](roadmap.md)).
+
 ## Fine-tuning on verified samples (one round, measured)
 
 One round of rejection-sampling fine-tuning, using the pieces above:

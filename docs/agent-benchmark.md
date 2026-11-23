@@ -25,7 +25,7 @@ Three complete runs of the same configuration, a few hours apart, all committed 
 | Pydantic AI | 87.7% / 90.8% / **92.3%** (77 to 100) | 92.3% | 60 of 65 |
 
 Run 3, paired over the 13 tasks: LangGraph minus ours +21.5 points (95% interval 0.0 to 46.2), Pydantic AI minus ours the same.
-**The intervals touch zero in all three runs, so none is called a significant difference.** *Strict* requires a numeric answer on
+**In runs 2 and 3 the intervals touch zero; in run 1 LangGraph minus ours is +20.0 points (1.5 to 43.1), which excludes zero, and Pydantic AI minus ours (+16.9, -1.5 to 38.5) does not. With 13 tasks and three runs of one model, none is called a settled difference.** *Strict* requires a numeric answer on
 a final `ANSWER: <n>` line; *content-correct* (a labelled secondary reading, a heuristic) accepts a correct number without the line.
 
 ![Per-task success rate](../assets/plots/agentbench_matrix.png)
