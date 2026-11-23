@@ -79,8 +79,12 @@ export const DEMO_TOUR: Step[] = [
     body: "The last stop: what was built, what was measured, and what the numbers do not show.",
   },
   {
+    route: "/", target: ".rail a[href*='github.com'], .src-link", placement: "right", title: "The source code",
+    body: "All of this is open source (AGPL-3.0). This link goes to the repository: the code, the documentation, and the result files behind every number you have seen. The README says what each part is and what has not been shown.",
+  },
+  {
     route: "/", title: "That is the tour",
-    body: "You can run it again from Take the tour in the sidebar. Every page also has an About this page line at the top, with a shorter walk through just that page.",
+    body: "You can run it again from Take the tour in the sidebar, and the source link is just below it. Every page also has an About this page line at the top, with a shorter walk through just that page.",
   },
 ];
 

@@ -7,6 +7,8 @@ import { STOPS } from "./Tour";
 import { startTour } from "../tour/Tour";
 import { DEMO_TOUR } from "../tour/steps";
 
+const SOURCE = (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SOURCE_URL ?? "https://github.com/PundarikakshNTripathi/silicon-forge";
+
 interface Bench { file: string; data: Record<string, any> }
 
 export default function Overview() {
@@ -41,6 +43,9 @@ export default function Overview() {
             </li>
           ))}
         </ol>
+        <p className="small" style={{ maxWidth: 700, margin: 0 }}>
+          <a className="src-link" href={SOURCE} target="_blank" rel="noreferrer">Source code on GitHub</a> (AGPL-3.0): the code, the docs and every result file behind these numbers.
+        </p>
         <p className="muted small" style={{ maxWidth: 700, margin: 0 }}>
           The two real pipeline runs under <Link to="/runs">Runs</Link> were made on the WSL backend with Yosys, SymbiYosys and OpenROAD; each carries a provenance stamp.
         </p>
