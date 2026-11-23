@@ -132,8 +132,9 @@ contract's own limits, then the flow. Dark theme and a bottom bar on phones come
 | **Layout.** The real GDSII from the run, zoomable. | **Agent loops.** The head-to-head against LangGraph and Pydantic AI, from the committed result files. |
 
 **The terminal UI** (`siliconforge tui`). A chat with the agent in your folder: tool calls are cards, edits arrive as diffs you approve,
-`Shift+Tab` cycles the permission mode, `Esc` interrupts. The recording below uses a scripted model with the real tools
-([how it is made](docs/tui.md)).
+`Shift+Tab` cycles the permission mode, `Esc` interrupts. The recording below is a **real session**: the actual app in a pseudo-terminal, a
+local Qwen3.5-9B model answering, real tools, and the file on disk really changed. It is hosted in a browser terminal so it could be captured without
+taking over a desktop, so it is not a screenshot of Windows Terminal ([how it was made](docs/tui.md)).
 
 <p align="center"><img src="assets/gifs/tui.gif" width="820" alt="The terminal UI: an animated splash, then a request to add a reset to a counter, with tool cards, a diff approval and the final answer"></p>
 
