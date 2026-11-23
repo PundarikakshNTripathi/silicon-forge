@@ -1,0 +1,1 @@
+{"backends":{"simulated":{"available":true,"note":"static demo: nothing runs here","tools":{}}},"gpu":{},"host_tools":{"cmake":false,"docker":false,"git":false,"llama-server":false,"node":false,"nvidia-smi":false,"pnpm":false,"python":false,"wsl":false},"llama_cpp":{"installed":false,"models":[],"tag":null},"platform":"static demo","python":"n/a","telemetry_engine_built":false}

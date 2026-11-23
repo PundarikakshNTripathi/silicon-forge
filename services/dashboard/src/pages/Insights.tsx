@@ -19,7 +19,7 @@ const pctOf = (x: number | null | undefined, d = 0) => (x == null ? "-" : `${(x 
 /** Where an agent turn's time goes, how often its tools work, and whether it recovers: measured from recorded spans (docs/telemetry.md). */
 function AgentInsights() {
   const [hours, setHours] = useState(24 * 7);
-  const q = useQuery({ queryKey: ["agent-insights", hours], queryFn: () => api<{ spans: number; metrics: AgentMetrics }>(`/insights/agent?hours=${hours}`) });
+  const q = useQuery({ queryKey: ["agent-insights", hours], queryFn: () => api<{ spans: number; metrics: AgentMetrics; source?: string }>(`/insights/agent?hours=${hours}`) });
   const m = q.data?.metrics;
   const split = m && m.runs > 0 && m.latency ? [["Waiting on the model", m.latency.reasoning_share], ["Running tools", m.latency.action_share], ["Everything else", m.latency.overhead_share]] as const : [];
   return (
@@ -47,6 +47,7 @@ function AgentInsights() {
           {Object.keys(m.tools.failures_by_class).length > 0 && (
             <Bars items={Object.entries(m.tools.failures_by_class).map(([k, v]) => ({ label: k.replaceAll("_", " "), value: v }))} fmt={(v: number) => `${v}`} />
           )}
+          {q.data?.source && <div className="hint">Source: {q.data.source}.</div>}
           <div className="hint">{m.cost.usd_per_solved != null ? `About ${usd(m.cost.usd_per_solved)} per solved turn; ` : ""}{Math.round(m.cost.tokens_per_run).toLocaleString()} tokens per turn on average.</div>
         </div>
       )}

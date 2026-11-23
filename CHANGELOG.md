@@ -3,6 +3,12 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Added (static demo)
+- **A zero-backend copy of the cockpit** (`VITE_DEMO_MODE`), deployable to GitHub Pages (`.github/workflows/demo-pages.yml`): every read is served from `services/dashboard/public/demo-data/`, which `scripts/export_demo_bundle.py` builds from the committed results and from two recorded real runs through the real route code. Writes say they do nothing. A banner states that it is a recording.
+- **Agent replay with a real approval gate**, from a trace recorded off the real agent (`services/orchestrator/demo/record_trace.py`): real tools, permission code, transcript compaction and static linter; the model is a script and the page says so. Approving or requesting a revision follows the matching recording. A tab shows the terminal interface as captures.
+- A four-stop guided tour and an engineering-note view whose text the author writes; `docs/demo.md`. Tests keep the bundle current and free of local paths and user names; CI builds the demo.
+### Fixed
+- One committed result file carried a (garbled) account name from a WSL error line; it is redacted, and `tests/test_results_hygiene.py` now checks for the name of whoever runs the tests.
 ### Changed (design: web, terminal, logo, README)
 - **Light and dark are both ordinary**: the sidebar follows the theme (it was dark in the light theme). New neutrals (warm paper, ink navy), ink-coloured buttons and links so colour stays reserved for data, softer corners, quieter rules.
 - **Typography**: Geist for the interface, Geist Mono for code and identifiers, Newsreader (a serif) for page titles, design names and big numbers; tabular figures kept. Replaces Atkinson Hyperlegible Next and Commit Mono.

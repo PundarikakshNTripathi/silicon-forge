@@ -16,3 +16,14 @@ def test_no_result_file_contains_a_local_user_path():
         if WINDOWS_PROFILE.search(text) or UNIX_HOME.search(text):
             offenders.append(f.name)
     assert not offenders, f"local paths in: {offenders}"
+
+
+def test_no_result_file_contains_the_name_of_the_machine_user_who_ran_it():
+    """A WSL error once put a (garbled) account name in a committed log line; the name of whoever runs this test is checked for."""
+    import getpass
+
+    me = getpass.getuser()
+    if len(me) < 3:
+        return
+    offenders = [f.name for f in sorted(RESULTS.glob("*.json")) if me.lower() in f.read_text(encoding="utf-8").lower()]
+    assert not offenders, f"the user name appears in: {offenders}"
