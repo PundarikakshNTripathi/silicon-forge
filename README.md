@@ -307,7 +307,10 @@ Making the loop ask before guessing (a vague first request such as "Make the des
 this loop **92.3%**, the v0.6.0 loop 69.2%, LangGraph 76.9%, Pydantic AI 75.4%, at about 60% fewer tokens per solved task. Against v0.6.0 the gain is
 separated from zero (+23.1, interval 3.1 to 46.2); against the frameworks it is a lead of 15 to 17 points that 13 tasks cannot separate from zero. All of
 it comes from the three vague-request tasks, where the frameworks asked in 0 of 15 runs; on the other ten they match or beat it (it missed one answer-format
-line they got right). A fix for that, and a fresh suite to measure it on, are next.
+line they got right). A third suite of 13 new tasks, written before the answer-format fix, came out as **a tie** (this loop 81.5%, LangGraph 76.9%, Pydantic AI 80.0%,
+the v0.6.0 loop 70.8%; nothing separated; `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-fresh-fmt-2026-11-24.json`) at about 35 to 40% fewer tokens per solved task. It also exposed three real weaknesses, listed in the
+benchmark doc. So the honest summary across both suites: clearly better and cheaper than the v0.6.0 loop on vague requests, level with the frameworks overall,
+not ahead.
 
 ### Searching layout knobs
 

@@ -3,6 +3,13 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- The answer-line check understands "a line of the form `ANSWER: HIGH` or `ANSWER: LOW`" (it only knew `ANSWER: <value>`), and a label written at the end of a
+  sentence is moved onto its own line before the check (`move_inline_answer`; the second is not yet re-measured).
+### Measured (agent)
+- A third frozen suite of 13 new tasks (`agentbench/tasks_fresh.py`): `custom` 81.5%, v0.6.0 loop 70.8%, LangGraph 76.9%, Pydantic AI 80.0%. **A tie** (intervals
+  about -30 to +20); about 35 to 40% fewer tokens per solved task. The failures it exposed (inline answer line, over-eager rename, counting lines in a log) are in
+  `docs/agent-benchmark.md`. `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-fresh-fmt-2026-11-24.json`.
 ### Added (agent: ask before guessing)
 - **A short, vague first request now gets one clarifying question and no edit** (`agent/clarify.py`, plus a sentence in the system prompt). Every loop in the earlier comparison, ours and both frameworks', edited on "Make the design faster." On 13 held-out tasks written and frozen before the change (`agentbench/tasks_heldout.py`), 4 arms, 5 trials, same model: the loop scored 92.3% against 69.2% for the v0.6.0 loop (paired +23.1, interval 3.1 to 46.2) and 76.9% / 75.4% for LangGraph / Pydantic AI (+15 to +17, not separated from zero), at about 60% fewer tokens per solved task. All of the lead is the three vague-request tasks; the loop lost one task the frameworks solved (a requested `ANSWER: HIGH` or `ANSWER: LOW` line it did not add). `docs/agent-benchmark.md`, `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-heldout-ask-2026-11-23.json`.
 - `agentbench` arm `custom_prev` (the loop without the ask-first check), for before/after runs on the same tasks.
