@@ -17,6 +17,8 @@
 
 <sub>One real run, start to finish, on real tools (a replayed model driving Yosys, SymbiYosys and OpenROAD in WSL2), then every page of the cockpit. Each pipeline stage has its own colour; the amber diamond is the moment formal verification sent the design back for repair.</sub>
 
+**[Try the static demo](https://pundarikakshntripathi.github.io/silicon-forge/)**: the cockpit in a browser with recorded results, no install ([what is real in it](docs/demo.md)).
+
 [Status](#status) · [Quick start](#quick-start) · [A look around](#a-look-around) · [What is in it](#what-is-in-it) · [Results](#results) · [Limits](#limits) · [Architecture](#architecture) · [Reference](#reference) · [Licence](#licence)
 
 </div>

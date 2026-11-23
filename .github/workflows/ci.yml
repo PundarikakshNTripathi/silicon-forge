@@ -74,6 +74,7 @@ jobs:
           pnpm install --frozen-lockfile --ignore-scripts
           pnpm run build
           pnpm run test
+          pnpm run build:demo-static  # the static demo must keep building from the committed bundle
 
   harness:
     runs-on: ubuntu-latest
@@ -81,3 +82,19 @@ jobs:
       - uses: actions/checkout@v7
       - name: Agent harness files point at AGENTS.md
         run: python scripts/check_harness.py
+
+  demo-bundle:  # rebuilds the static demo's data (it needs the C++ lint engine) and compares it with the committed copy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: uv venv --python 3.12
+      - name: Install
+        run: uv pip install -e ".[api,providers,dev]"
+      - name: Build the lint engine
+        working-directory: services/telemetry_engine
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+      - name: Demo bundle is current and clean
+        run: uv run pytest -q tests/test_demo_bundle.py -rs

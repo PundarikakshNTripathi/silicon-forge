@@ -632,7 +632,7 @@
           "completion_tokens": 16000,
           "latency_s": 305.27,
           "error": null,
-          "detail": "no testbench summary (exit 1): pwnam(pndntpt) failed 5\n<3>WSL (529 - Relay) ERROR: CreateProcessParseCommon:1003: getpwuid(1000) failed 5\n<3>WSL (529 - Relay) ERROR: ConfigUpdateLanguage:2519: fopen(/etc/default/locale) failed 5\n<3>WSL (529 - Relay) ERROR: operator():577: getpwuid(0) failed 5\n<3>WSL (529) ERROR: I/O error @util.cpp:1356 (UtilInitGroups)\n<3>WSL (529 - Relay) ERROR: CreateProcessCommon:805: Create process failed\n"
+          "detail": "no testbench summary (exit 1): pwnam(<user>) failed 5\n<3>WSL (529 - Relay) ERROR: CreateProcessParseCommon:1003: getpwuid(1000) failed 5\n<3>WSL (529 - Relay) ERROR: ConfigUpdateLanguage:2519: fopen(/etc/default/locale) failed 5\n<3>WSL (529 - Relay) ERROR: operator():577: getpwuid(0) failed 5\n<3>WSL (529) ERROR: I/O error @util.cpp:1356 (UtilInitGroups)\n<3>WSL (529 - Relay) ERROR: CreateProcessCommon:805: Create process failed\n"
         }
       ]
     },

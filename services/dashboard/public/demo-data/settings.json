@@ -1,0 +1,1 @@
+{"cli_bridge_enabled":false,"default_backend":"simulated","default_profile":"replay","llama_ctx":16384,"llama_kv":"q8_0","timing_corner":"worst"}

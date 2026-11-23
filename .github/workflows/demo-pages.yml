@@ -1,0 +1,56 @@
+name: Demo (GitHub Pages)
+
+# Publishes the static demo: the dashboard built with VITE_DEMO_MODE and fed by the committed bundle in
+# services/dashboard/public/demo-data. No Python, no model, no secrets. Runs when the dashboard, the bundle or this file
+# change on main, and on demand. See docs/demo.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "services/dashboard/**"
+      - ".github/workflows/demo-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with: {package_json_file: services/dashboard/package.json}
+      - uses: actions/setup-node@v7
+        with: {node-version: 22, cache: pnpm, cache-dependency-path: services/dashboard/pnpm-lock.yaml}
+      - name: Warn if the engineering note is unfinished
+        run: |
+          if grep -q "AUTHOR TO WRITE BY HAND" services/dashboard/src/demo/engineeringNote.md; then
+            echo "::warning::The engineering note still has unwritten sections; the published demo shows placeholders."
+          fi
+      - name: Build the demo
+        working-directory: services/dashboard
+        env:
+          VITE_BASE: ${{ github.event.repository.name }}
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm run build:demo-static
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: services/dashboard/dist}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

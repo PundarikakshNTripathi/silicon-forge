@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Typed client for the SiliconForge API. The desktop app passes a per-launch token as ?token=…
 
+import { demoRead, demoWrite } from "./demo/demoApi";
+import { DEMO, dataUrl } from "./demo/mode";
+
 const params = new URLSearchParams(window.location.search);
 const fromUrl = params.get("token");
 if (fromUrl) {
@@ -15,6 +18,10 @@ export class ApiError extends Error {
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  if (DEMO) { // static demo: no backend, see src/demo/
+    const method = (init.method ?? "GET").toUpperCase();
+    return method === "GET" ? demoRead<T>(path) : demoWrite<T>(method, path, init.body ? JSON.parse(String(init.body)) : undefined);
+  }
   const headers: Record<string, string> = { "Content-Type": "application/json", ...(init.headers as Record<string, string>) };
   if (token) headers.Authorization = `Bearer ${token}`;
   const res = await fetch(`/api${path}`, { ...init, headers });
@@ -35,7 +42,8 @@ export const put = <T>(path: string, body: unknown) => api<T>(path, { method: "P
 export const del = <T>(path: string) => api<T>(path, { method: "DELETE" });
 
 export const withToken = (url: string) => (token ? `${url}${url.includes("?") ? "&" : "?"}token=${encodeURIComponent(token)}` : url);
-export const artifactUrl = (runId: string, path: string) => withToken(`/api/runs/${runId}/artifacts/${path}`);
+export const artifactUrl = (runId: string, path: string) =>
+  DEMO ? dataUrl(`run-files/${runId}/${path}`) : withToken(`/api/runs/${runId}/artifacts/${path}`);
 
 // ---------- types ----------
 export type RunStatus = "queued" | "running" | "succeeded" | "failed" | "cancelled" | "interrupted";
