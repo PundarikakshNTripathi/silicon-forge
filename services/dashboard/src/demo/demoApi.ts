@@ -29,9 +29,9 @@ export function loadJson<T>(file: string): Promise<T> {
 /** Every GET the dashboard makes, mapped to its file. A test (demoApi.test.ts) checks this table against the call sites. */
 export const READS: [RegExp, (m: RegExpMatchArray, q: URLSearchParams) => string][] = [
   [/^\/runs$/, () => "runs.json"],
-  [/^\/runs\/([^/]+)$/, (m) => `runs/${m[1]}.json`],
-  [/^\/runs\/([^/]+)\/events\/all$/, (m) => `runs/${m[1]}.events.json`],
-  [/^\/runs\/([^/]+)\/artifacts$/, (m) => `runs/${m[1]}.artifacts.json`],
+  [/^\/runs\/([^/]+)$/, (m) => `run-data/${m[1]}.json`],
+  [/^\/runs\/([^/]+)\/events\/all$/, (m) => `run-data/${m[1]}.events.json`],
+  [/^\/runs\/([^/]+)\/artifacts$/, (m) => `run-data/${m[1]}.artifacts.json`],
   [/^\/benchmarks$/, () => "benchmarks.json"],
   [/^\/examples$/, () => "examples.json"],
   [/^\/estimate$/, (_m, q) => `estimate/${q.get("profile") ?? "replay"}.json`],

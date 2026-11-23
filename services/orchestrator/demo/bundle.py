@@ -5,6 +5,7 @@ The dashboard in demo mode (`VITE_DEMO_MODE=true`) has no backend. Every number 
 file or a recorded run, never from code written for the demo. So:
 
 * the committed benchmark results are served by the real `/api/benchmarks` route;
+* (files for one run live in run-data/ and run-files/: .gitignore ignores any folder named runs)
 * the committed, sanitised real runs under `benchmarks/demo/recorded/` go through the real `Store` and the real run routes;
 * the agent-insights panel is the real `telemetry.aggregate` over the committed AgentBench run metrics;
 * the replay trace comes from `record_trace` (scripted model, real tools: see that module for what is and is not real);
@@ -176,10 +177,10 @@ def build(out: Path | None = None, assets_out: Path | None = None) -> dict[str, 
             runs = get("/runs?limit=100")
             _dump(out / "runs.json", runs)
             for rid in run_ids:
-                _dump(out / "runs" / f"{rid}.json", get(f"/runs/{rid}"))
-                _dump(out / "runs" / f"{rid}.events.json", get(f"/runs/{rid}/events/all"))
+                _dump(out / "run-data" / f"{rid}.json", get(f"/runs/{rid}"))
+                _dump(out / "run-data" / f"{rid}.events.json", get(f"/runs/{rid}/events/all"))
                 arts = get(f"/runs/{rid}/artifacts")
-                _dump(out / "runs" / f"{rid}.artifacts.json", arts)
+                _dump(out / "run-data" / f"{rid}.artifacts.json", arts)
                 for a in arts:
                     dest = out / "run-files" / rid / a["path"]
                     dest.parent.mkdir(parents=True, exist_ok=True)

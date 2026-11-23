@@ -119,3 +119,17 @@ def test_engineering_note_is_a_file_the_author_writes():
     """The note is the author's own writing; this repo's tooling only checks that it exists and is not auto-generated."""
     note = (ROOT / "services" / "dashboard" / "src" / "demo" / "engineeringNote.md").read_text(encoding="utf-8")
     assert note.lstrip().startswith("# ")
+
+
+def test_no_demo_file_is_ignored_by_git():
+    """A folder named `runs` is gitignored, which once left a published demo without its run data."""
+    import shutil
+    import subprocess
+
+    if not shutil.which("git"):
+        pytest.skip("git is not available")
+    files = [p for d in (bundle.DEFAULT_OUT, bundle.DEFAULT_ASSETS, bundle.DEMO_RUNS) for p in d.rglob("*") if p.is_file()]
+    assert files
+    r = subprocess.run(["git", "check-ignore", "--stdin"], cwd=ROOT, input="\n".join(str(p) for p in files), capture_output=True,
+                       text=True, check=False)
+    assert r.returncode == 1 and not r.stdout.strip(), f"ignored by git: {r.stdout}"
