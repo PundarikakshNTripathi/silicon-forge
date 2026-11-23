@@ -3,21 +3,17 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
-<<<<<<< HEAD
 ### Added (research roadmap)
 - **`services/orchestrator/evals/equiv.py`**: a pairwise RTL equivalence grader (Yosys `equiv_simple`, then `equiv_induct -seq 30`, the NotSoTiny recipe) with a self-check. No model, CPU only; verdicts are `equivalent`, `not_proven` or `error`.
-### Changed
-- `docs/landscape.md` adds what November 2026 changed (Harmonic Aristotle, the free waveform MCP servers, ChipMATE, NotSoTiny, Build-A-Chip-Bench, ChipAgents' benchmark audit) and states plainly where this project is weaker. `docs/roadmap.md` now starts with the one comparison that would show whether the tool-gated pipeline beats simpler setups, with a stop rule, and puts learning steps after it. README Limits and Roadmap follow.
-### Fixed
-- `docs/agent-benchmark.md` said the paired intervals touch zero in all three runs; in run 1 LangGraph minus ours is +20.0 (1.5 to 43.1), which excludes zero.
-=======
 ### Added (static demo)
 - **A zero-backend copy of the cockpit** (`VITE_DEMO_MODE`), deployable to GitHub Pages (`.github/workflows/demo-pages.yml`): every read is served from `services/dashboard/public/demo-data/`, which `scripts/export_demo_bundle.py` builds from the committed results and from two recorded real runs through the real route code. Writes say they do nothing. A banner states that it is a recording.
 - **Agent replay with a real approval gate**, from a trace recorded off the real agent (`services/orchestrator/demo/record_trace.py`): real tools, permission code, transcript compaction and static linter; the model is a script and the page says so. Approving or requesting a revision follows the matching recording. A tab shows the terminal interface as captures.
 - A four-stop guided tour and an engineering-note view whose text the author writes; `docs/demo.md`. Tests keep the bundle current and free of local paths and user names; CI builds the demo.
+### Changed
+- `docs/landscape.md` adds what November 2026 changed (Harmonic Aristotle, the free waveform MCP servers, ChipMATE, NotSoTiny, Build-A-Chip-Bench, ChipAgents' benchmark audit) and states plainly where this project is weaker. `docs/roadmap.md` now starts with the one comparison that would show whether the tool-gated pipeline beats simpler setups, with a stop rule, and puts learning steps after it. README Limits and Roadmap follow.
 ### Fixed
+- `docs/agent-benchmark.md` said the paired intervals touch zero in all three runs; in run 1 LangGraph minus ours is +20.0 (1.5 to 43.1), which excludes zero.
 - One committed result file carried a (garbled) account name from a WSL error line; it is redacted, and `tests/test_results_hygiene.py` now checks for the name of whoever runs the tests.
->>>>>>> origin/main
 ### Changed (design: web, terminal, logo, README)
 - **Light and dark are both ordinary**: the sidebar follows the theme (it was dark in the light theme). New neutrals (warm paper, ink navy), ink-coloured buttons and links so colour stays reserved for data, softer corners, quieter rules.
 - **Typography**: Geist for the interface, Geist Mono for code and identifiers, Newsreader (a serif) for page titles, design names and big numbers; tabular figures kept. Replaces Atkinson Hyperlegible Next and Commit Mono.
