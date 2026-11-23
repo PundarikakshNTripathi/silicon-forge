@@ -21,7 +21,6 @@ def test_no_result_file_contains_a_local_user_path():
 def test_no_result_file_contains_the_name_of_the_machine_user_who_ran_it():
     """A WSL error once put a (garbled) account name in a committed log line; the name of whoever runs this test is checked for."""
     import getpass
-
     import os
 
     me = getpass.getuser()
