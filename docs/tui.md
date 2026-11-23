@@ -17,9 +17,17 @@ siliconforge tui --run                    # the pipeline run viewer (stage strip
 
 ![Splash, a conversation with an approval, the final answer](../assets/gifs/tui.gif)
 
-The recording above uses a **scripted model** (a fixed list of replies) with the real tools (list, read, edit, lint), so it is
-reproducible: `python scripts/tui_demo.py OUT_DIR` regenerates the frames, `scripts/frames_to_gif.py` assembles them. It shows the
-interface, not a model's ability.
+The recording above is a **real session, about a minute long**, with nothing scripted except the keystrokes: `siliconforge tui` runs in a pseudo-terminal
+(`scripts/tui_real/server.py`, via `pywinpty`) and is shown in a terminal emulator inside a headless browser (xterm.js), where `rec.cjs` types the request, presses
+`y` at the approval prompt and saves a frame about every 100 ms. The model is the local Qwen3.5-9B (`start_llm.py` starts a private server); it read
+`rtl/counter.sv`, proposed an edit, waited for approval, applied it, read the file back and answered. The file on disk changed. `make_gif.py` joins the frames
+with their real timing (no pause longer than 1.3 s is shortened, and none needed to be). It is not a screen recording of Windows Terminal: the app talks to a
+real pseudo-terminal, but the picture comes from a browser-hosted terminal, which made it possible to capture it without taking over the desktop.
+
+To redo it: `cd scripts/tui_real && npm i playwright-core @xterm/xterm && pip install pywinpty websockets`, start the model with `start_llm.py`, the pty
+server with `server.py PORT WORKSPACE REPO tui --workspace WORKSPACE --profile local`, then `node rec.cjs PORT OUT "your request"` and `make_gif.py`. One run is
+one take; the result depends on what the model does that time. The older scripted frames (`scripts/tui_demo.py`) remain for tests and screenshots of states that are
+hard to reach with a real model.
 
 ## What you see
 
