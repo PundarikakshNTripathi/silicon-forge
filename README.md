@@ -52,7 +52,8 @@ outline means a surrogate did. In the command line and in result files the field
 | Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. Speculative decoding is implemented and off by default; see [docs/providers.md](docs/providers.md#speculative-decoding) for what was measured. |
 | Tiny Tapeout IHP: hardening, timing, DRC | **Not run locally.** Needs the official flow (Docker or the GitHub action). |
 | Fine-tuning a local model on verified samples | One round measured on a 1.5B model ([results](#fine-tuning-on-verified-answers)); no larger model, no second round. |
-| Web cockpit, terminal UI | Run in a browser and in a terminal; the web views are screenshots of real runs below. |
+| Web cockpit, terminal UI | Run in a browser and in a terminal; the web views are screenshots of real runs below. A guided tour and an "About this page" line on every page explain the cockpit to a newcomer. |
+| Static demo | [A copy of the cockpit in a browser](https://pundarikakshntripathi.github.io/silicon-forge/) fed by committed results and two recorded real runs; the agent replay uses a scripted model and says so ([docs/demo.md](docs/demo.md)). |
 | Agent measurement (latency split, tool success, cost per task, recovery) | Built and measured on one local model against LangGraph and Pydantic AI ([results](#the-agent-against-langgraph-and-pydantic-ai)). |
 | Docker backend | Lint, synthesis and the equivalence proof run through it in CI on every change to the Docker files (`.github/workflows/docker.yml`); place and route is not in that image. Not run on the reference machine. |
 | Subscription CLI bridges | Wiring is unit-tested; the Gemini route through `agy` is measured, the others are not run end to end. |

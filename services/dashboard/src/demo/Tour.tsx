@@ -2,7 +2,9 @@
 // The demo's top bar: what it is, and four stops that are each worth about fifteen seconds.
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { Play, X } from "lucide-react";
+import { startTour } from "../tour/Tour";
+import { DEMO_TOUR } from "../tour/steps";
 
 export const STOPS = [
   { id: "replay", title: "Agent replay and the approval gate", short: "Replay and approval", to: "/workspace" },
@@ -26,7 +28,8 @@ export default function Tour() {
       <div className="demo-banner" role="status">Static demo: recorded results from the repository. Nothing runs live here.</div>
       {!hidden && (
         <nav className="tour" aria-label="Guided tour">
-          <span className="tour-label small">60-second tour</span>
+          <button className="btn primary sm tour-start" onClick={() => startTour(DEMO_TOUR)}><Play size={13} /> Take the tour</button>
+          <span className="tour-label small">or jump to</span>
           <ol>
             {STOPS.map((s, i) => (
               <li key={s.id}><NavLink to={s.to} className={here(s.to) ? "on" : ""} end><span className="tour-n">{i + 1}</span>{s.short}</NavLink></li>

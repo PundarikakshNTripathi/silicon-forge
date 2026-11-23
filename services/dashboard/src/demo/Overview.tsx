@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { STOPS } from "./Tour";
+import { startTour } from "../tour/Tour";
+import { DEMO_TOUR } from "../tour/steps";
 
 interface Bench { file: string; data: Record<string, any> }
 
@@ -15,7 +17,7 @@ export default function Overview() {
     replay: "A recorded agent session. It pauses at the first edit and waits for your decision.",
     agentbench: ab ? `${ab.arms.length} agent setups, ${ab.tasks.length} tasks, ${ab.trials} trials each, repeated three times; one local ${ab.model} model throughout.` : "",
     evals: files.length ? `${files.length} committed result files: VerilogEval, full-flow runs, formal and equivalence results, PPA search, telemetry.` : "",
-    note: "Written by the author.",
+    note: "What was built, what was measured, and what the numbers do not show.",
   };
   return (
     <>
@@ -25,6 +27,10 @@ export default function Overview() {
           SiliconForge turns a hardware spec into verified RTL, formal proofs and a layout, using open EDA tools. Tool verdicts decide; language models
           propose. This page is a static copy of its dashboard: everything is a recording of this repository's own results, and nothing runs live.
         </p>
+        <div className="row wrap">
+          <button className="btn primary" onClick={() => startTour(DEMO_TOUR)}>Take the one-minute tour</button>
+          <span className="muted small">or open one of these.</span>
+        </div>
         <ol className="tour-cards">
           {STOPS.map((s, i) => (
             <li key={s.id}>

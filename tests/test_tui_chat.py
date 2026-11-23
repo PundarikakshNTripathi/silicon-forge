@@ -223,3 +223,26 @@ def test_diff_is_compacted_to_the_changes_and_results_are_readable():
     read = diffview.pretty("read_file", json.dumps({"path": "a.sv", "total_lines": 2, "shown": [1, 2], "content": "1\tone\n2\ttwo"}))
     assert read[0] == "a.sv: lines 1-2 of 2" and read[1:] == ["1\tone", "2\ttwo"]
     assert diffview.pretty("eda", "error: tool not found") == ["error: tool not found"]  # plain text passes through
+
+
+def test_splash_runs_to_the_end_before_the_workspace_opens_and_ignores_typing(tmp_path):
+    """The splash was cut short by any key (including a command typed while the program started) and by a slow start-up."""
+    from services.tui.chat import Splash
+
+    app, _ = make_app(tmp_path, [])
+    app.animate_splash = True
+    Splash.DRAW_S, Splash.HOLD_S, Splash.SKIP_AFTER_S = 0.6, 0.3, 0.2  # the same logic on a shorter clock
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause(0.05)
+            assert isinstance(app.screen, Splash) and app.session is None  # nothing is loaded behind the splash yet
+            await pilot.press("x", "y", "z")  # typed ahead
+            await pilot.press("enter")  # too early to skip
+            await pilot.pause(0.05)
+            assert isinstance(app.screen, Splash)
+            await pilot.pause(1.2)
+            assert not isinstance(app.screen, Splash) and app.session is not None
+            assert app.query_one("#composer").value == ""  # nothing typed during the splash reached the composer
+
+    run(scenario())

@@ -46,32 +46,48 @@ def mode_style(mode: str, pal: dict[str, str]) -> str:
 # ---------------------------------------------------------------------------------------------------------------- widgets
 
 class Splash(Screen):
-    """The conductor draws itself through the five layers, then the name. Any key skips it."""
+    """The conductor draws itself through the five layers, then the name and the legend, then holds for a moment.
+
+    Timed by the clock, not by frame count, so a slow terminal or a busy start-up shortens nothing: the drawing always takes
+    `DRAW_S` seconds and the finished logo stays up for `HOLD_S`. Typing ahead does not skip it (a command typed while the
+    program starts would otherwise cut it off); Esc, Enter or Space skip it once it has been on screen for `SKIP_AFTER_S`.
+    The workspace is only opened after the splash is done (see ChatApp.on_mount), so loading never competes with it."""
 
     BINDINGS = [Binding("escape,enter,space", "skip", show=False)]
-    FRAMES = 36
+    DRAW_S = 2.4
+    HOLD_S = 1.1
+    SKIP_AFTER_S = 0.6
 
     def __init__(self, mode: str) -> None:
         super().__init__()
-        self.mode_name, self.frame = mode, 0
+        self.mode_name = mode
+        self.t0 = 0.0
+        self.done = False
 
     def compose(self) -> ComposeResult:
         yield Static("", id="splash")
 
     def on_mount(self) -> None:
-        self.set_interval(1 / 24, self._tick)
+        self.t0 = time.monotonic()
+        self.set_interval(1 / 30, self._tick)
 
     def _tick(self) -> None:
-        self.frame += 1
-        self.query_one("#splash", Static).update(art.splash(min(1.0, self.frame / self.FRAMES), self.mode_name, width=self.size.width))
-        if self.frame > self.FRAMES + 14:
+        elapsed = time.monotonic() - self.t0
+        self.query_one("#splash", Static).update(art.splash(min(1.0, elapsed / self.DRAW_S), self.mode_name, width=self.size.width))
+        if elapsed >= self.DRAW_S + self.HOLD_S:
+            self._finish()
+
+    def _finish(self) -> None:
+        if not self.done:
+            self.done = True
             self.dismiss()
 
-    def on_key(self) -> None:
-        self.dismiss()
+    def on_key(self, event) -> None:  # noqa: ANN001
+        event.stop()  # keys typed during the splash are dropped, never replayed into the composer
 
     def action_skip(self) -> None:
-        self.dismiss()
+        if time.monotonic() - self.t0 >= self.SKIP_AFTER_S:
+            self._finish()
 
 
 class ApprovalModal(ModalScreen[str]):
@@ -213,16 +229,20 @@ class ChatApp(App):
         return "dark" if self.theme == "siliconforge-dark" else "light"
 
     def on_mount(self) -> None:
+        if self.animate_splash:
+            # the splash runs alone; the session, tree and first notice load once it has finished
+            self.push_screen(Splash(self.mode_name), lambda _: self._open())
+        else:
+            self._open()
+
+    def _open(self) -> None:
         self.session = self.session_factory(self._on_event_thread, self._approve_thread) if self.session_factory else None
         if self.ws:
             self.query_one("#ws-name", Static).update(Text(f"{self.ws.name or Path(self.ws.root).name}", style="bold"))
         self.set_interval(0.1, self._spin)
         self._status()
         self._notice("Describe a change, or ask a question about this folder. `/help` lists the keys and commands.")
-        if self.animate_splash:
-            self.push_screen(Splash(self.mode_name), lambda _: self.query_one("#composer", Input).focus())
-        else:
-            self.query_one("#composer", Input).focus()
+        self.query_one("#composer", Input).focus()
 
     # ---- status
     def _status(self) -> None:
