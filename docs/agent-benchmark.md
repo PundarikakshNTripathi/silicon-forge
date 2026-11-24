@@ -138,6 +138,40 @@ Where the difference comes from, so it is not over-read:
 - 13 tasks and one model: the intervals are wide, and a 3-task lead is a lead on one capability, not a general ranking. The tasks were written
   by the same person who built the change, so they are held out from the change's design, not independent of its author.
 
+## A third comparison, on tasks written before the answer-format fix (a tie)
+
+The second suite left one recorded loss: a requested line written as "`ANSWER: HIGH` or `ANSWER: LOW`" was not recognised by the session's format check.
+That check now understands the wording (`required_line_prefix`). A third suite of 13 new tasks (`agentbench/tasks_fresh.py`, ids `h3_*`) was committed first,
+and then the four arms ran on it exactly as before: same Qwen3.5-9B, tools, sampling and budget, 5 trials, interleaved (`benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-fresh-fmt-2026-11-24.json`).
+It varies the answer-line wording and includes vague requests of shapes the ask-first check was not designed around.
+
+| Arm | Task success (95% interval) | Runs solved | Tokens per solved task | Median time | First prompt |
+| :--- | :--- | :--- | ---: | ---: | ---: |
+| `custom` (current) | 81.5% (66.2 to 95.4) | 53/65 | 5,585 | 3.7 s | 621 |
+| `custom_prev` (v0.6.0) | 70.8% (52.3 to 89.2) | 46/65 | 8,820 | 7.0 s | 572 |
+| LangGraph | 76.9% (53.8 to 100) | 50/65 | 9,358 | 5.9 s | 957 |
+| Pydantic AI | 80.0% (60.0 to 100) | 52/65 | 8,939 | 5.7 s | 957 |
+
+**This is a tie, not a win.** Paired over the 13 tasks, the frameworks minus `custom` are -1.5 (Pydantic AI) and -4.6 points (LangGraph), intervals about
+-30 to +20: nothing separates them, and `custom` against `custom_prev` (+10.8, interval -6.2 to +30.8) is not separated either. What does hold up: about 35 to
+40% fewer tokens per solved task than either framework, and a lower median time. The lead seen in the second suite came from the ask-first check on vague
+requests; it only partly carries over here, because "Make this more efficient." uses a word the check does not list (20% for `custom`, so the prompt rule
+alone is weak) and the loop did worse than the frameworks on several other tasks.
+
+What the failures show, read from the result file (these are findings, not fixes):
+
+- **An inline answer line** (`h3_has_reset`, `h3_undefined_module`): the answer was right and ended the sentence ("... reset logic. ANSWER: NO") instead of
+  starting its own line, so the strict check failed (content-correct 86.2% against strict 81.5%). Addressed afterwards by moving a trailing label onto its own
+  line (`move_inline_answer`); **not re-measured** on a new suite.
+- **Over-eager renaming** (`h3_short_specific`): asked to rename a module in `rtl/alu.sv`, in 2 of 5 runs the loop created a new `rtl/adder.sv` instead of
+  editing in place (one run then hit the step limit). The frameworks did it in one edit every time. Not addressed.
+- **Counting lines in a log** (`h3_injection_log`): the loop answered 5 where the log has 4 WARNING lines in 3 of 5 runs, and the frameworks were right every time.
+  The loop shows file contents to the model inside a JSON string, which a 9B model may count worse; that is a hypothesis, not tested.
+- No safety violations in any arm, and the injected line in the log was never obeyed.
+
+Taken together with the second suite: the improvement over the v0.6.0 loop is real on vague requests and cheaper in tokens; "ahead of the frameworks" is
+not established by either suite (13 tasks each, one model).
+
 ## What this does and does not show
 
 - **It is one 9B model on 13 tasks.** A framework with a stronger model, or a different task mix, could rank differently. With

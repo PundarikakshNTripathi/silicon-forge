@@ -124,13 +124,26 @@ def tool_error_class(exc: Exception) -> str:
     return "tool_error"
 
 
-_FORMAT_RE = re.compile(r"line of the form\s*`\s*([^`<]*?)\s*<[^`]*`", re.IGNORECASE)
+# "line of the form `LABEL: <number>`" and also "line of the form `LABEL: HIGH` or `LABEL: LOW`": the label is the first backticked token
+# after the phrase, up to and including its colon. The first wording was all the check knew; the second was missed in a held-out run
+# (the answer was right but the line absent), which is what this pattern fixes.
+_FORMAT_RE = re.compile(r"line of the form\s*`\s*([A-Za-z][A-Za-z0-9 _-]*:)", re.IGNORECASE)
 
 
 def required_line_prefix(message: str) -> str | None:
-    """The label of a final line the user asked for, e.g. 'ANSWER:' from "end your reply with a line of the form `ANSWER: <number>`"."""
+    """The label of a final line the user asked for, e.g. 'ANSWER:' from "end your reply with a line of the form `ANSWER: <number>`"
+    or "... of the form `ANSWER: HIGH` or `ANSWER: LOW`"."""
     m = _FORMAT_RE.search(message)
-    return (m.group(1).strip() or None) if m else None
+    return m.group(1).strip() if m else None
+
+
+def move_inline_answer(text: str, prefix: str) -> str:
+    """If the requested label sits at the end of a sentence ("... no reset. ANSWER: NO") instead of starting its own line, put it on its own line.
+    Nothing is invented: the value is the model's own, and a reply that already has the line, or has no label at all, is returned unchanged."""
+    if has_line(text, prefix):
+        return text
+    m = re.search(r"(?<=\S)[ \t]+(" + re.escape(prefix) + r"[ \t]*\S[^\n]*)\s*$", text)
+    return text[: m.start()].rstrip() + "\n" + m.group(1).strip() if m else text
 
 
 def has_line(text: str, prefix: str) -> bool:
@@ -300,6 +313,8 @@ class AgentSession:
         if act["say"]:
             self._emit("assistant", act["say"])
         if act["tool"] is None:
+            if self._format_prefix:  # a label written inline at the end of a sentence is moved to its own line before it is checked
+                act["say"] = move_inline_answer(act["say"], self._format_prefix)
             if self._format_prefix and not self._format_asked and not has_line(act["say"], self._format_prefix):
                 # the user asked for a final line of a given form and the reply lacks it: ask once, instead of handing back a reply
                 # that is right but unusable by whatever reads it (small models often ignore a format inside a JSON envelope)

@@ -1,0 +1,458 @@
+{
+  "schema": "siliconforge.notsotiny/1",
+  "suite": "notsotiny-26-07",
+  "dataset": {
+    "repo": "HPAI-BSC/NotSoTiny-26-07",
+    "revision": "c561f340e86f522033be5c33d4f2668e375c3260",
+    "license": "Apache-2.0"
+  },
+  "arm": "feedback",
+  "model": "Qwen3.5-9B-Q4_K_M",
+  "sample": "sample-seed0-n40.json",
+  "seed": 0,
+  "tasks_run": 40,
+  "tasks_in_sample": 40,
+  "stopped": null,
+  "runner": "wsl",
+  "grader": "equiv_simple + equiv_induct -seq 30 (evals/equiv.py)",
+  "equivalent_rate": {
+    "mean": 0.125,
+    "ci95": [
+      0.025,
+      0.25
+    ]
+  },
+  "syntax_ok_rate": 0.6,
+  "tokens": {
+    "in": 402235,
+    "out": 95929
+  },
+  "wall_s": 2172.1,
+  "created": "2026-11-24T03:48:20+0530",
+  "per_task": [
+    {
+      "id": "ttgf0p2_0254",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.6,
+      "calls": 1,
+      "tokens_in": 8829,
+      "tokens_out": 109,
+      "seconds": 7.2
+    },
+    {
+      "id": "ttsky26b_1011",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "63 signal pair(s) not proven",
+      "elapsed_s": 31.5,
+      "calls": 1,
+      "tokens_in": 8712,
+      "tokens_out": 1559,
+      "seconds": 67.0
+    },
+    {
+      "id": "ttihp26a_0452",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "2435 signal pair(s) not proven",
+      "elapsed_s": 9.4,
+      "calls": 1,
+      "tokens_in": 4566,
+      "tokens_out": 252,
+      "seconds": 16.7
+    },
+    {
+      "id": "ttgf0p2_0256",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:402: ERROR:Identifier `\\_ADD' is implicitly declared and `default_nettype is set to none.",
+      "calls": 3,
+      "tokens_in": 27678,
+      "tokens_out": 1473,
+      "seconds": 33.8
+    },
+    {
+      "id": "ttsky26b_0932",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:434: ERROR: Unimplemented compiler directive or undefined macro `verilog.",
+      "calls": 3,
+      "tokens_in": 25717,
+      "tokens_out": 9000,
+      "seconds": 185.3
+    },
+    {
+      "id": "ttgf0p2_0471",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "51 signal pair(s) not proven",
+      "elapsed_s": 0.3,
+      "calls": 1,
+      "tokens_in": 1259,
+      "tokens_out": 110,
+      "seconds": 3.3
+    },
+    {
+      "id": "ttsky26b_0933",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:412: ERROR: syntax error, unexpected TOK_ENDMODULE",
+      "calls": 3,
+      "tokens_in": 21948,
+      "tokens_out": 4896,
+      "seconds": 98.0
+    },
+    {
+      "id": "ttihp26a_0457",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "2643 signal pair(s) not proven",
+      "elapsed_s": 10.8,
+      "calls": 1,
+      "tokens_in": 5809,
+      "tokens_out": 116,
+      "seconds": 16.2
+    },
+    {
+      "id": "ttgf0p2_0259",
+      "syntax": true,
+      "verdict": "error",
+      "detail": "ERROR: Gate module contains memories or processes. Run 'memory' or 'proc' respectively.",
+      "elapsed_s": 0.3,
+      "calls": 1,
+      "tokens_in": 8602,
+      "tokens_out": 1825,
+      "seconds": 39.5
+    },
+    {
+      "id": "ttsky26b_0024",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "563 signal pair(s) not proven",
+      "elapsed_s": 1.5,
+      "calls": 1,
+      "tokens_in": 5430,
+      "tokens_out": 938,
+      "seconds": 22.1
+    },
+    {
+      "id": "ttgf26a_0706",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:277: ERROR: Unimplemented compiler directive or undefined macro `verilog.",
+      "calls": 3,
+      "tokens_in": 19172,
+      "tokens_out": 9000,
+      "seconds": 180.5
+    },
+    {
+      "id": "ttgf26a_0858",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:37: ERROR: Unimplemented compiler directive or undefined macro `verilog.",
+      "calls": 3,
+      "tokens_in": 10982,
+      "tokens_out": 9000,
+      "seconds": 173.5
+    },
+    {
+      "id": "ttihp26a_0344",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "68 signal pair(s) not proven",
+      "elapsed_s": 0.2,
+      "calls": 1,
+      "tokens_in": 3684,
+      "tokens_out": 751,
+      "seconds": 16.7
+    },
+    {
+      "id": "ttsky25b_0301",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "121 signal pair(s) not proven",
+      "elapsed_s": 1.9,
+      "calls": 1,
+      "tokens_in": 4705,
+      "tokens_out": 362,
+      "seconds": 11.5
+    },
+    {
+      "id": "ttgf26a_0111",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "332 signal pair(s) not proven",
+      "elapsed_s": 2.0,
+      "calls": 1,
+      "tokens_in": 4762,
+      "tokens_out": 342,
+      "seconds": 11.1
+    },
+    {
+      "id": "ttsky26a_0979",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:90: ERROR: Module port `\\clear' is not declared in module header.",
+      "calls": 3,
+      "tokens_in": 12036,
+      "tokens_out": 641,
+      "seconds": 15.2
+    },
+    {
+      "id": "ttsky26a_0912",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "468 signal pair(s) not proven",
+      "elapsed_s": 2.8,
+      "calls": 1,
+      "tokens_in": 7945,
+      "tokens_out": 142,
+      "seconds": 10.0
+    },
+    {
+      "id": "ttgf26b_0694",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "651 signal pair(s) not proven",
+      "elapsed_s": 6.2,
+      "calls": 1,
+      "tokens_in": 1609,
+      "tokens_out": 278,
+      "seconds": 12.4
+    },
+    {
+      "id": "ttsky26a_0981",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:166: ERROR: Unimplemented compiler directive or undefined macro `verilog.",
+      "calls": 3,
+      "tokens_in": 17185,
+      "tokens_out": 9000,
+      "seconds": 181.0
+    },
+    {
+      "id": "ttgf26a_0113",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "331 signal pair(s) not proven",
+      "elapsed_s": 2.3,
+      "calls": 1,
+      "tokens_in": 4523,
+      "tokens_out": 150,
+      "seconds": 7.5
+    },
+    {
+      "id": "ttgf26a_0659",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "558 signal pair(s) not proven",
+      "elapsed_s": 26.8,
+      "calls": 1,
+      "tokens_in": 6043,
+      "tokens_out": 203,
+      "seconds": 33.6
+    },
+    {
+      "id": "ttsky26b_0992",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:223: ERROR: Unimplemented compiler directive or undefined macro `verilog.",
+      "calls": 3,
+      "tokens_in": 14080,
+      "tokens_out": 9000,
+      "seconds": 178.5
+    },
+    {
+      "id": "ttihp26a_0824",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:61: ERROR: Unimplemented compiler directive or undefined macro `verilog.",
+      "calls": 3,
+      "tokens_in": 12190,
+      "tokens_out": 9000,
+      "seconds": 175.9
+    },
+    {
+      "id": "ttsky25b_0037",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:177: ERROR:Incompatible re-declaration of wire \\score.",
+      "calls": 3,
+      "tokens_in": 10426,
+      "tokens_out": 5398,
+      "seconds": 118.2
+    },
+    {
+      "id": "ttsky26a_0754",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "143 signal pair(s) not proven",
+      "elapsed_s": 2.8,
+      "calls": 1,
+      "tokens_in": 4747,
+      "tokens_out": 772,
+      "seconds": 23.5
+    },
+    {
+      "id": "ttihp26a_0859",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "162 signal pair(s) not proven",
+      "elapsed_s": 7.7,
+      "calls": 1,
+      "tokens_in": 3407,
+      "tokens_out": 699,
+      "seconds": 23.3
+    },
+    {
+      "id": "ttihp26a_0082",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:143: ERROR:Condition for generate if is not constant!",
+      "calls": 3,
+      "tokens_in": 13944,
+      "tokens_out": 4770,
+      "seconds": 101.8
+    },
+    {
+      "id": "ttsky26b_1008",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 29.8,
+      "calls": 1,
+      "tokens_in": 9255,
+      "tokens_out": 125,
+      "seconds": 37.1
+    },
+    {
+      "id": "ttgf0p2_1128",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "1078 signal pair(s) not proven",
+      "elapsed_s": 1.6,
+      "calls": 1,
+      "tokens_in": 5285,
+      "tokens_out": 116,
+      "seconds": 7.3
+    },
+    {
+      "id": "ttsky26b_0064",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "640 signal pair(s) not proven",
+      "elapsed_s": 2.7,
+      "calls": 1,
+      "tokens_in": 3487,
+      "tokens_out": 197,
+      "seconds": 8.5
+    },
+    {
+      "id": "ttgf0p2_0472",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.2,
+      "calls": 1,
+      "tokens_in": 1941,
+      "tokens_out": 20,
+      "seconds": 1.8
+    },
+    {
+      "id": "ttihp26a_0204",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:619: ERROR:Identifier `\\mem_addr_next' is implicitly declared and `default_nettype is set to none.",
+      "calls": 3,
+      "tokens_in": 21926,
+      "tokens_out": 7980,
+      "seconds": 166.1
+    },
+    {
+      "id": "ttsky26b_1018",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:423: ERROR: syntax error, unexpected TOK_ENDMODULE",
+      "calls": 3,
+      "tokens_in": 28235,
+      "tokens_out": 808,
+      "seconds": 21.5
+    },
+    {
+      "id": "ttsky26b_1009",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:169: ERROR: syntax error, unexpected TOK_ENDMODULE",
+      "calls": 3,
+      "tokens_in": 27408,
+      "tokens_out": 3526,
+      "seconds": 77.1
+    },
+    {
+      "id": "ttgf0p2_0473",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.3,
+      "calls": 1,
+      "tokens_in": 1931,
+      "tokens_out": 34,
+      "seconds": 2.3
+    },
+    {
+      "id": "ttsky25b_0870",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:345: ERROR: syntax error, unexpected TOK_ENDMODULE",
+      "calls": 3,
+      "tokens_in": 14630,
+      "tokens_out": 1056,
+      "seconds": 24.2
+    },
+    {
+      "id": "ttgf0p2_0063",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "562 signal pair(s) not proven",
+      "elapsed_s": 8.6,
+      "calls": 1,
+      "tokens_in": 1223,
+      "tokens_out": 77,
+      "seconds": 11.3
+    },
+    {
+      "id": "ttihp26a_0857",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "106 signal pair(s) not proven",
+      "elapsed_s": 0.4,
+      "calls": 1,
+      "tokens_in": 2018,
+      "tokens_out": 1135,
+      "seconds": 22.9
+    },
+    {
+      "id": "ttsky25b_0038",
+      "syntax": false,
+      "verdict": "syntax_error",
+      "detail": "cand.sv:67: ERROR: syntax error, unexpected OP_LE, expecting TOK_ID or '#'",
+      "calls": 3,
+      "tokens_in": 7903,
+      "tokens_out": 984,
+      "seconds": 20.7
+    },
+    {
+      "id": "ttgf26a_0656",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 1.6,
+      "calls": 1,
+      "tokens_in": 7003,
+      "tokens_out": 85,
+      "seconds": 7.1
+    }
+  ]
+}

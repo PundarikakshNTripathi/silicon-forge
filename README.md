@@ -317,7 +317,20 @@ Making the loop ask before guessing (a vague first request such as "Make the des
 this loop **92.3%**, the v0.6.0 loop 69.2%, LangGraph 76.9%, Pydantic AI 75.4%, at about 60% fewer tokens per solved task. Against v0.6.0 the gain is
 separated from zero (+23.1, interval 3.1 to 46.2); against the frameworks it is a lead of 15 to 17 points that 13 tasks cannot separate from zero. All of
 it comes from the three vague-request tasks, where the frameworks asked in 0 of 15 runs; on the other ten they match or beat it (it missed one answer-format
-line they got right). A fix for that, and a fresh suite to measure it on, are next.
+line they got right). A third suite of 13 new tasks, written before the answer-format fix, came out as **a tie** (this loop 81.5%, LangGraph 76.9%, Pydantic AI 80.0%,
+the v0.6.0 loop 70.8%; nothing separated; `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-fresh-fmt-2026-11-24.json`) at about 35 to 40% fewer tokens per solved task. It also exposed three real weaknesses, listed in the
+benchmark doc. So the honest summary across both suites: clearly better and cheaper than the v0.6.0 loop on vague requests, level with the frameworks overall,
+not ahead.
+
+### Hidden-test module completion (NotSoTiny, 40 tasks)
+
+A masked module from a Tiny Tapeout project, graded by Yosys formal equivalence against the real module that no arm can see
+([details and limits](docs/evals.md#a-first-hidden-test-comparison-notsotiny-40-tasks)). The local Qwen3.5-9B got 5 of 40 (12.5%, interval 2.5 to 25.0); Gemini 3.8 Flash got 12 of 40
+(30.0%, 15.0 to 45.0), a gap that is separated (+17.5 points, +7.5 to +30.0). Feeding the model Yosys' parse error and letting it repair changed nothing (local 5 and 5; Gemini 12 and 13, where the repair never ran).
+A plain coding agent with the same Yosys check, on the first 20 tasks, got 6 of 20 with Claude and 4 of 20 with Gemini, not separated from Gemini's single reply. **So here the tool check added nothing measurable and a plain
+agent does not need this project to match it**; the value of SiliconForge is the checked flow around a design, not a higher pass rate on this task. One earlier agent run scored 20 of 20 because the agent
+read the answer file on disk; it was discarded, and the harness now scrambles the file and audits every transcript.
+`benchmarks/results/eval-notsotiny-26-07-*.json`.
 
 ### Searching layout knobs
 
@@ -342,8 +355,8 @@ an exception. [docs/ppa-search.md](docs/ppa-search.md)
 
 ## Limits
 
-- One benchmark suite, and it is nearly saturated for strong models. No CVDP, ChipBench or NotSoTiny run, so nothing here yet shows the
-  tool-gated pipeline beating a simpler setup, such as a plain coding agent with Yosys. That comparison is the first item on the roadmap.
+- VerilogEval is nearly saturated for strong models, and the one hidden-test run (NotSoTiny, 40 tasks, one run each) has wide intervals. It showed no gain from a Yosys parse check and no gap
+  between a plain coding agent and a single reply. No CVDP or ChipBench run. Nothing here shows the tool-gated approach beating a simpler setup.
 - Learning is small: one LoRA round on a 1.5B model is the only fine-tuning result, and no reinforcement learning has been run (published
   recipes for it need datacentre GPUs and gain a few points over supervised tuning).
 - The pipeline results are four designs, one run each. Nothing in them supports a claim about model quality.
@@ -358,8 +371,8 @@ an exception. [docs/ppa-search.md](docs/ppa-search.md)
 
 **If there were capital and compute** (future work, not a promise; prices are estimates from the research in [docs/roadmap.md](docs/roadmap.md)):
 
-- The audited, hidden-test comparison at scale: NotSoTiny and the corrected CVDP and RTLLM sets, with a plain coding agent given Yosys as the
-  baseline and a stop rule fixed in advance. Roughly $50 to $150 of API calls.
+- The hidden-test comparison at scale: all 1,146 NotSoTiny tasks with repeated runs, plus corrected CVDP and RTLLM sets, so the intervals can separate arms. A check that says more than "it parses"
+  (a testbench the model cannot see, formal properties) is the thing most worth trying. Roughly $50 to $150 of API calls.
 - Rejection-sampling fine-tuning of an open 4B or 9B model on verified answers, which is where the published recipes find most of their gain: about
   $50 to $200 of teacher tokens and $10 to $50 of GPU time.
 - A measured reinforcement-learning pilot (30 steps, a hidden second checker, mutation-checked tests), then a main run on one 24 to 48 GB GPU, only if
@@ -450,10 +463,8 @@ are stronger.
 
 The detailed list, with why each item matters and where it stands, is in [docs/roadmap.md](docs/roadmap.md). In short:
 
-- **First:** one audited comparison with hidden tests (raw model, model with simulation feedback, this pipeline, and a plain coding agent
-  with Yosys) on [NotSoTiny](https://arxiv.org/abs/2512.20823) and corrected CVDP/RTLLM subsets, with intervals and a stop rule decided in
-  advance. The grader it needs, a pairwise Yosys equivalence check with a self-check, is in `services/orchestrator/evals/equiv.py`; the task
-  sets, baselines and runs are not done.
+- **First, partly done:** the hidden-test comparison. A 40-task [NotSoTiny](https://arxiv.org/abs/2512.20823) run is in; it did not favour the tool check (see Results). Next is the larger run and the corrected CVDP/RTLLM subsets,
+  with a check stronger than a parse.
 - **Then, only if that shows an edge:** verdict-labelled memory, rejection-sampling fine-tuning at a larger scale, a short reinforcement-learning
   pilot with a hidden second checker, and improvement loops over prompts and tools that are judged on a sealed set. None is started.
 - **Also:** a re-test of the fixed agent loop on tasks written blind; a test-and-assertion agent rewarded by mutant kills; resuming

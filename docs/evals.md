@@ -105,7 +105,54 @@ siliconforge evals run verilogeval --serve model.gguf --arm single --split test 
 `equiv_simple`, then `equiv_induct -seq 30` (the recipe of [NotSoTiny](https://arxiv.org/abs/2512.20823)). The verdict is `equivalent`,
 `not_proven` or `error`; it never says "different", because an unproven pair may be a different design or one that bounded induction could
 not close. `self_check` runs reference-versus-reference and reference-versus-mutant so a grader is checked before it scores anything.
-It needs no model; no task set is wired to it yet (see [roadmap.md](roadmap.md)).
+It needs no model. The NotSoTiny comparison below uses it.
+
+## A first hidden-test comparison: NotSoTiny (40 tasks)
+
+[NotSoTiny](https://arxiv.org/abs/2512.20823) (HPAI-BSC, Apache-2.0, pinned to revision `c561f340`) gives a Tiny Tapeout project with one module's body masked
+out; the answer is graded by Yosys formal equivalence against the real module, which no arm can see. 40 tasks were drawn with a fixed seed from the ones whose
+reference passes the grader against itself, and the list was committed (`benchmarks/notsotiny/sample-seed0-n40.json`) before any arm ran. The dataset is downloaded
+to the data directory (`python scripts/notsotiny.py fetch`), never committed.
+
+Arms: `single` (one reply), `feedback` (up to two repairs from Yosys' parse and elaboration message only, never the reference), and a **plain coding agent**
+(`claude -p` or `agy`, given the project, the task text and a command that runs the same Yosys check, nothing from this repository). The agents ran on the
+first 20 tasks of the sample, so they are compared with the other arms on those 20.
+
+| Setup | Tasks | Equivalent (95% interval) | Paired difference from the first row |
+| :--- | ---: | :--- | :--- |
+| Qwen3.5-9B Q4_K_M, local, single | 40 | 12.5% (2.5 to 25.0), 5 of 40 | |
+| Qwen3.5-9B Q4_K_M, local, feedback | 40 | 12.5% (2.5 to 25.0), 5 of 40 | 0.0 points |
+| Gemini 3.8 Flash (agy), single | 40 | 30.0% (15.0 to 45.0), 12 of 40 | +17.5 points (+7.5 to +30.0) |
+| Gemini 3.8 Flash (agy), feedback | 40 | 32.5% (17.5 to 47.5), 13 of 40 | +20.0 points (+7.5 to +32.5) |
+| Plain coding agent, Gemini (agy), 20 tasks | 20 | 20.0% (5.0 to 40.0), 4 of 20 | +15.0 points (0.0 to +30.0) |
+| Plain coding agent, Claude (`claude -p`), 20 tasks | 20 | 30.0% (10.0 to 50.0), 6 of 20 | +25.0 points (+10.0 to +45.0) |
+
+(Regenerate with `python scripts/notsotiny.py table FILE...`; the first row of the command is the base. Result files are in `benchmarks/results/eval-notsotiny-26-07-*.json`.)
+
+What it says, in the order of the stop rule written down beforehand:
+
+- **Feedback from a parse check did not help.** Local: identical to single (5 of 40 both). Gemini: one more task (13 against 12), which is what a second draw of the same
+  model can do, because the repair step never ran: every completed Gemini reply parsed on the first try (one task timed out in the provider both times and counts as a miss). On the local model the repair ran on all 16 tasks whose first
+  reply did not parse and fixed none of them. A check that only says "it parses" cannot tell the model whether the module does the right thing.
+- **The plain coding agents did not do better than the same model in one reply, and Claude's 30% on 20 tasks is level with Gemini's single-reply 30% on 40.** The paired difference
+  of the Claude agent over Gemini single on the shared 20 is +10 points with an interval from 0.0 to +25.0 (not separated); the Gemini agent is level with Gemini single (0.0). The agent ran
+  Yosys on its own file and still had no way to learn whether the logic was right; 6 of the 20 Gemini agent runs hit its 10-minute limit and one Claude run hit 700 s.
+- **What is separated is model size.** Gemini over the local 9B model: +17.5 points (+7.5 to +30.0) on the same 40 tasks.
+- So on this task, **gating each step on a Yosys parse verdict adds nothing measurable, and a plain coding agent does not need our gating to match it**. This is the outcome the stop rule
+  names, and it applies: nothing here supports training spend, and the pitch is the verified flow around a design (lint, formal, equivalence, place and route), not a pass-rate gain on module completion.
+
+Limits of this run, all real:
+
+- 40 tasks (20 for the agents), one run each, one dataset revision. The intervals are wide; "not separated" means unknown, not "equal". The graded gap between Claude and the others could be real.
+- Failure shapes differ by arm. The local model fails to parse on 16 of 40 tasks; in the one I opened the reply held several modules, so the whole-module splice nested them (I did not inspect all 16). The prompt asks for the body only, so this is
+  counted as a miss, but a more forgiving splice (keep only the module with the target name) would score the local arms higher. It was not changed after seeing results.
+  One task (`ttgf0p2_0259`) ends in a grader error ("gate module contains memories or processes") for every arm, so it is a miss for all of them and may be a task this grader cannot judge; it stays in the sample because the sample was frozen first.
+- The tasks are public and recent, so some contamination of the cloud models is possible; the local model's training cut-off is earlier.
+- **An earlier run of the plain agent was thrown away.** The first Gemini agent run scored 20 of 20, and the transcript showed why: the agent found the dataset file on this machine and read the reference answer.
+  The scores were deleted, the prompt now forbids looking outside the folder, the dataset is scrambled on disk while an agent runs (`notsotiny.scrambled_on_disk`), every run's full transcript is saved and
+  scanned for lookups (`plain_agent.audit`; a run with one is void and scored as a miss), and both agents were rerun. Neither rerun had a flagged run. This guards against reading the file on this machine and
+  against the public dataset URL appearing in a transcript; it does not prove an agent never recalled an answer from training.
+- The cloud agents ran on the author's subscriptions, which have usage limits (the Claude arm hit one on a first attempt, and that attempt was discarded and rerun).
 
 ## Fine-tuning on verified samples (one round, measured)
 

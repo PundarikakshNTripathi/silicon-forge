@@ -476,3 +476,8 @@ BY_ID.update({t.id: t for t in HOLDOUT})
 from services.orchestrator.agentbench.tasks_heldout import HELDOUT  # noqa: E402
 
 BY_ID.update({t.id: t for t in HELDOUT})
+
+# A third suite, written and frozen before the answer-format fix was measured (see tasks_fresh.py).
+from services.orchestrator.agentbench.tasks_fresh import FRESH  # noqa: E402
+
+BY_ID.update({t.id: t for t in FRESH})

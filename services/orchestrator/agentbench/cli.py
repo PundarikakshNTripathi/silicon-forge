@@ -105,7 +105,7 @@ def _runner(backend: str) -> Any:
 
 def cmd_agentbench(args: argparse.Namespace) -> int:
     if args.action == "list":
-        for t in (*tasks.SUITE, *tasks.HOLDOUT, *tasks.HELDOUT):
+        for t in (*tasks.SUITE, *tasks.HOLDOUT, *tasks.HELDOUT, *tasks.FRESH):
             print(f"{t.id:<22} {t.category:<14} {'EDA ' if t.needs_eda else '    '}{t.title}")
         return 0
     if args.action == "report":
