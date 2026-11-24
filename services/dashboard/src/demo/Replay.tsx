@@ -257,7 +257,7 @@ export function TerminalTab() {
         <figure><img src={assetUrl("tui-approval.png")} alt="Terminal approval prompt for an edit" loading="lazy" /><figcaption className="small muted">The approval prompt before an edit.</figcaption></figure>
       </div>
       <div className="rp-shots">
-        <figure><img src={assetUrl("tui.gif")} alt="Animated capture of the terminal interface" loading="lazy" /><figcaption className="small muted">Terminal interface, animated.</figcaption></figure>
+        <figure><img src={assetUrl("tui.gif")} alt="Animated capture of the terminal interface" loading="lazy" /><figcaption className="small muted">A real session of the terminal interface with a local 9B model, about a minute, captured through a browser-hosted terminal.</figcaption></figure>
         <figure><img src={assetUrl("web-tour.gif")} alt="Animated capture of the web interface running a flow" loading="lazy" /><figcaption className="small muted">Web interface, animated.</figcaption></figure>
       </div>
     </div>
