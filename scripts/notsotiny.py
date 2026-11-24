@@ -132,12 +132,14 @@ def cmd_run(a) -> int:
                     else:
                         g = ns.grade(runner, tmp / "grade", task, code, timeout=a.timeout)
                     rec = {**g, **r}
-                    if r["error"] and "limit" in r["error"].lower():
+                    if r["error"] and "limit" in r["error"].lower():  # a usage limit is not a wrong answer: stop, and do not count this task
                         stopped = f"stopped after {i} tasks: {r['error'][:120]}"
-                        records.append({"id": tid, **rec})
                         break
                 else:
-                    rec = _record_llm_arm(a, runner, llm, task, tmp)
+                    try:
+                        rec = _record_llm_arm(a, runner, llm, task, tmp)
+                    except Exception as exc:  # a provider that times out or refuses is counted as a miss and labelled, not allowed to lose the other tasks
+                        rec = {"syntax": False, "verdict": "provider_error", "detail": f"{type(exc).__name__}: {str(exc)[:200]}"}
             records.append({"id": tid, **rec})
             print(f"{i + 1:>3}/{len(ids)} {tid:<18} {rec['verdict']:<12} {rec.get('seconds', '')}s", flush=True)
     finally:
@@ -149,7 +151,7 @@ def cmd_run(a) -> int:
     syn = [1.0 if r.get("syntax") else 0.0 for r in records]
     doc = {"schema": SCHEMA, "suite": ns.SUITE, "dataset": {"repo": ns.REPO, "revision": ns.REVISION, "license": "Apache-2.0"},
            "arm": a.arm + (f":{a.cli}" if a.arm == "agent" else ""), "model": label, "sample": Path(a.sample).name, "seed": sample["seed"],
-           "void_runs": sum(1 for r in records if r["verdict"] == "void_reference_lookup"), "tasks_run": n, "tasks_in_sample": len(sample["tasks"]), "stopped": stopped or None, "runner": runner.name,
+           "void_runs": sum(1 for r in records if r["verdict"] == "void_reference_lookup"), "provider_errors": sum(1 for r in records if r["verdict"] == "provider_error"), "tasks_run": n, "tasks_in_sample": len(sample["tasks"]), "stopped": stopped or None, "runner": runner.name,
            "grader": sample["grader"], "equivalent_rate": {"mean": sum(ok) / n if n else None, "ci95": list(bootstrap_ci(ok)) if n else None},
            "syntax_ok_rate": sum(syn) / n if n else None,
            "tokens": {"in": sum(r.get("tokens_in") or 0 for r in records), "out": sum(r.get("tokens_out") or 0 for r in records)},
