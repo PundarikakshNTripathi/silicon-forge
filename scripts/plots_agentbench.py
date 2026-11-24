@@ -23,9 +23,9 @@ RES = ROOT / "benchmarks" / "results"
 OUT = ROOT / "assets" / "plots"
 
 INK, MUTED, GRID, PAPER = "#0e1520", "#626c7b", "#d5d9e0", "#f7f5f0"
-ARM_COLOR = {"custom": "#1f6feb", "langgraph": "#d9482b", "pydantic_ai": "#0f9d74"}
-ARM_MARKER = {"custom": "o", "langgraph": "s", "pydantic_ai": "^"}
-ARM_LABEL = {"custom": "SiliconForge loop", "langgraph": "LangGraph", "pydantic_ai": "Pydantic AI"}
+ARM_COLOR = {"custom": "#1f6feb", "custom_prev": "#7a8aa3", "langgraph": "#d9482b", "pydantic_ai": "#0f9d74"}
+ARM_MARKER = {"custom": "o", "custom_prev": "D", "langgraph": "s", "pydantic_ai": "^"}
+ARM_LABEL = {"custom": "SiliconForge loop", "custom_prev": "SiliconForge loop (v0.6.0)", "langgraph": "LangGraph", "pydantic_ai": "Pydantic AI"}
 CATEGORY_ORDER = ["comprehension", "editing", "recovery", "judgement", "safety"]
 
 plt.rcParams.update({
@@ -186,8 +186,32 @@ def profile(doc: dict, name: str = "agentbench_profile.png") -> None:
     plt.close(fig)
 
 
+def latest(docs: list[tuple[str, dict]], name: str = "agentbench_latest.png") -> None:
+    """The current comparison: one panel per frozen suite that was written before the change it measures, same arms in the same order,
+    so the reader sees the lead on one suite and the tie on the next."""
+    fig, axes = plt.subplots(len(docs), 1, figsize=(7.6, 2.7 * len(docs) + 0.6), sharex=True)
+    for ax, (title, doc) in zip(axes, docs, strict=True):
+        arms = doc["summary"]["arms"]
+        for i, (arm, a) in enumerate(reversed(list(arms.items()))):
+            ts = a["task_success"]
+            col = ARM_COLOR.get(base(arm), MUTED)
+            ax.plot([ts["ci95"][0], ts["ci95"][1]], [i, i], color=col, lw=6, alpha=0.25, solid_capstyle="butt")
+            ax.scatter(ts["mean"], i, s=80, marker=ARM_MARKER.get(base(arm), "o"), color=col, edgecolor=col, linewidth=2, zorder=3, clip_on=False)
+            ax.text(1.02, i, f"{ts['mean'] * 100:.1f}%  [{ts['ci95'][0] * 100:.0f}, {ts['ci95'][1] * 100:.0f}]", va="center", fontsize=8.5, color=INK)
+        ax.set_yticks(range(len(arms)), [label(a) for a in reversed(list(arms))], fontsize=9)
+        ax.set_xlim(0, 1.0)
+        ax.set_title(f"{title} ({len(doc['tasks'])} tasks, {doc['trials']} trials each)", loc="left", fontsize=10, color=INK)
+        ax.grid(axis="y", visible=False)
+    axes[-1].set_xlabel("Task success (95% bootstrap interval over tasks); same model, tools, sandbox and budget for every loop")
+    fig.savefig(OUT / name)
+    plt.close(fig)
+
+
 def main(pattern: str = "agentbench-*-run3-*.json") -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    second, third = load("agentbench-*-heldout-ask-*.json"), load("agentbench-*-fresh-fmt-*.json")
+    if second and third:
+        latest([("Second suite, frozen before the ask-first change", second), ("Third suite, frozen before the answer-format fix", third)])
     doc = load(pattern)
     if doc:
         success(doc)

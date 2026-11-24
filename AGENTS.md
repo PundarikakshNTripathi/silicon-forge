@@ -17,6 +17,8 @@ python scripts/dev.py build-cpp   # CMake build of services/telemetry_engine (MS
 python scripts/dev.py test        # ctest + pytest
 python scripts/dev.py lint        # ruff
 python -m pytest -q tests/test_guardrails.py    # one file
+python scripts/notsotiny.py run --arm single|feedback|agent ...   # hidden-test NotSoTiny arms (docs/evals.md); needs the dataset and Yosys
+python scripts/plots_agentbench.py                  # regenerate the agent-benchmark figures from the result files
 siliconforge serve                # API + built UI at http://127.0.0.1:8000
 cd services/dashboard && pnpm install && pnpm dev   # UI dev server :5173 (proxies /api to :8000)
 siliconforge tui                  # terminal UI: chat with the agent (--run for the pipeline run viewer)
@@ -34,7 +36,7 @@ Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,t
 - `services/orchestrator/` Python backend: `pipeline.py` (DAG), `workspace.py` + `agent/` (workspace agent), `agents/`, `guardrails/`, `eda/` (bridge, `backends/`
   simulated+real, `runner.py`, `librelane.py`, `formal_ir.py`, `vcd.py`), `inference/` (`router.py`, `providers/` incl. `agy`,
   `catalog.py`, `cache.py`, `llamacpp.py`, `gpu.py`, `ledger.py`), `isa/` (ISA toolchain), `verify/` (stdlib-only verification tools run via the EDA runner), `tt/` (Tiny Tapeout IHP mode), `rl/` (PPA optimizer), `api/` (FastAPI, SQLite store, run manager),
-  `skills/` (BM25 skill packs), `schemas.py` (pydantic IR), `paths.py` (resource vs data dir).
+  `skills/` (BM25 skill packs), `schemas.py` (pydantic IR), `paths.py` (resource vs data dir), `evals/` (VerilogEval and NotSoTiny runners, `equiv.py` grader, `plain_agent.py` baseline), `agentbench/` (agent loop vs LangGraph / Pydantic AI, frozen task suites).
 - `services/telemetry_engine/` C++20 log parser + static RTL linter (`sf-telemetry`), CMake.
 - `services/dashboard/` React + Vite web UI (built to `dist/`, served by the API). `services/tui/` Textual TUI.
 - `apps/desktop/` Electron shell (supervises a PyInstaller-frozen backend). Build: `python scripts/build_desktop.py`.
@@ -53,7 +55,9 @@ Python env: `uv venv --python 3.12 .venv && uv pip install -e ".[api,providers,t
 5. **Subscription CLI bridge** (`claude -p`, `codex exec`, `gemini -p`) is opt-in and must never read, copy or store OAuth tokens.
 6. **Shared machine.** Never stop, evict or attach to another program's model server or GPU job (`inference/gpu.py` only reads). Tests never
    allocate large files (the dev laptop disk has filled up once from a test).
-7. Prefer editing existing modules; keep prompts in `configs/prompts/`, PDK facts in `configs/pdks/`.
+7. **Agent evals must not let the agent read the answer.** A general-purpose agent on this machine can open files, so keep reference solutions out of its reach (`notsotiny.scrambled_on_disk`),
+   save every transcript and audit it (`plain_agent.audit`), and void a run that looked. One run was discarded for exactly this. Freeze task lists before running; report intervals and "not separated" as measured.
+8. Prefer editing existing modules; keep prompts in `configs/prompts/`, PDK facts in `configs/pdks/`.
 
 ## Git workflow
 Branch from `main` (`feat/*`, `fix/*`, `perf/*`, `docs/*`, `chore/*`), Conventional Commits, PR into `main`
