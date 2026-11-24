@@ -23,7 +23,7 @@ import Overview from "./demo/Overview";
 import DemoAgent from "./demo/DemoAgent";
 import EngineeringNote from "./demo/EngineeringNote";
 import Tour from "./demo/Tour";
-import TourHost, { startTour, tourSeen } from "./tour/Tour";
+import TourHost, { startTour, tourRequested, tourSeen } from "./tour/Tour";
 import HelpBar from "./tour/HelpBar";
 import { DEMO_TOUR, PAGE_TOURS, helpKey } from "./tour/steps";
 
@@ -94,8 +94,13 @@ export default function App() {
   const toasts = useToasts();
   useHotkey("mod+k", () => setPalette((p) => !p));
   const loc = useLocation();
-  // in the demo the full tour opens by itself on a first visit (it begins by asking, so it is easy to wave off); elsewhere it is on request
-  useEffect(() => { if (DEMO && !tourSeen() && loc.pathname === "/") startTour(DEMO_TOUR); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // in the demo the full tour opens by itself on a first visit (it begins by asking, so it is easy to wave off), and again whenever the link says `?tour`;
+  // elsewhere it is on request
+  useEffect(() => {
+    if (!DEMO) return;
+    const asked = tourRequested(window.location.search) || tourRequested(loc.search);
+    if (asked || (!tourSeen() && loc.pathname === "/")) startTour(DEMO_TOUR);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const takeTour = () => {
     const k = helpKey(loc.pathname);
     startTour(DEMO && !k ? DEMO_TOUR : (k && PAGE_TOURS[k]) || DEMO_TOUR);

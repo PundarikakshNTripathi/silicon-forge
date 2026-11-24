@@ -12,6 +12,8 @@ const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 const SEEN = "sf-tour-seen";
 
+/** A link can ask for the tour whatever the visitor has seen before: `?tour`, `?tour=1`, or `#/?tour=1`. */
+export const tourRequested = (search: string) => new URLSearchParams(search).has("tour") && new URLSearchParams(search).get("tour") !== "0";
 export const tourSeen = () => { try { return localStorage.getItem(SEEN) === "1"; } catch { return false; } };
 const markSeen = () => { try { localStorage.setItem(SEEN, "1"); } catch { /* storage may be unavailable */ } };
 
