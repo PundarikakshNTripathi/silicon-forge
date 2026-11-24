@@ -18,7 +18,9 @@ that could come out against us:
 - **Stop rule, decided in advance:** if the pipeline is not clearly better than model-plus-simulation-feedback, or the plain coding
   agent matches it, the project is positioned as teaching and tooling and nothing is spent on training or compute.
 
-The first step exists: `services/orchestrator/evals/equiv.py` is a pairwise equivalence grader (Yosys `equiv_simple`, then `equiv_induct -seq 30`, the NotSoTiny recipe) with the self-check above. It needs no model and runs on CPU. What is missing is the task sets, the baselines and the runs.
+**Status (2026-11-24): a 40-task run is done and the stop rule applies.** On NotSoTiny a Yosys parse check added nothing, and a plain coding agent with Yosys matched a single reply within the noise
+(`docs/evals.md`, `benchmarks/results/eval-notsotiny-26-07-*.json`). So the positioning is the verified flow and the teaching tooling, and no training or compute is spent on this basis. What would change that is
+a stronger check than a parse (a hidden testbench, formal properties) that makes a repair loop worth having, run at a larger scale with repeats; that is the next experiment, not a result.
 
 Only after that is there a reason to look at learning:
 

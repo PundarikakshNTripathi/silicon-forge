@@ -110,10 +110,8 @@ placement or scale beyond blocks.
 
 ## 6. Where SiliconForge is weaker
 
-- **No audited, hidden-test comparison.** Results rest on VerilogEval, which is close to saturated and probably contaminated for strong
-  models, and on our own AgentBench tasks, which are public. There is no run on NotSoTiny or on corrected CVDP/RTLLM sets, and no
-  comparison against a plain coding agent that calls Yosys and SymbiYosys itself. Until that exists, nothing here shows the
-  tool-gated pipeline beats a simpler setup.
+- **Only a small hidden-test comparison, and it did not favour the tool check.** On 40 NotSoTiny tasks (one run each, wide intervals) a Yosys parse check added nothing, and a plain coding agent with Yosys
+  was not separated from a single reply (`docs/evals.md`). VerilogEval is close to saturated and probably contaminated for strong models, and our own AgentBench tasks are public. No run on corrected CVDP/RTLLM sets.
 - **Learning is small.** One LoRA round on a 1.5B model (+8.1 points on held-out problems) is the only fine-tuning result. No
   reinforcement learning has been run; the published recipes for it need datacentre GPUs and gain a few points over supervised
   fine-tuning (ChipMATE above).

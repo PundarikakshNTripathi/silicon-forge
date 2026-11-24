@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Measured (hidden-test module completion)
+- **NotSoTiny, 40 tasks** (`scripts/notsotiny.py`, `evals/notsotiny.py`, `evals/plain_agent.py`; grader: Yosys formal equivalence, frozen sample in `benchmarks/notsotiny/`). Local Qwen3.5-9B 12.5%, Gemini 3.8 Flash 30.0% (separated);
+  a Yosys parse-error repair loop changed nothing; a plain coding agent with Yosys (Claude 6 of 20, Gemini 4 of 20) was not separated from a single reply. The stop rule from the research plan applies: no evidence that the tool check helps here
+  (`docs/evals.md`). An earlier agent run that scored 20 of 20 by reading the answer file was discarded; runs are now audited (transcripts saved and scanned) and the dataset file is scrambled while an agent runs.
 ### Fixed
 - The answer-line check understands "a line of the form `ANSWER: HIGH` or `ANSWER: LOW`" (it only knew `ANSWER: <value>`), and a label written at the end of a
   sentence is moved onto its own line before the check (`move_inline_answer`; the second is not yet re-measured).

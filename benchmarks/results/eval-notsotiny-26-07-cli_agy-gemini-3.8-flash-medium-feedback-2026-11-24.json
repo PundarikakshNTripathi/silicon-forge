@@ -1,0 +1,471 @@
+{
+  "schema": "siliconforge.notsotiny/1",
+  "suite": "notsotiny-26-07",
+  "dataset": {
+    "repo": "HPAI-BSC/NotSoTiny-26-07",
+    "revision": "c561f340e86f522033be5c33d4f2668e375c3260",
+    "license": "Apache-2.0"
+  },
+  "arm": "feedback",
+  "model": "cli_agy:gemini-3.8-flash-medium",
+  "sample": "sample-seed0-n40.json",
+  "seed": 0,
+  "void_runs": 0,
+  "provider_errors": 1,
+  "tasks_run": 40,
+  "tasks_in_sample": 40,
+  "stopped": null,
+  "runner": "wsl",
+  "grader": "equiv_simple + equiv_induct -seq 30 (evals/equiv.py)",
+  "equivalent_rate": {
+    "mean": 0.325,
+    "ci95": [
+      0.175,
+      0.475
+    ]
+  },
+  "syntax_ok_rate": 0.975,
+  "tokens": {
+    "in": 642294,
+    "out": 1350454
+  },
+  "wall_s": 7355.6,
+  "created": "2026-11-24T09:16:08+0530",
+  "per_task": [
+    {
+      "id": "ttgf0p2_0254",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.6,
+      "calls": 1,
+      "tokens_in": 20594,
+      "tokens_out": 5415,
+      "seconds": 36.2
+    },
+    {
+      "id": "ttsky26b_1011",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "493 signal pair(s) not proven",
+      "elapsed_s": 180.0,
+      "calls": 1,
+      "tokens_in": 21013,
+      "tokens_out": 31323,
+      "seconds": 324.4
+    },
+    {
+      "id": "ttihp26a_0452",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "2541 signal pair(s) not proven",
+      "elapsed_s": 9.4,
+      "calls": 1,
+      "tokens_in": 16282,
+      "tokens_out": 81758,
+      "seconds": 366.7
+    },
+    {
+      "id": "ttgf0p2_0256",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.6,
+      "calls": 1,
+      "tokens_in": 20624,
+      "tokens_out": 3434,
+      "seconds": 27.9
+    },
+    {
+      "id": "ttsky26b_0932",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "424 signal pair(s) not proven",
+      "elapsed_s": 5.5,
+      "calls": 1,
+      "tokens_in": 18562,
+      "tokens_out": 37932,
+      "seconds": 173.3
+    },
+    {
+      "id": "ttgf0p2_0471",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "51 signal pair(s) not proven",
+      "elapsed_s": 0.3,
+      "calls": 1,
+      "tokens_in": 12420,
+      "tokens_out": 6755,
+      "seconds": 42.6
+    },
+    {
+      "id": "ttsky26b_0933",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "433 signal pair(s) not proven",
+      "elapsed_s": 5.7,
+      "calls": 1,
+      "tokens_in": 17931,
+      "tokens_out": 81616,
+      "seconds": 336.1
+    },
+    {
+      "id": "ttihp26a_0457",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 4.5,
+      "calls": 1,
+      "tokens_in": 17786,
+      "tokens_out": 5617,
+      "seconds": 39.7
+    },
+    {
+      "id": "ttgf0p2_0259",
+      "syntax": true,
+      "verdict": "error",
+      "detail": "ERROR: Gate module contains memories or processes. Run 'memory' or 'proc' respectively.",
+      "elapsed_s": 0.2,
+      "calls": 1,
+      "tokens_in": 20389,
+      "tokens_out": 12577,
+      "seconds": 54.4
+    },
+    {
+      "id": "ttsky26b_0024",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "543 signal pair(s) not proven",
+      "elapsed_s": 21.1,
+      "calls": 1,
+      "tokens_in": 17001,
+      "tokens_out": 54943,
+      "seconds": 274.6
+    },
+    {
+      "id": "ttgf26a_0706",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "713 signal pair(s) not proven",
+      "elapsed_s": 8.3,
+      "calls": 1,
+      "tokens_in": 16147,
+      "tokens_out": 68858,
+      "seconds": 291.4
+    },
+    {
+      "id": "ttgf26a_0858",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "158 signal pair(s) not proven",
+      "elapsed_s": 1.7,
+      "calls": 1,
+      "tokens_in": 12972,
+      "tokens_out": 49316,
+      "seconds": 135.0
+    },
+    {
+      "id": "ttihp26a_0344",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "584 signal pair(s) not proven",
+      "elapsed_s": 0.6,
+      "calls": 1,
+      "tokens_in": 15264,
+      "tokens_out": 73122,
+      "seconds": 304.2
+    },
+    {
+      "id": "ttsky25b_0301",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "125 signal pair(s) not proven",
+      "elapsed_s": 1.6,
+      "calls": 1,
+      "tokens_in": 16613,
+      "tokens_out": 47063,
+      "seconds": 204.1
+    },
+    {
+      "id": "ttgf26a_0111",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "339 signal pair(s) not proven",
+      "elapsed_s": 2.0,
+      "calls": 1,
+      "tokens_in": 16512,
+      "tokens_out": 42981,
+      "seconds": 177.8
+    },
+    {
+      "id": "ttsky26a_0979",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "248 signal pair(s) not proven",
+      "elapsed_s": 2.4,
+      "calls": 1,
+      "tokens_in": 15443,
+      "tokens_out": 53509,
+      "seconds": 247.1
+    },
+    {
+      "id": "ttsky26a_0912",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "468 signal pair(s) not proven",
+      "elapsed_s": 2.2,
+      "calls": 1,
+      "tokens_in": 19452,
+      "tokens_out": 8335,
+      "seconds": 49.6
+    },
+    {
+      "id": "ttgf26b_0694",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.6,
+      "calls": 1,
+      "tokens_in": 12932,
+      "tokens_out": 17621,
+      "seconds": 91.0
+    },
+    {
+      "id": "ttsky26a_0981",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.4,
+      "calls": 1,
+      "tokens_in": 15260,
+      "tokens_out": 49672,
+      "seconds": 206.3
+    },
+    {
+      "id": "ttgf26a_0113",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "338 signal pair(s) not proven",
+      "elapsed_s": 2.3,
+      "calls": 1,
+      "tokens_in": 16258,
+      "tokens_out": 67228,
+      "seconds": 273.9
+    },
+    {
+      "id": "ttgf26a_0659",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "561 signal pair(s) not proven",
+      "elapsed_s": 31.6,
+      "calls": 1,
+      "tokens_in": 17872,
+      "tokens_out": 68147,
+      "seconds": 312.7
+    },
+    {
+      "id": "ttsky26b_0992",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "496 signal pair(s) not proven",
+      "elapsed_s": 63.5,
+      "calls": 1,
+      "tokens_in": 14105,
+      "tokens_out": 80246,
+      "seconds": 391.3
+    },
+    {
+      "id": "ttihp26a_0824",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "795 signal pair(s) not proven",
+      "elapsed_s": 180.0,
+      "calls": 1,
+      "tokens_in": 13313,
+      "tokens_out": 55828,
+      "seconds": 401.5
+    },
+    {
+      "id": "ttsky25b_0037",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "209 signal pair(s) not proven",
+      "elapsed_s": 2.4,
+      "calls": 1,
+      "tokens_in": 13459,
+      "tokens_out": 58003,
+      "seconds": 257.6
+    },
+    {
+      "id": "ttsky26a_0754",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "213 signal pair(s) not proven",
+      "elapsed_s": 4.1,
+      "calls": 1,
+      "tokens_in": 16363,
+      "tokens_out": 34965,
+      "seconds": 166.5
+    },
+    {
+      "id": "ttihp26a_0859",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "162 signal pair(s) not proven",
+      "elapsed_s": 22.6,
+      "calls": 1,
+      "tokens_in": 15020,
+      "tokens_out": 20359,
+      "seconds": 113.6
+    },
+    {
+      "id": "ttihp26a_0082",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "60 signal pair(s) not proven",
+      "elapsed_s": 1.2,
+      "calls": 1,
+      "tokens_in": 14870,
+      "tokens_out": 79886,
+      "seconds": 315.6
+    },
+    {
+      "id": "ttsky26b_1008",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 24.1,
+      "calls": 1,
+      "tokens_in": 21780,
+      "tokens_out": 4123,
+      "seconds": 51.5
+    },
+    {
+      "id": "ttgf0p2_1128",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 1.6,
+      "calls": 1,
+      "tokens_in": 16976,
+      "tokens_out": 4745,
+      "seconds": 34.7
+    },
+    {
+      "id": "ttsky26b_0064",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "646 signal pair(s) not proven",
+      "elapsed_s": 2.8,
+      "calls": 1,
+      "tokens_in": 15103,
+      "tokens_out": 29006,
+      "seconds": 126.9
+    },
+    {
+      "id": "ttgf0p2_0472",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.3,
+      "calls": 1,
+      "tokens_in": 13409,
+      "tokens_out": 1112,
+      "seconds": 19.8
+    },
+    {
+      "id": "ttihp26a_0204",
+      "syntax": false,
+      "verdict": "provider_error",
+      "detail": "ProviderError: All targets failed for tier 'balanced' in profile 'gemini-agy': cli:agy: timed out after 420s"
+    },
+    {
+      "id": "ttsky26b_1018",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 23.7,
+      "calls": 1,
+      "tokens_in": 21685,
+      "tokens_out": 7342,
+      "seconds": 62.7
+    },
+    {
+      "id": "ttsky26b_1009",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 46.2,
+      "calls": 1,
+      "tokens_in": 20562,
+      "tokens_out": 10209,
+      "seconds": 97.6
+    },
+    {
+      "id": "ttgf0p2_0473",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.2,
+      "calls": 1,
+      "tokens_in": 13405,
+      "tokens_out": 2813,
+      "seconds": 24.8
+    },
+    {
+      "id": "ttsky25b_0870",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 0.2,
+      "calls": 1,
+      "tokens_in": 16181,
+      "tokens_out": 26295,
+      "seconds": 118.8
+    },
+    {
+      "id": "ttgf0p2_0063",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "690 signal pair(s) not proven",
+      "elapsed_s": 12.5,
+      "calls": 1,
+      "tokens_in": 12553,
+      "tokens_out": 17810,
+      "seconds": 100.0
+    },
+    {
+      "id": "ttihp26a_0857",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "839 signal pair(s) not proven",
+      "elapsed_s": 1.5,
+      "calls": 1,
+      "tokens_in": 13381,
+      "tokens_out": 26742,
+      "seconds": 130.3
+    },
+    {
+      "id": "ttsky25b_0038",
+      "syntax": true,
+      "verdict": "not_proven",
+      "detail": "231 signal pair(s) not proven",
+      "elapsed_s": 1.6,
+      "calls": 1,
+      "tokens_in": 13900,
+      "tokens_out": 21238,
+      "seconds": 108.6
+    },
+    {
+      "id": "ttgf26a_0656",
+      "syntax": true,
+      "verdict": "equivalent",
+      "detail": "all compared signals proven",
+      "elapsed_s": 1.2,
+      "calls": 1,
+      "tokens_in": 18902,
+      "tokens_out": 2510,
+      "seconds": 24.3
+    }
+  ]
+}
