@@ -141,7 +141,7 @@ What it says, in the order of the stop rule written down beforehand:
   Yosys on its own file and still had no way to learn whether the logic was right; 6 of the 20 Gemini agent runs hit its 10-minute limit and one Claude run hit 700 s.
 - **What is separated is model size.** Gemini over the local 9B model: +17.5 points (+7.5 to +30.0) on the same 40 tasks.
 - So on this task, **a Yosys parse verdict adds nothing measurable, and a plain coding agent with Yosys did not beat one reply**. **Not tested here: SiliconForge's own agent loop was not run as an arm**, so this run says nothing yet about
-  our loop against a plain agent on the same model. The only tool-gated arm is the parse-error repair loop. This is the outcome the stop rule names for that arm, and it applies: nothing here supports training spend, and the pitch is the verified flow around a design (lint, formal, equivalence, place and route), not a pass-rate gain on module completion.
+  our loop against a plain agent on the same model. The only tool-gated arm is the parse-error repair loop. (A first try of our loop through the `agy` bridge was stopped: four model calls took over 15 minutes on one task, so 20 tasks is impractical that way. A run on the local 9B, to compare with its single and feedback rows, needs a GPU window and has not been done.) This is the outcome the stop rule names for that arm, and it applies: nothing here supports training spend, and the pitch is the verified flow around a design (lint, formal, equivalence, place and route), not a pass-rate gain on module completion.
 
 Limits of this run, all real:
 
