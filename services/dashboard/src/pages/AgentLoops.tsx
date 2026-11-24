@@ -86,9 +86,10 @@ function TaskMatrix({ doc, arms }: { doc: AgentBenchDoc; arms: [string, ArmSumma
 }
 
 export function AgentLoops({ files }: { files: BenchFile[] }) {
-  const docs = useMemo(() => files.filter((f) => f.file.startsWith("agentbench-")), [files]);
+  // Newest first, and the newest is what opens: the older public-task suites stay in the list for comparison.
+  const docs = useMemo(() => files.filter((f) => f.file.startsWith("agentbench-")).sort((a, b) => String(b.data.created).localeCompare(String(a.data.created))), [files]);
   const [pick, setPick] = useState<string | null>(null);
-  const current = docs.find((d) => d.file === pick) ?? docs.find((d) => d.file.includes("run3")) ?? docs[0];
+  const current = docs.find((d) => d.file === pick) ?? docs[0];
   if (!current) {
     return <Panel><Empty title="No agent-loop results yet">Run <code>siliconforge agentbench run --serve &lt;model&gt;.gguf</code>; the result file appears here.</Empty></Panel>;
   }

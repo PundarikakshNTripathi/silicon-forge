@@ -79,6 +79,8 @@ run reports a non-zero exit code; failures are not dropped from the denominator.
 
 Datasets are downloaded into the data directory (`/datasets` is gitignored) and never committed or redistributed.
 
+The NotSoTiny runs (`scripts/notsotiny.py`) write `eval-notsotiny-26-07-<arm>-<date>.json` with the dataset revision, the frozen sample name and seed, the grader, and one record per task (verdict, whether Yosys read the project, calls, tokens, seconds). Verdicts other than `equivalent` are `not_proven`, `syntax_error`, `error` (the grader failed), `provider_error` (the model call failed) and `void_reference_lookup` (an agent run whose transcript shows it looked for the answer); all count as misses, and the counts are in the file.
+
 ## Trajectories, a fixed split and an environment
 
 For fine-tuning you need the replies, not only the scores.
@@ -138,8 +140,8 @@ What it says, in the order of the stop rule written down beforehand:
   of the Claude agent over Gemini single on the shared 20 is +10 points with an interval from 0.0 to +25.0 (not separated); the Gemini agent is level with Gemini single (0.0). The agent ran
   Yosys on its own file and still had no way to learn whether the logic was right; 6 of the 20 Gemini agent runs hit its 10-minute limit and one Claude run hit 700 s.
 - **What is separated is model size.** Gemini over the local 9B model: +17.5 points (+7.5 to +30.0) on the same 40 tasks.
-- So on this task, **gating each step on a Yosys parse verdict adds nothing measurable, and a plain coding agent does not need our gating to match it**. This is the outcome the stop rule
-  names, and it applies: nothing here supports training spend, and the pitch is the verified flow around a design (lint, formal, equivalence, place and route), not a pass-rate gain on module completion.
+- So on this task, **a Yosys parse verdict adds nothing measurable, and a plain coding agent with Yosys did not beat one reply**. **Not tested here: SiliconForge's own agent loop was not run as an arm**, so this run says nothing yet about
+  our loop against a plain agent on the same model. The only tool-gated arm is the parse-error repair loop. This is the outcome the stop rule names for that arm, and it applies: nothing here supports training spend, and the pitch is the verified flow around a design (lint, formal, equivalence, place and route), not a pass-rate gain on module completion.
 
 Limits of this run, all real:
 

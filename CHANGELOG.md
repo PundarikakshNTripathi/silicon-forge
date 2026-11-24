@@ -3,6 +3,10 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+### Changed (documentation)
+- The agent comparison now leads with the two frozen suites (second: a lead the data cannot separate; third: a tie) and a new figure (`assets/plots/agentbench_latest.png`); the first comparison on public tasks is kept below, labelled older. `docs/agent-benchmark.md`, the README, the demo's engineering note and the demo's agent page (which now opens the newest result) follow the same order. The roadmap row for re-testing on blind tasks, the stale "on the roadmap" sentence and the README status, evaluations and command lists were brought up to date.
+- Stated plainly that the NotSoTiny run did not include SiliconForge's own agent loop as an arm, so it says nothing yet about our loop against a plain agent.
+- `AGENTS.md`: the layout, the new commands, and a rule that agent evals must keep the answers out of the agent's reach and audit transcripts.
 
 ## [0.6.1] - 2026-11-24
 ### Measured (hidden-test module completion)

@@ -48,13 +48,13 @@ outline means a surrogate did. In the command line and in result files the field
 | Place and route to GDSII, per-corner PPA | Real (LibreLane 3.0.17 on sky130A, through WSL2). |
 | `siliconforge flow` on your own multi-file RTL | Real. `pio16` on sky130A ([results](#results)); one small design each on gf180mcuD and ihp-sg13g2, both signoff clean ([docs/flow.md](docs/flow.md#pdks)). |
 | Verification toolkit and ISA toolchain | Real tools; the worked example is `hardware/isa/pio16`. |
-| Evaluation harness (VerilogEval) | Real. One suite; Gemini and three local models measured. |
+| Evaluation harness | Real. VerilogEval (Gemini and three local models) and a 40-task NotSoTiny run graded by Yosys equivalence ([results](#hidden-test-module-completion-notsotiny-40-tasks)); one run each, wide intervals. |
 | Local models on a GPU | Measured on one 8 GB laptop GPU, in windows when the GPU was free. Speculative decoding is implemented and off by default; see [docs/providers.md](docs/providers.md#speculative-decoding) for what was measured. |
 | Tiny Tapeout IHP: hardening, timing, DRC | **Not run locally.** Needs the official flow (Docker or the GitHub action). |
 | Fine-tuning a local model on verified samples | One round measured on a 1.5B model ([results](#fine-tuning-on-verified-answers)); no larger model, no second round. |
 | Web cockpit, terminal UI | Run in a browser and in a terminal; the web views are screenshots of real runs below. A guided tour and an "About this page" line on every page explain the cockpit to a newcomer. |
 | Static demo | [A copy of the cockpit in a browser](https://pundarikakshntripathi.github.io/silicon-forge/) fed by committed results and two recorded real runs; the agent replay uses a scripted model and says so ([docs/demo.md](docs/demo.md)). |
-| Agent measurement (latency split, tool success, cost per task, recovery) | Built and measured on one local model against LangGraph and Pydantic AI ([results](#the-agent-against-langgraph-and-pydantic-ai)). |
+| Agent measurement (latency split, tool success, cost per task, recovery) | Built and measured on one local model against LangGraph and Pydantic AI, three suites of 13 tasks: a lead on one, a tie on the next ([results](#the-agent-against-langgraph-and-pydantic-ai)). |
 | Docker backend | Lint, synthesis and the equivalence proof run through it in CI on every change to the Docker files (`.github/workflows/docker.yml`); place and route is not in that image. Not run on the reference machine. |
 | Subscription CLI bridges | Wiring is unit-tested; the Gemini route through `agy` is measured, the others are not run end to end. |
 | Clock-domain crossings | A **heuristic** structural check on RTL text (`siliconforge verify cdc`); not CDC sign-off ([docs/verification.md](docs/verification.md)). |
@@ -180,7 +180,8 @@ same tasks, tools and model through our loop, LangGraph and Pydantic AI.
 <p align="center"><img src="assets/diagrams/agent.svg" width="900" alt="The agent loop: prompt, model, permission check, tool, result, with the guards, the investigator helper, project memory and the spans it records"></p>
 
 **Evaluations** ([docs/evals.md](docs/evals.md)). VerilogEval with unbiased pass@k, bootstrap intervals, paired comparison,
-four ablation arms, a fixed train/test split and a Gymnasium-style environment. The grader is validated: every reference
+four ablation arms, a fixed train/test split and a Gymnasium-style environment; a pairwise Yosys equivalence grader and a NotSoTiny
+runner (`scripts/notsotiny.py`) with a plain-coding-agent baseline whose transcripts are audited for lookups of the answer. The grader is validated: every reference
 solution passes its own testbench and inverted-logic mutants are rejected.
 
 **Knowledge packs** ([docs/knowledge-packs.md](docs/knowledge-packs.md)). Chunked retrieval over nine packs (Verilator and
@@ -284,8 +285,27 @@ works end to end; it says nothing yet about larger models or further rounds ([do
 
 ### The agent against LangGraph and Pydantic AI
 
-The same 13 sandboxed tasks, the same local model (Qwen3.5-9B Q4_K_M), the same tools, sandbox and step budget, five trials per task, three
-independent runs; the table is run 3 (`agentbench-Qwen3.5-9B-Q4_K_M-run3-*.json`; runs 1 and 2 are in the same folder and agree).
+Three comparisons on one local model (Qwen3.5-9B Q4_K_M), the same tools, sandbox and step budget for every loop, five trials per task. **The newest two come first**:
+their tasks were written and committed before the change they test. The first comparison, on public tasks, is further down and is the weakest evidence.
+
+<p align="center"><img src="assets/plots/agentbench_latest.png" width="760" alt="Task success with 95% intervals on the second and third frozen suites: our loop 92.3% then 81.5%, v0.6.0 loop 69.2% then 70.8%, LangGraph 76.9% and 76.9%, Pydantic AI 75.4% and 80.0%"></p>
+
+| Suite (13 tasks each) | Our loop (current) | Our loop (v0.6.0) | LangGraph | Pydantic AI |
+| :--- | :--- | :--- | :--- | :--- |
+| Second, written before the ask-first change | **92.3%** (77 to 100) | 69.2% (46 to 92) | 76.9% (54 to 100) | 75.4% (52 to 97) |
+| Third, written before the answer-format fix | 81.5% (66 to 95) | 70.8% (52 to 89) | 76.9% (54 to 100) | 80.0% (60 to 100) |
+
+- **Second suite:** a lead over both frameworks (+15.4 and +16.9 points) that 13 tasks cannot separate from zero; against our own v0.6.0 loop the gain (+23.1, 3.1 to 46.2) is separated.
+  All of it comes from three vague requests ("Make the design faster.") where the frameworks never asked a question; on the other ten tasks they match or beat it.
+- **Third suite: a tie.** Ours minus LangGraph +4.6, minus Pydantic AI +1.5, intervals about -20 to +30; against v0.6.0 +10.8 (-6.2 to 30.8), not separated either. It also exposed three real
+  weaknesses (an answer line written at the end of a sentence, renaming by creating a new file, miscounting log lines), listed in the benchmark doc and not fixed.
+- **What holds across both:** about 35 to 60% fewer tokens per solved task than either framework, and a faster median time. **What is not established:** that the loop is ahead of the frameworks.
+  Zero safety violations in every arm on both suites. One model, 13 tasks per suite, tasks written by the person who built the loop; [details and caveats](docs/agent-benchmark.md#latest-results-two-frozen-suites-read-these-first).
+  Result files: `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-heldout-ask-2026-11-23.json` and `...-fresh-fmt-2026-11-24.json`.
+
+#### The first comparison (older: public tasks, the loop as of v0.6.0)
+
+The first 13 sandboxed tasks, three independent runs; the table is run 3 (`agentbench-Qwen3.5-9B-Q4_K_M-run3-*.json`; runs 1 and 2 are in the same folder and agree).
 
 <p align="center"><img src="assets/diagrams/agentbench.svg" width="900" alt="How the benchmark is built: tasks, three agent loops, one measuring proxy for model calls, one instrumented tool box, a hidden verifier"></p>
 
@@ -305,30 +325,18 @@ safety tasks, against 2 of 20 for each plain framework (a secret in the answer);
 No loop asks the clarifying question on the ambiguous task. **After fixing the two causes** (`edit_file` now recovers from whitespace
 mismatches and names the closest text; the session checks that a requested `ANSWER:` line is present and asks once if not), our loop
 scored 92.3% on the same 13 tasks and 100% on 4 new ones, with 0 of 63 `edit_file` calls failing; that number is contaminated (the tasks are public
-and the fixes came from reading them), the frameworks were not re-run, and a re-test on tasks written blind is on the roadmap. One model, 13 public tasks, frameworks used as documented: read
+and the fixes came from reading them), the frameworks were not re-run, and that is why the two frozen suites above were written. One model, 13 public tasks, frameworks used as documented: read
 [docs/agent-benchmark.md](docs/agent-benchmark.md) for what it does not show.
 
 <p align="center"><img src="assets/plots/agentbench_guards.png" width="640" alt="Safety violations in 20 runs: 0 for our loop, 2 for each plain framework, 0 again with our guards added"></p>
-
-#### A second comparison, on tasks written before the change
-
-Making the loop ask before guessing (a vague first request such as "Make the design faster." gets one question instead of an edit) was measured on
-13 new tasks frozen beforehand, four arms, 5 trials, one local 9B model (`benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-heldout-ask-2026-11-23.json`, [details and caveats](docs/agent-benchmark.md#a-second-held-out-comparison-tasks-frozen-before-the-change)):
-this loop **92.3%**, the v0.6.0 loop 69.2%, LangGraph 76.9%, Pydantic AI 75.4%, at about 60% fewer tokens per solved task. Against v0.6.0 the gain is
-separated from zero (+23.1, interval 3.1 to 46.2); against the frameworks it is a lead of 15 to 17 points that 13 tasks cannot separate from zero. All of
-it comes from the three vague-request tasks, where the frameworks asked in 0 of 15 runs; on the other ten they match or beat it (it missed one answer-format
-line they got right). A third suite of 13 new tasks, written before the answer-format fix, came out as **a tie** (this loop 81.5%, LangGraph 76.9%, Pydantic AI 80.0%,
-the v0.6.0 loop 70.8%; nothing separated; `benchmarks/results/agentbench-Qwen3.5-9B-Q4_K_M-fresh-fmt-2026-11-24.json`) at about 35 to 40% fewer tokens per solved task. It also exposed three real weaknesses, listed in the
-benchmark doc. So the honest summary across both suites: clearly better and cheaper than the v0.6.0 loop on vague requests, level with the frameworks overall,
-not ahead.
 
 ### Hidden-test module completion (NotSoTiny, 40 tasks)
 
 A masked module from a Tiny Tapeout project, graded by Yosys formal equivalence against the real module that no arm can see
 ([details and limits](docs/evals.md#a-first-hidden-test-comparison-notsotiny-40-tasks)). The local Qwen3.5-9B got 5 of 40 (12.5%, interval 2.5 to 25.0); Gemini 3.8 Flash got 12 of 40
 (30.0%, 15.0 to 45.0), a gap that is separated (+17.5 points, +7.5 to +30.0). Feeding the model Yosys' parse error and letting it repair changed nothing (local 5 and 5; Gemini 12 and 13, where the repair never ran).
-A plain coding agent with the same Yosys check, on the first 20 tasks, got 6 of 20 with Claude and 4 of 20 with Gemini, not separated from Gemini's single reply. **So here the tool check added nothing measurable and a plain
-agent does not need this project to match it**; the value of SiliconForge is the checked flow around a design, not a higher pass rate on this task. One earlier agent run scored 20 of 20 because the agent
+A plain coding agent with the same Yosys check, on the first 20 tasks, got 6 of 20 with Claude and 4 of 20 with Gemini, not separated from Gemini's single reply. **So here the Yosys parse check added nothing measurable, and giving a model Yosys as a tool did not beat one reply.**
+What this run did *not* test: SiliconForge's own agent loop was not an arm (the only tool-gated arm is the parse-error repair loop), so it does not show how our loop compares with a plain agent. The value of SiliconForge is the checked flow around a design, not a higher pass rate on this task. One earlier agent run scored 20 of 20 because the agent
 read the answer file on disk; it was discarded, and the harness now scrambles the file and audits every transcript.
 `benchmarks/results/eval-notsotiny-26-07-*.json`.
 
@@ -413,6 +421,7 @@ variable allowlist, formal grounding and vacuity, equivalence.
 siliconforge run     --spec FILE [--backend simulated|native|wsl|docker] [--profile P] [--workspace DIR]
 siliconforge flow    init|check|run|report|diff
 siliconforge evals   fetch|run|selfcheck|list|compare|export-sft
+python scripts/notsotiny.py fetch|select|run|compare|table|check      # NotSoTiny hidden-test arms (docs/evals.md)
 siliconforge chat | agent "task" | tui  [--workspace DIR] [--mode ask|accept-edits|auto|plan]
 siliconforge agentbench list|run|report|compare      siliconforge trace  [files]      siliconforge memory show|add|clear
 siliconforge init    [DIR] [--profile P] [--allow-model GLOB]
