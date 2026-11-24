@@ -171,7 +171,7 @@ def cmd_compare(a) -> int:
     xa = {r["id"]: r["verdict"] == "equivalent" for r in x["per_task"]}
     ya = {r["id"]: r["verdict"] == "equivalent" for r in y["per_task"]}
     ids = sorted(set(xa) & set(ya))
-    d = paired_difference([float(xa[i]) for i in ids], [float(ya[i]) for i in ids])
+    d = paired_difference([float(ya[i]) for i in ids], [float(xa[i]) for i in ids])  # second arm minus first
     print(f"{y['arm']} ({y['model']}) minus {x['arm']} ({x['model']}): {d['mean'] * 100:+.1f} points "
           f"(95% interval {d['ci95'][0] * 100:+.1f} to {d['ci95'][1] * 100:+.1f}) over {len(ids)} shared tasks")
     return 0
@@ -187,7 +187,7 @@ def cmd_table(a) -> int:
         m = d["equivalent_rate"]
         mine = {r["id"]: r["verdict"] == "equivalent" for r in d["per_task"]}
         ids = sorted(set(base) & set(mine))
-        pd = paired_difference([float(base[i]) for i in ids], [float(mine[i]) for i in ids]) if d is not docs[0] and len(ids) > 1 else None
+        pd = paired_difference([float(mine[i]) for i in ids], [float(base[i]) for i in ids]) if d is not docs[0] and len(ids) > 1 else None
         diff = "-" if pd is None else f"{pd['mean'] * 100:+.1f} points ({pd['ci95'][0] * 100:+.1f} to {pd['ci95'][1] * 100:+.1f}), {len(ids)} tasks"
         n_eq = sum(mine.values())
         print(f"| {d['model']} / {d['arm']} | {d['tasks_run']} | {m['mean'] * 100:.1f}% ({m['ci95'][0] * 100:.1f} to {m['ci95'][1] * 100:.1f}), {n_eq} of {d['tasks_run']} "

@@ -102,3 +102,24 @@ def test_the_audit_flags_a_lookup_of_the_reference_and_not_the_legitimate_check(
     assert pa.audit("open('C:/x/datasets/notsotiny/abc/tasks.jsonl')") == ["datasets/notsotiny", "tasks.jsonl"]
     assert "huggingface.co" in pa.audit("curl https://huggingface.co/datasets/HPAI-BSC/NotSoTiny-26-07")
     assert "golden_module" in pa.audit("print(row['golden_module'])")
+
+
+def test_compare_and_table_report_the_second_arm_minus_the_first(tmp_path: Path, capsys):
+    import json
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    import notsotiny as cli
+
+    def doc(arm, verdicts):
+        rate = sum(v == "equivalent" for v in verdicts) / len(verdicts)
+        return {"arm": arm, "model": arm, "tasks_run": len(verdicts), "equivalent_rate": {"mean": rate, "ci95": [rate, rate]}, "syntax_ok_rate": 1.0,
+                "per_task": [{"id": f"t{i}", "verdict": v} for i, v in enumerate(verdicts)]}
+
+    a, b = tmp_path / "a.json", tmp_path / "b.json"
+    a.write_text(json.dumps(doc("weak", ["x"] * 8 + ["equivalent"] * 2)), encoding="utf-8")
+    b.write_text(json.dumps(doc("strong", ["equivalent"] * 6 + ["x"] * 4)), encoding="utf-8")
+    cli.cmd_compare(type("A", (), {"a": str(a), "b": str(b)})())
+    assert "+40.0 points" in capsys.readouterr().out
+    cli.cmd_table(type("A", (), {"files": [str(a), str(b)]})())
+    assert "+40.0 points" in capsys.readouterr().out
