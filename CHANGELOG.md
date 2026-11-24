@@ -3,6 +3,8 @@
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.6.1] - 2026-11-24
 ### Measured (hidden-test module completion)
 - **NotSoTiny, 40 tasks** (`scripts/notsotiny.py`, `evals/notsotiny.py`, `evals/plain_agent.py`; grader: Yosys formal equivalence, frozen sample in `benchmarks/notsotiny/`). Local Qwen3.5-9B 12.5%, Gemini 3.8 Flash 30.0% (separated);
   a Yosys parse-error repair loop changed nothing; a plain coding agent with Yosys (Claude 6 of 20, Gemini 4 of 20) was not separated from a single reply. The stop rule from the research plan applies: no evidence that the tool check helps here
