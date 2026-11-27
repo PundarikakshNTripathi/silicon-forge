@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: YosysHQ/setup-oss-cad-suite@v3   # Icarus Verilog 14, the version the baselines were graded with
+      - uses: YosysHQ/setup-oss-cad-suite@v4   # Icarus Verilog 14, the version the baselines were graded with
       - name: Install
         run: python -m pip install -e ".[providers]"
       - name: Fetch the benchmark
