@@ -42,7 +42,7 @@ jobs:
           pnpm install --frozen-lockfile --ignore-scripts
           pnpm run build:demo-static
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with: {path: services/dashboard/dist}
 
   deploy:
