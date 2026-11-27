@@ -71,7 +71,7 @@ jobs:
           siliconforge flow run /tmp/proj --backend docker --stages lint,synth | tee /tmp/flow.log
           grep -q "equivalence proven" /tmp/flow.log
           grep -q "lint   pass" /tmp/flow.log
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: docker-flow-report
